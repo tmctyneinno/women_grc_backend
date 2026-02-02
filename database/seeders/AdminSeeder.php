@@ -17,7 +17,7 @@ class AdminSeeder extends Seeder
             ['email' => 'admin@example.com'], // prevents duplicates
             [
                 'name'      => 'Super Admin',
-                'email'     => 'admin@example.com',
+                'email'     => 'admin@wgrcfp.com',
                 'password'  => Hash::make('password'), // change this!
                 'role'      => 'admin',
                 'is_active' => true,
