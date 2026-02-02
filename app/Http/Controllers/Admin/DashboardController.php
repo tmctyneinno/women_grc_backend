@@ -11,7 +11,7 @@ class DashboardController extends Controller
     {
         $this->middleware('auth:admin');
     }
-
+ 
     public function index()
     {
         return view('admin.dashboard');
