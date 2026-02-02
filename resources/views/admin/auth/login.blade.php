@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>OneUI - Bootstrap 5 Admin Template &amp; UI Framework</title>
+    <title>WGRCFP ADMIN</title>
     <meta name="description" content="OneUI - Bootstrap 5 Admin Template &amp; UI Framework created by pixelcave">
     <meta name="author" content="pixelcave">
     <meta name="robots" content="index, follow">
@@ -34,7 +34,7 @@
               <div class="p-4 p-xl-5 flex-grow-1 d-flex align-items-center">
                 <div class="w-100">
                   <a class="link-fx fw-semibold fs-2 text-white" href="index.html">
-                    OneUI
+                    WGRCFP
                   </a>
                   <p class="text-white-75 me-xl-8 mt-2">
                     Welcome to your amazing app. Feel free to login and start managing your projects and clients.
@@ -42,9 +42,7 @@
                 </div>
               </div>
               <div class="p-4 p-xl-5 d-xl-flex justify-content-between align-items-center fs-sm">
-                <p class="fw-medium text-white-50 mb-0">
-                  <strong>OneUI 5.12</strong> &copy; <span data-toggle="year-copy"></span>
-                </p>
+                
                 <ul class="list list-inline mb-0 py-2">
                   <li class="list-inline-item">
                     <a class="text-white-75 fw-medium" href="javascript:void(0)">Legal</a>
