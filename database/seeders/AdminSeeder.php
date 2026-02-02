@@ -20,7 +20,7 @@ class AdminSeeder extends Seeder
             'password' => Hash::make('password'),
             'role' => 'super_admin',
             'is_active' => true,
-        ]);
+        ]); 
 
         Admin::create([
             'name' => 'Regular Admin',
