@@ -7,12 +7,23 @@
     <div class="p-6 bg-white border-b border-gray-200">
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-2xl font-semibold text-gray-900">Admin Dashboard</h1>
-            <span class="px-3 py-1 text-sm font-semibold rounded-full 
-                         {{ Auth::guard('admin')->user()->is_active 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-red-100 text-red-800' }}">
-                {{ Auth::guard('admin')->user()->is_active ? 'Active' : 'Inactive' }}
-            </span>
+            <div class="flex items-center space-x-4">
+                <span class="px-3 py-1 text-sm font-semibold rounded-full 
+                             {{ Auth::guard('admin')->user()->is_active 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-red-100 text-red-800' }}">
+                    {{ Auth::guard('admin')->user()->is_active ? 'Active' : 'Inactive' }}
+                </span>
+                
+                <!-- Logout Button -->
+                <form method="POST" action="{{ route('admin.logout') }}">
+                    @csrf
+                    <button type="submit" 
+                            class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 active:bg-red-800 focus:outline-none focus:border-red-800 focus:ring focus:ring-red-300 disabled:opacity-25 transition">
+                        Logout
+                    </button>
+                </form>
+            </div>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -59,6 +70,31 @@
             </div>
         </div>
         
+        <!-- Quick Actions Card -->
+        <div class="bg-blue-50 border border-blue-100 rounded-lg p-6 mb-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
+            <div class="flex flex-wrap gap-4">
+                <form method="POST" action="{{ route('admin.logout') }}">
+                    @csrf
+                    <button type="submit" 
+                            class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 active:bg-red-800 focus:outline-none focus:border-red-800 focus:ring focus:ring-red-300 disabled:opacity-25 transition">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                        Logout
+                    </button>
+                </form>
+                
+                <button onclick="window.location.reload()"
+                        class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-800 focus:outline-none focus:border-gray-800 focus:ring focus:ring-gray-300 disabled:opacity-25 transition">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Refresh
+                </button>
+            </div>
+        </div>
+        
         <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
             <h3 class="text-lg font-medium text-gray-900 mb-4">Admin Information</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -73,6 +109,29 @@
                     <p class="text-sm font-medium text-gray-900">
                         {{ Auth::guard('admin')->user()->updated_at->format('M d, Y') }}
                     </p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Account Status:</p>
+                    <p class="text-sm font-medium text-gray-900">
+                        {{ Auth::guard('admin')->user()->is_active ? 'Active ✓' : 'Inactive ✗' }}
+                    </p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Role Level:</p>
+                    <p class="text-sm font-medium text-gray-900 capitalize">
+                        {{ Auth::guard('admin')->user()->role }}
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Session Information -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <h4 class="text-md font-medium text-gray-900 mb-2">Session Information</h4>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Logged in since:</span>
+                    <span class="text-sm font-medium text-gray-900">
+                        {{ session('login_time') ? \Carbon\Carbon::parse(session('login_time'))->diffForHumans() : 'Just now' }}
+                    </span>
                 </div>
             </div>
         </div> 
