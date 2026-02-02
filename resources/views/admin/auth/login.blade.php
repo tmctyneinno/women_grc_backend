@@ -1,93 +1,159 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
+<!doctype html>
+<html lang="en" class="remember-theme">
+  <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>OneUI - Bootstrap 5 Admin Template &amp; UI Framework</title>
+    <meta name="description" content="OneUI - Bootstrap 5 Admin Template &amp; UI Framework created by pixelcave">
+    <meta name="author" content="pixelcave">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="OneUI - Bootstrap 5 Admin Template &amp; UI Framework">
+    <meta property="og:site_name" content="OneUI">
+    <meta property="og:description" content="OneUI - Bootstrap 5 Admin Template &amp; UI Framework created by pixelcave">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <link rel="shortcut icon" href="assets/media/favicons/favicon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/media/favicons/favicon-192x192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/media/favicons/apple-touch-icon-180x180.png">
+    <link rel="stylesheet" id="css-main" href="assets/css/oneui.min.css">
+    <script src="assets/js/setTheme.js"></script>
+  </head>
+
+  <body>
     
-    <title>Admin Login - {{ config('app.name', 'Laravel') }}</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-    
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-</head> 
-<body class="font-sans antialiased bg-gray-50">
-    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-            <div>
-                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Admin Login
-                </h2>
-                <p class="mt-2 text-center text-sm text-gray-600">
-                    Access the admin dashboard
+    <div id="page-container">
+
+      <!-- Main Container -->
+      <main id="main-container">
+        <!-- Page Content -->
+        <div class="bg-image" style="background-image: url('assets/media/photos/photo28@2x.jpg');">
+          <div class="row g-0 bg-primary-dark-op">
+            <!-- Meta Info Section -->
+            <div class="hero-static col-lg-4 d-none d-lg-flex flex-column justify-content-center">
+              <div class="p-4 p-xl-5 flex-grow-1 d-flex align-items-center">
+                <div class="w-100">
+                  <a class="link-fx fw-semibold fs-2 text-white" href="index.html">
+                    OneUI
+                  </a>
+                  <p class="text-white-75 me-xl-8 mt-2">
+                    Welcome to your amazing app. Feel free to login and start managing your projects and clients.
+                  </p>
+                </div>
+              </div>
+              <div class="p-4 p-xl-5 d-xl-flex justify-content-between align-items-center fs-sm">
+                <p class="fw-medium text-white-50 mb-0">
+                  <strong>OneUI 5.12</strong> &copy; <span data-toggle="year-copy"></span>
                 </p>
+                <ul class="list list-inline mb-0 py-2">
+                  <li class="list-inline-item">
+                    <a class="text-white-75 fw-medium" href="javascript:void(0)">Legal</a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="text-white-75 fw-medium" href="javascript:void(0)">Contact</a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="text-white-75 fw-medium" href="javascript:void(0)">Terms</a>
+                  </li>
+                </ul>
+              </div>
             </div>
-            
-            <form class="mt-8 space-y-6" method="POST" action="{{ route('admin.login') }}">
-                @csrf
-                
-                @if($errors->any())
-                    <div class="rounded-md bg-red-50 p-4">
-                        <div class="flex">
-                            <div class="ml-3">
-                                <h3 class="text-sm font-medium text-red-800">
-                                    Authentication failed
-                                </h3>
-                                <div class="mt-2 text-sm text-red-700">
-                                    <ul class="list-disc pl-5 space-y-1">
-                                        @foreach($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            </div>
+            <!-- END Meta Info Section -->
+
+            <!-- Main Section -->
+            <div class="hero-static col-lg-8 d-flex flex-column align-items-center bg-body-extra-light">
+              <div class="p-3 w-100 d-lg-none text-center">
+                <a class="link-fx fw-semibold fs-3 text-dark" href="index.html">
+                  OneUI
+                </a>
+              </div>
+              <div class="p-4 w-100 flex-grow-1 d-flex align-items-center">
+                <div class="w-100">
+                  <!-- Header -->
+                  <div class="text-center mb-5">
+                    <p class="mb-3">
+                      <i class="fa fa-2x fa-circle-notch text-primary-light"></i>
+                    </p>
+                    <h1 class="fw-bold mb-2">
+                      Sign In
+                    </h1>
+                    <p class="fw-medium text-muted">
+                      Welcome, please login or <a href="op_auth_signup3.html">sign up</a> for a new account.
+                    </p>
+                  </div>
+                  <!-- END Header -->
+
+                  <!-- Sign In Form -->
+                  <!-- jQuery Validation (.js-validation-signin class is initialized in js/pages/op_auth_signin.min.js which was auto compiled from _js/pages/op_auth_signin.js) -->
+                  <!-- For more info and examples you can check out https://github.com/jzaefferer/jquery-validation -->
+                  <div class="row g-0 justify-content-center">
+                    <div class="col-sm-8 col-xl-4">
+                      <form class="js-validation-signin" action="be_pages_auth_all.html" method="POST">
+                        <div class="mb-4">
+                          <input type="text" class="form-control form-control-lg form-control-alt py-3" id="login-username" name="login-username" placeholder="Username">
                         </div>
+                        <div class="mb-4">
+                          <input type="password" class="form-control form-control-lg form-control-alt py-3" id="login-password" name="login-password" placeholder="Password">
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                          <div>
+                            <a class="text-muted fs-sm fw-medium d-block d-lg-inline-block mb-1" href="op_auth_reminder3.html">
+                              Forgot Password?
+                            </a>
+                          </div>
+                          <div>
+                            <button type="submit" class="btn btn-lg btn-alt-primary">
+                              <i class="fa fa-fw fa-sign-in-alt me-1 opacity-50"></i> Sign In
+                            </button>
+                          </div>
+                        </div>
+                      </form>
                     </div>
-                @endif
-                
-                <div class="rounded-md shadow-sm -space-y-px">
-                    <div>
-                        <label for="email" class="sr-only">Email address</label>
-                        <input id="email" name="email" type="email" autocomplete="email" required 
-                               class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 
-                                      placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 
-                                      focus:border-indigo-500 focus:z-10 sm:text-sm"
-                               placeholder="Email address" value="{{ old('email') }}">
-                    </div>
-                    <div>
-                        <label for="password" class="sr-only">Password</label>
-                        <input id="password" name="password" type="password" autocomplete="current-password" required 
-                               class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 
-                                      placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 
-                                      focus:border-indigo-500 focus:z-10 sm:text-sm"
-                               placeholder="Password">
-                    </div>
+                  </div>
+                  <!-- END Sign In Form -->
                 </div>
-
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <input id="remember" name="remember" type="checkbox" 
-                               class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                        <label for="remember" class="ml-2 block text-sm text-gray-900">
-                            Remember me
-                        </label>
-                    </div>
-                </div>
-
-                <div>
-                    <button type="submit" 
-                            class="group relative w-full flex justify-center py-2 px-4 border border-transparent 
-                                   text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 
-                                   focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Sign in
-                    </button>
-                </div>
-            </form>
+              </div>
+              <div class="px-4 py-3 w-100 d-lg-none d-flex flex-column flex-sm-row justify-content-between fs-sm text-center text-sm-start">
+                <p class="fw-medium text-black-50 py-2 mb-0">
+                  <strong>OneUI 5.12</strong> &copy; <span data-toggle="year-copy"></span>
+                </p>
+                <ul class="list list-inline py-2 mb-0">
+                  <li class="list-inline-item">
+                    <a class="text-muted fw-medium" href="javascript:void(0)">Legal</a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="text-muted fw-medium" href="javascript:void(0)">Contact</a>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="text-muted fw-medium" href="javascript:void(0)">Terms</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <!-- END Main Section -->
+          </div>
         </div>
+        <!-- END Page Content -->
+      </main>
+      <!-- END Main Container -->
     </div>
-</body>
+    <!-- END Page Container -->
+
+    <!--
+        OneUI JS
+
+        Core libraries and functionality
+        webpack is putting everything together at assets/_js/main/app.js
+    -->
+    <script src="assets/js/oneui.app.min.js"></script>
+
+    <!-- jQuery (required for jQuery Validation plugin) -->
+    <script src="assets/js/lib/jquery.min.js"></script>
+
+    <!-- Page JS Plugins -->
+    <script src="assets/js/plugins/jquery-validation/jquery.validate.min.js"></script>
+
+    <!-- Page JS Code -->
+    <script src="assets/js/pages/op_auth_signin.min.js"></script>
+  </body>
 </html>
