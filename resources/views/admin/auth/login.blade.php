@@ -4,20 +4,20 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>WGRCFP ADMIN</title>
-    <meta name="description" content="OneUI - Bootstrap 5 Admin Template &amp; UI Framework created by pixelcave">
+    <meta name="description" content="">
     <meta name="author" content="pixelcave">
     <meta name="robots" content="index, follow">
-    <meta property="og:title" content="OneUI - Bootstrap 5 Admin Template &amp; UI Framework">
+    <meta property="og:title" content="">
     <meta property="og:site_name" content="OneUI">
-    <meta property="og:description" content="OneUI - Bootstrap 5 Admin Template &amp; UI Framework created by pixelcave">
+    <meta property="og:description" content="">
     <meta property="og:type" content="website">
     <meta property="og:url" content="">
     <meta property="og:image" content="">
-    <link rel="shortcut icon" href="assets/media/favicons/favicon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="assets/media/favicons/favicon-192x192.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/media/favicons/apple-touch-icon-180x180.png">
-    <link rel="stylesheet" id="css-main" href="assets/css/oneui.min.css">
-    <script src="assets/js/setTheme.js"></script>
+    <link rel="shortcut icon" href="{{ asset('assets/media/favicons/favicon.png')}}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('assets/media/favicons/favicon-192x192.png')}}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/media/favicons/apple-touch-icon-180x180.png')}}">
+    <link rel="stylesheet" id="css-main" href="{{ asset('assets/css/oneui.min.css')}}">
+    <script src="{{ asset('assets/js/setTheme.js')}}"></script>
   </head>
 
   <body>
@@ -27,7 +27,7 @@
       <!-- Main Container -->
       <main id="main-container">
         <!-- Page Content -->
-        <div class="bg-image" style="background-image: url('assets/media/photos/photo28@2x.jpg');">
+        <div class="bg-image" style="background-image: url('{{ asset('assets/media/photos/photo28@2x.jpg')}}');">
           <div class="row g-0 bg-primary-dark-op">
             <!-- Meta Info Section -->
             <div class="hero-static col-lg-4 d-none d-lg-flex flex-column justify-content-center">
@@ -37,7 +37,7 @@
                     WGRCFP
                   </a>
                   <p class="text-white-75 me-xl-8 mt-2">
-                    Welcome to your amazing app. Feel free to login and start managing your projects and clients.
+                    Welcome to your WGRCFP Admin. Feel free to login and start managing your projects and clients.
                   </p>
                 </div>
               </div>
@@ -62,7 +62,7 @@
             <div class="hero-static col-lg-8 d-flex flex-column align-items-center bg-body-extra-light">
               <div class="p-3 w-100 d-lg-none text-center">
                 <a class="link-fx fw-semibold fs-3 text-dark" href="index.html">
-                  OneUI
+                  WGRCFP
                 </a>
               </div>
               <div class="p-4 w-100 flex-grow-1 d-flex align-items-center">
@@ -76,29 +76,37 @@
                       Sign In
                     </h1>
                     <p class="fw-medium text-muted">
-                      Welcome, please login or <a href="op_auth_signup3.html">sign up</a> for a new account.
+                      Welcome, please login.
                     </p>
                   </div>
                   <!-- END Header -->
+                <div class="row g-0 justify-content-center">
+                    <div class="col-sm-8 col-xl-6">
+                      <form class="js-validation-signin" action="{{ route('admin.login') }}" method="POST">
+                        @csrf
+                        
+                        @if($errors->any())
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <h3 class="alert-heading h4 my-2">Authentication failed</h3>
+                            <ul class="list-disc pl-5 space-y-1">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        @endif
 
-                  <!-- Sign In Form -->
-                  <!-- jQuery Validation (.js-validation-signin class is initialized in js/pages/op_auth_signin.min.js which was auto compiled from _js/pages/op_auth_signin.js) -->
-                  <!-- For more info and examples you can check out https://github.com/jzaefferer/jquery-validation -->
-                  <div class="row g-0 justify-content-center">
-                    <div class="col-sm-8 col-xl-4">
-                      <form class="js-validation-signin" action="be_pages_auth_all.html" method="POST">
                         <div class="mb-4">
-                          <input type="text" class="form-control form-control-lg form-control-alt py-3" id="login-username" name="login-username" placeholder="Username">
+                          <input type="email" class="form-control form-control-lg form-control-alt py-3" 
+                          id="login-username" name="email" placeholder="Email address" autocomplete="email" required >
                         </div>
                         <div class="mb-4">
-                          <input type="password" class="form-control form-control-lg form-control-alt py-3" id="login-password" name="login-password" placeholder="Password">
+                          <input type="password" class="form-control form-control-lg form-control-alt py-3" 
+                          id="login-password" name="password" autocomplete="current-password"  required placeholder="Password">
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                          <div>
-                            <a class="text-muted fs-sm fw-medium d-block d-lg-inline-block mb-1" href="op_auth_reminder3.html">
-                              Forgot Password?
-                            </a>
-                          </div>
+                         
                           <div>
                             <button type="submit" class="btn btn-lg btn-alt-primary">
                               <i class="fa fa-fw fa-sign-in-alt me-1 opacity-50"></i> Sign In
