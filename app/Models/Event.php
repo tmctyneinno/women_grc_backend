@@ -42,7 +42,7 @@ class Event extends Model
         'is_featured',
         'is_online',
         'meeting_link',
-        'speakers',
+        'speakers', 
         'sponsors',
         'tags',
         'meta_title',
