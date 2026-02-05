@@ -47,7 +47,7 @@ class Cors
         // If origin is not allowed, return error
         return response()->json([
             'error' => 'Origin not allowed',
-            'origin' => $origin,
+            'origin' => $origin, 
             'allowed_origins' => $allowedOrigins
         ], 403);
     }
