@@ -14,7 +14,7 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         Admin::updateOrCreate(
-            ['email' => 'admin@example.com'], // prevents duplicates
+            ['email' => 'admin@gmail.com'], // prevents duplicates
             [
                 'name'      => 'Super Admin',
                 'email'     => 'admin@wgrcfp.com',
