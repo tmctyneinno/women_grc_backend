@@ -17,3 +17,12 @@ Route::middleware('api')->prefix('v1')->group(function () {
     });
 
 });
+
+Route::get('/test-cors', function() {
+    return response()->json([
+        'success' => true,
+        'message' => 'CORS is working!',
+        'origin' => request()->header('Origin'),
+        'timestamp' => now()->toDateTimeString()
+    ]);
+});
