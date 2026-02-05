@@ -15,9 +15,16 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::get('/upcoming', [EventController::class, 'upcoming'])->name('upcoming');
         Route::get('/{id}', [EventController::class, 'show'])->name('show');
     });
-
+    Route::get('/test-cors', function() {
+        return response()->json([
+            'success' => true,
+            'message' => 'CORS is working!',
+            'origin' => request()->header('Origin'),
+            'timestamp' => now()->toDateTimeString()
+        ]);
+    });
 });
-
+ 
 Route::get('/test-cors', function() {
     return response()->json([
         'success' => true,
