@@ -22,4 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-    })->create();
+    })->create()
+    // Add CORS middleware
+    $middleware->validateCsrfTokens(except: [
+        'api/*',
+    ]);
