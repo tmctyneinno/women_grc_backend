@@ -124,7 +124,6 @@ class EventController extends Controller
      */
     public function upcoming()
     {
-        // $events = Event::with([ 'category'])
         $events = Event::where('status', 'published')
                       ->where('start_date', '>=', now())
                       ->orderBy('start_date', 'asc')
