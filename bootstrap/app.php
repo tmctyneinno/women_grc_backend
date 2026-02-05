@@ -12,18 +12,23 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->append(\App\Http\Middleware\Cors::class);
+        // Add CORS middleware only to API group
+        $middleware->api(append: [
+            \App\Http\Middleware\Cors::class,
+        ]);
+        
+        // Skip CSRF for API routes
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+        ]);
+        
         // Register alias middleware
         $middleware->alias([
             'admin.auth' => \App\Http\Middleware\AuthenticateAdmin::class,
             'admin.guest' => \App\Http\Middleware\RedirectIfAdminAuthenticated::class,
-            
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-    })->create()
-    // Add CORS middleware
-    $middleware->validateCsrfTokens(except: [
-        'api/*',
-    ]);
+    })
+    ->create();
