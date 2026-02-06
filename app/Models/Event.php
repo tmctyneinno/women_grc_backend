@@ -86,7 +86,7 @@ class Event extends Model
 
     public function speakers()
     {
-        return $this->hasMany(Speaker::class)->orderBy('order');
+        return $this->hasMany(Speaker::class);
     }
     
     
