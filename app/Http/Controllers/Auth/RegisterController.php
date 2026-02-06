@@ -63,6 +63,7 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+         \Log::error('Registration success:');
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
