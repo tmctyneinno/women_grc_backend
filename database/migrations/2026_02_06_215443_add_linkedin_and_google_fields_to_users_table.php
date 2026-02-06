@@ -12,16 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-             // Add linkedin_profile column
             $table->string('linkedin_profile')->nullable()->after('email');
             
-            // Add google_id column for OAuth
             $table->string('google_id')->nullable()->after('linkedin_profile');
             
-            // Add is_google_account column
             $table->boolean('is_google_account')->default(false)->after('google_id');
             
-            // Add index for faster lookups
             $table->index('linkedin_profile');
             $table->index('google_id');
             $table->index('is_google_account');
@@ -35,7 +31,14 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            // Drop indexes first
+            $table->dropIndex(['linkedin_profile']);
+            $table->dropIndex(['google_id']);
+            $table->dropIndex(['is_google_account']);
+            $table->dropIndex(['email', 'google_id']);
+            
+            // Drop columns
+            $table->dropColumn(['linkedin_profile', 'google_id', 'is_google_account']);
         });
     }
 };
