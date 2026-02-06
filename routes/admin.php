@@ -24,10 +24,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
     });
 
-    // Event API Routes
-    // Event API Routes - REORDERED VERSION
     Route::prefix('events')->name('events.')->group(function () {
-        // CREATE routes (GET before dynamic routes)
         Route::get('/create', [EventController::class, 'create'])->name('create');
         
         // SINGLE routes with explicit names
