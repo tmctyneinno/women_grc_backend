@@ -2,6 +2,7 @@
 // routes/api.php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Api\EventController;
 
 Route::middleware('api')->prefix('v1')->group(function () {
