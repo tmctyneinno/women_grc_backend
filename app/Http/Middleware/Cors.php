@@ -31,7 +31,6 @@ class Cors
             'http://127.0.0.1:8000',
         ];
         
-        
         $origin = $request->header('Origin');
         
         // Handle OPTIONS preflight requests
