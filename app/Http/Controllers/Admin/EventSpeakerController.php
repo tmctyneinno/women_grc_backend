@@ -12,20 +12,17 @@ class EventSpeakerController extends Controller
 {
     public function index(Event $event)
     {
-        // Debug: Check if event is loaded
+        // Get speakers count
+        $speakersCount = $event->speakers()->count();
+        
+        // Get speakers collection
+        $speakers = $event->speakers()->get(); // Use get() to explicitly get collection
+        
         \Log::info('Event ID: ' . $event->id);
         \Log::info('Event Title: ' . $event->title);
-        
-        // Load speakers relationship
-        $event->load('speakers');
-        
-        // Debug: Check speakers count
-        $speakersCount = $event->speakers()->count();
         \Log::info('Speakers count: ' . $speakersCount);
-        
-        // Debug: Get all speakers
-        $speakers = $event->speakers;
-        \Log::info('Speakers collection: ' . json_encode($speakers->toArray()));
+        \Log::info('Speakers collection class: ' . get_class($speakers));
+        \Log::info('Speakers collection count: ' . $speakers->count());
         
         return view('admin.events.speakers.index', compact('event', 'speakers'));
     }
