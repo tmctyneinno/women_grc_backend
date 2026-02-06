@@ -12,7 +12,10 @@ class EventSpeakerController extends Controller
 {
     public function index(Event $event)
     {
+        // Eager load the speakers relationship
+        $event->load('speakers');
         $speakers = $event->speakers;
+        
         return view('admin.events.speakers.index', compact('event', 'speakers'));
     }
 
