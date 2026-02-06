@@ -80,8 +80,10 @@ class EventController extends Controller
                 'name' => $speaker->name,
                 'title' => $speaker->title,
                 'brief' => $speaker->brief,
-                'avatar' => $imageField ? asset('storage/speakers/' . $imageField) : null,
-                'image_url' => $imageField ? asset('storage/speakers/' . $imageField) : null,
+               'avatar' => $imagePath,
+        'image_url' => $imagePath,
+        'avatar_placeholder' => $initials, // Add initials for UI
+        'has_image' => !empty($speaker->image), // Add flag
                 'order' => $speaker->order, 
             ];
         })->toArray();
