@@ -121,6 +121,13 @@
                                            title="Edit Event">
                                             <i class="fa fa-fw fa-pencil-alt"></i>
                                         </a>
+                                        <!-- Add Speakers Button -->
+                                        <a href="{{ route('admin.events.speakers.index', $event->id) }}" 
+                                        class="btn btn-sm btn-alt-info" 
+                                        data-bs-toggle="tooltip" 
+                                        title="Manage Speakers">
+                                            <i class="fa fa-fw fa-users"></i>
+                                        </a>
                                         <form action="{{ route('admin.events.destroy', $event->id) }}" 
                                               method="POST" 
                                               class="d-inline"
