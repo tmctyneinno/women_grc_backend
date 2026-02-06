@@ -45,7 +45,7 @@ Route::get('/test-cors', function() {
 
 Route::prefix('auth')->group(function () {
     // Registration route
-    Route::post('/register', RegisterController::class,'create')->name('register');
+    Route::post('/register', [RegisterController::class, 'register']);
     
     // Email verification routes
     Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
