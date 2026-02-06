@@ -76,8 +76,8 @@ class EventController extends Controller
                 'name' => $speaker->name,
                 'title' => $speaker->title,
                 'brief' => $speaker->brief,
-                'avatar' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
-                'image_url' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
+                'avatar' => $imagePath, // Use the checked path
+                'image_url' => $imagePath, 
                 'order' => $speaker->order, 
             ];
         })->toArray();
