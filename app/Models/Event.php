@@ -89,6 +89,7 @@ class Event extends Model
         return $this->hasMany(Speaker::class)->orderBy('order');
     }
     
+    
     // Relationships
     public function creator()
     {
