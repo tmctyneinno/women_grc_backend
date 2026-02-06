@@ -15,7 +15,7 @@ class Speaker extends Model
         'title',
         'brief',
         'image',
-        'order'
+        'order',
     ];
 
     protected $casts = [
