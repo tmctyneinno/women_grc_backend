@@ -23,12 +23,10 @@ class Cors
         
         // ALLOWED ORIGINS - MUST INCLUDE www.wgrcfp.org
         $allowedOrigins = [
-            // 'https://www.wgrcfp.org',
-            // 'https://wgrcfp.org',
             'http://localhost:3000',
             'http://127.0.0.1:3000',
-            'http://localhost:8000',
-            'http://127.0.0.1:8000',
+            'http://localhost:5173', // Vite default
+            'http://127.0.0.1:5173',
         ];
         
         $origin = $request->header('Origin');
