@@ -54,7 +54,7 @@ class Cors
         $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
         $response->headers->set('Access-Control-Allow-Credentials', 'true');
         $response->headers->set('Access-Control-Max-Age', '86400');
-        
+         
         \Log::info('CORS Headers Added', [
             'origin' => $origin,
             'allowed_origin' => $allowOrigin
