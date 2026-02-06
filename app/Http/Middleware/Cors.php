@@ -22,12 +22,15 @@ class Cors
         ]);
         
         // ALLOWED ORIGINS - MUST INCLUDE www.wgrcfp.org
+        // $allowedOrigins = [
+        //     'https://www.wgrcfp.org',
+        //     'https://wgrcfp.org',
+        //     'http://localhost:3000',
+        //     'http://127.0.0.1:3000',
+        //     'http://localhost:8000',
+        //     'http://127.0.0.1:8000',
+        // ];
         $allowedOrigins = [
-            'https://www.wgrcfp.org',
-            'https://wgrcfp.org',
-            'http://localhost:3000',
-            'http://127.0.0.1:3000',
-            'http://localhost:8000',
             'http://127.0.0.1:8000',
         ];
         
