@@ -68,8 +68,8 @@ class EventController extends Controller
                 'name' => $speaker->name,
                 'title' => $speaker->title,
                 'brief' => $speaker->brief,
-                'avatar' => $speaker->image ? asset('storage/speaker' . $speaker->image) : null,
-                'image_url' => $speaker->image ? asset('storage/speaker' . $speaker->image) : null,
+                'avatar' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
+                'image_url' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
                 'order' => $speaker->order, 
             ];
         })->toArray();
