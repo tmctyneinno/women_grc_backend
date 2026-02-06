@@ -1,5 +1,4 @@
-@extends('layouts.admin')
-
+@extends('admin.layouts.app')
 @section('content')
 <div class="content">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -14,13 +13,13 @@
         </div>
     </div>
 
-    @if($speakers->isEmpty())
+    @if(optional($speakers)->isEmpty())
         <div class="alert alert-info">
             No speakers added yet. <a href="{{ route('admin.events.speakers.create', $event) }}">Add your first speaker</a>
         </div>
     @else
         <div class="row">
-            @foreach($speakers as $speaker)
+            @foreach(optional($speakers) as $speaker)
                 <div class="col-md-4 mb-4">
                     <div class="card">
                         @if($speaker->image)
