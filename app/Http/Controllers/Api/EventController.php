@@ -62,6 +62,15 @@ class EventController extends Controller
         
         // Format speakers
         $formattedSpeakers = $speakers->map(function($speaker) {
+            $imagePath = null;
+            if ($speaker->image) {
+                $storagePath = storage_path('app/public/speakers/' . $speaker->image);
+                if (file_exists($storagePath)) {
+                    $imagePath = asset('storage/speakers/' . $speaker->image);
+                } else {
+                    \Log::warning("Speaker image not found: {$speaker->image} for speaker {$speaker->id}");
+                }
+            }
             return [
                 'id' => $speaker->id,
                 'name' => $speaker->name,
