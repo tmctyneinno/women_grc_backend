@@ -38,14 +38,16 @@ class EventController extends Controller
     public function show($identifier)
 {
     try {
-        // Use with() to eager load speakers
+       \Log::info("Fetching event: {$identifier}");
+        
         $event = Event::with(['speakers' => function($query) {
             $query->orderBy('order', 'asc');
         }])->where('slug', $identifier)
            ->where('status', 'published')
            ->first();
         
-        if (!$event) {
+         if (!$event) {
+            \Log::warning("Event not found: {$identifier}");
             return response()->json([
                 'success' => false,
                 'message' => 'Event not found.'
