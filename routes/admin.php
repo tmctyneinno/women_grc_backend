@@ -46,8 +46,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // CREATE route (POST method)
         Route::post('/', [EventController::class, 'store'])->name('store');
     });
-
-    Route::prefix('events/{event}/speakers')->name('admin.events.speakers.')->group(function () {
+ 
+    Route::prefix('events/{event}/speakers')->name('events.speakers.')->group(function () {
         Route::get('/', [EventSpeakerController::class, 'index'])->name('index');
         Route::get('/create', [EventSpeakerController::class, 'create'])->name('create');
         Route::post('/', [EventSpeakerController::class, 'store'])->name('store');
