@@ -62,19 +62,7 @@ class EventController extends Controller
         
         // Format speakers
         $formattedSpeakers = $speakers->map(function($speaker) {
-            $imagePath = null;
-    if ($speaker->image) {
-        $imagePath = asset('storage/speakers/' . $speaker->image);
-    }
-    
-    // Generate initials for placeholder
-    $initials = '';
-    $nameParts = explode(' ', $speaker->name);
-    foreach ($nameParts as $part) {
-        $initials .= strtoupper(substr($part, 0, 1));
-    }
-    $initials = substr($initials, 0, 2); // Get first 2 initials
-    
+           
             return [
                 'id' => $speaker->id,
                 'name' => $speaker->name,
