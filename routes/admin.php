@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\EventSpeakerController;
 use Illuminate\Support\Facades\Route;
 
 // Admin Routes
@@ -27,17 +28,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::prefix('events')->name('events.')->group(function () {
         Route::get('/create', [EventController::class, 'create'])->name('create');
         
-        // SINGLE routes with explicit names
         Route::get('/{id}', [EventController::class, 'show'])->name('show'); // GET single event
         Route::get('/{id}/edit', [EventController::class, 'edit'])->name('edit'); // GET edit form
         
-        // UPDATE route (PUT method)
         Route::put('/{id}', [EventController::class, 'update'])->name('update'); // PUT update event
         
-        // DELETE route
         Route::delete('/{id}', [EventController::class, 'destroy'])->name('destroy');
-        
-        // Other single routes
         Route::patch('/{id}/status', [EventController::class, 'updateStatus'])->name('updateStatus');
         Route::delete('/{id}/gallery', [EventController::class, 'removeGalleryImage'])->name('removeGalleryImage');
         
@@ -49,5 +45,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         
         // CREATE route (POST method)
         Route::post('/', [EventController::class, 'store'])->name('store');
+    });
+
+    Route::prefix('events/{event}/speakers')->name('admin.events.speakers.')->group(function () {
+        Route::get('/', [EventSpeakerController::class, 'index'])->name('index');
+        Route::get('/create', [EventSpeakerController::class, 'create'])->name('create');
+        Route::post('/', [EventSpeakerController::class, 'store'])->name('store');
+        Route::get('/{speaker}/edit', [EventSpeakerController::class, 'edit'])->name('edit');
+        Route::put('/{speaker}', [EventSpeakerController::class, 'update'])->name('update');
+        Route::delete('/{speaker}', [EventSpeakerController::class, 'destroy'])->name('destroy');
     });
 });
