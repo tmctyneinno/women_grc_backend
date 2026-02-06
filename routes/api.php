@@ -25,11 +25,19 @@ Route::middleware('api')->prefix('v1')->group(function () {
     });
 });
  
+
 Route::get('/test-cors', function() {
+    $headers = [];
+    foreach (request()->headers->all() as $key => $value) {
+        $headers[$key] = $value[0];
+    }
+    
     return response()->json([
         'success' => true,
-        'message' => 'CORS is working!',
-        'origin' => request()->header('Origin'),
-        'timestamp' => now()->toDateTimeString()
+        'origin_header' => request()->header('Origin'),
+        'all_headers' => $headers,
+        'method' => request()->method(),
+        'server_time' => now()->toDateTimeString(),
+        'cors_working' => true
     ]);
 });

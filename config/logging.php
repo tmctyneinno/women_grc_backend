@@ -30,6 +30,11 @@ return [
     | your application ready for upcoming major versions of dependencies.
     |
     */
+    'cors' => [
+        'driver' => 'single',
+        'path' => storage_path('logs/cors.log'),
+        'level' => 'debug',
+    ],
 
     'deprecations' => [
         'channel' => env('LOG_DEPRECATIONS_CHANNEL', 'null'),
