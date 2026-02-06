@@ -37,12 +37,14 @@ class EventController extends Controller
      */
     public function show($identifier)
     {
-        $event = Event::where('slug', $identifier)
-            ->where('status', 'published')
-            ->first();
+        // $event = Event::where('slug', $identifier)
+        //     ->where('status', 'published')
+        //     ->first();
         $event = Event::with(['speakers' => function($query) {
             $query->orderBy('order', 'asc');
-        }])->where('slug', $slug)->firstOrFail();
+        }])->where('slug', $slug)
+        ->where('status', 'published')
+        ->firstOrFail();
         
         if (!$event) {
             return response()->json([
