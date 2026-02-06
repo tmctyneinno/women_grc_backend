@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Add CORS middleware only to API group
         $middleware->api(append: [
-            // \App\Http\Middleware\Cors::class,
+            \App\Http\Middleware\Cors::class,
         ]);
         
         // Skip CSRF for API routes
