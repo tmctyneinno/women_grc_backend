@@ -36,15 +36,14 @@ class EventController extends Controller
      * Display the specified resource.
      */
     public function show($identifier)
-    {
-        // $event = Event::where('slug', $identifier)
-        //     ->where('status', 'published')
-        //     ->first();
+{
+    try {
+        // Use with() to eager load speakers
         $event = Event::with(['speakers' => function($query) {
             $query->orderBy('order', 'asc');
         }])->where('slug', $identifier)
-        ->where('status', 'published')
-        ->firstOrFail();
+           ->where('status', 'published')
+           ->first();
         
         if (!$event) {
             return response()->json([
@@ -52,6 +51,20 @@ class EventController extends Controller
                 'message' => 'Event not found.'
             ], 404);
         }
+        
+        // Format speakers - handle null case
+        $speakers = $event->speakers ? $event->speakers->map(function($speaker) {
+            return [
+                'id' => $speaker->id,
+                'name' => $speaker->name,
+                'title' => $speaker->title,
+                'brief' => $speaker->brief,
+                'avatar' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
+                'image_url' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
+                'order' => $speaker->order, 
+            ];
+        }) : [];
+        
         // Format the response data properly
         $eventData = [
             'id' => $event->id,
@@ -59,7 +72,7 @@ class EventController extends Controller
             'slug' => $event->slug,
             'description' => $event->description,
             'short_description' => $event->short_description,
-            'featured_image' => $event->featured_image,
+            'featured_image' => $event->featured_image ? asset('storage/' . $event->featured_image) : null,
             'gallery_images' => $event->gallery_images,
             'start_date' => $event->start_date,
             'end_date' => $event->end_date,
@@ -69,32 +82,21 @@ class EventController extends Controller
             'state' => $event->state,
             'country' => $event->country,
             'status' => $event->status,
-            'speakers' => $event->speakers->map(function($speaker) {
-                return [
-                    'id' => $speaker->id,
-                    'name' => $speaker->name,
-                    'title' => $speaker->title,
-                    'brief' => $speaker->brief,
-                    'avatar' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
-                    'image_url' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
-                    'order' => $speaker->order, 
-                ];
-            }),
+            'speakers' => $speakers, // Use the formatted speakers
             'type' => $event->type,
             'capacity' => $event->capacity,
             'registered_count' => $event->registered_count,
             'price' => $event->price,
             'currency' => $event->currency,
             'formatted_price' => $event->formatted_price,
-            'is_featured' => $event->is_featured,
-            'is_online' => $event->is_online,
+            'is_featured' => (bool)$event->is_featured,
+            'is_online' => (bool)$event->is_online,
             'meeting_link' => $event->meeting_link,
-            'speakers' => $event->speakers,
             'sponsors' => $event->sponsors,
             'tags' => $event->tags,
-            'is_upcoming' => $event->is_upcoming,
-            'is_ongoing' => $event->is_ongoing,
-            'is_past' => $event->is_past,
+            'is_upcoming' => (bool)$event->is_upcoming,
+            'is_ongoing' => (bool)$event->is_ongoing,
+            'is_past' => (bool)$event->is_past,
             'registration_percentage' => $event->registration_percentage,
             'duration_hours' => $event->duration_hours,
             'has_capacity' => $event->hasCapacity(),
@@ -107,7 +109,18 @@ class EventController extends Controller
             'data' => $eventData,
             'message' => 'Event retrieved successfully.'
         ]);
+        
+    } catch (\Exception $e) {
+        \Log::error('Event API Error: ' . $e->getMessage());
+        \Log::error('Stack trace: ' . $e->getTraceAsString());
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Server error',
+            'error' => env('APP_DEBUG') ? $e->getMessage() : 'Internal server error'
+        ], 500);
     }
+}
 
     /**
      * Get featured events.
