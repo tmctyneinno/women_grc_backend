@@ -42,7 +42,7 @@ class EventController extends Controller
         //     ->first();
         $event = Event::with(['speakers' => function($query) {
             $query->orderBy('order', 'asc');
-        }])->where('slug', $slug)
+        }])->where('slug', $identifier)
         ->where('status', 'published')
         ->firstOrFail();
         
