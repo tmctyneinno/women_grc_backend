@@ -48,6 +48,8 @@ class Event extends Model
         'meta_title',
         'meta_description',
         'meta_keywords',
+        'has_speakers',
+        'speakers_title',
         'created_by',
         'updated_by',
     ];
@@ -82,6 +84,11 @@ class Event extends Model
         'duration_hours',
     ];
 
+    public function speakers()
+    {
+        return $this->hasMany(Speaker::class)->orderBy('order');
+    }
+    
     // Relationships
     public function creator()
     {
