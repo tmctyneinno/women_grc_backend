@@ -5,77 +5,80 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class Cors
 {
     public function handle(Request $request, Closure $next)
     {
-        // Log incoming request for debugging
-        Log::channel('cors')->info('CORS Request', [
+        // Log the request for debugging
+        \Log::info('CORS Request', [
             'origin' => $request->header('Origin'),
             'method' => $request->method(),
+            'url' => $request->fullUrl(),
             'path' => $request->path(),
-            'ip' => $request->ip(),
-            'user_agent' => $request->header('User-Agent'),
+            'headers' => $request->headers->all()
         ]);
         
-        // Define allowed origins - BOTH with and without www
+        // List of ALLOWED origins (both with and without www)
         $allowedOrigins = [
-            'https://wgrcfp.org',
-            'http://wgrcfp.org',
             'https://www.wgrcfp.org',
             'http://www.wgrcfp.org',
-            'https://wgrcfp.org:3000',
-            'http://wgrcfp.org:3000',
-            'https://www.wgrcfp.org:3000',
-            'http://www.wgrcfp.org:3000',
-            'http://localhost:3000',
+            'https://wgrcfp.org',
+            'http://wgrcfp.org',
             'https://localhost:3000',
-            'http://127.0.0.1:3000',
+            'http://localhost:3000',
             'https://127.0.0.1:3000',
+            'http://127.0.0.1:3000',
+            'https://localhost:8000',
+            'http://localhost:8000',
+            'https://127.0.0.1:8000',
+            'http://127.0.0.1:8000',
         ];
         
         $origin = $request->header('Origin');
         
-        // If it's an OPTIONS request (preflight), handle it immediately
+        // For OPTIONS preflight requests
         if ($request->isMethod('OPTIONS')) {
-            Log::channel('cors')->info('OPTIONS Preflight Request', [
+            \Log::info('CORS OPTIONS Preflight', [
                 'origin' => $origin,
-                'path' => $request->path(),
+                'path' => $request->path()
             ]);
             
             $headers = [
-                'Access-Control-Allow-Origin' => $origin && in_array($origin, $allowedOrigins) ? $origin : $allowedOrigins[0],
-                'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
-                'Access-Control-Allow-Headers' => 'Content-Type, Authorization, X-Requested-With, Accept',
+                'Access-Control-Allow-Origin' => $origin ?: '*',
+                'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD',
+                'Access-Control-Allow-Headers' => 'Content-Type, Authorization, X-Requested-With, Accept, X-CSRF-TOKEN',
                 'Access-Control-Allow-Credentials' => 'true',
-                'Access-Control-Max-Age' => '86400',
+                'Access-Control-Max-Age' => '86400', // 24 hours
             ];
             
-            return response()->json([], 200, $headers);
+            return response('', 200, $headers);
         }
         
         // Process the request
         $response = $next($request);
         
-        // Add CORS headers if origin is allowed
+        // Determine which origin to allow
         if ($origin && in_array($origin, $allowedOrigins)) {
-            $response->headers->set('Access-Control-Allow-Origin', $origin);
-            $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-            $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
-            $response->headers->set('Access-Control-Allow-Credentials', 'true');
-            
-            Log::channel('cors')->info('CORS Headers Added', [
-                'origin' => $origin,
-                'path' => $request->path(),
-            ]);
+            $allowOrigin = $origin;
         } else {
-            Log::channel('cors')->warning('Origin not allowed', [
-                'origin' => $origin,
-                'allowed_origins' => $allowedOrigins,
-            ]);
+            // For development/testing, you might want to allow all
+            // $allowOrigin = '*';
+            $allowOrigin = 'https://www.wgrcfp.org'; // Default to main domain
         }
+        
+        // Add CORS headers
+        $response->headers->set('Access-Control-Allow-Origin', $allowOrigin);
+        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD');
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, X-CSRF-TOKEN');
+        $response->headers->set('Access-Control-Allow-Credentials', 'true');
+        $response->headers->set('Access-Control-Expose-Headers', 'Content-Disposition');
+        
+        \Log::info('CORS Headers Added', [
+            'origin' => $origin,
+            'allowed_origin' => $allowOrigin,
+            'path' => $request->path()
+        ]);
         
         return $response;
     }

@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Skip CSRF for API routes
         $middleware->validateCsrfTokens(except: [
             'api/*',
+            'sanctum/*',
         ]);
         
         // Register alias middleware
