@@ -3,6 +3,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\EventController;
 
 Route::middleware('api')->prefix('v1')->group(function () {
@@ -44,12 +47,19 @@ Route::get('/test-cors', function() {
 });
 
 Route::prefix('auth')->group(function () {
-    // Registration route
-    Route::post('/register', [RegisterController::class, 'register']);
+Route::prefix('auth')->group(function () {
+    // Registration route - SPECIFIC METHOD
+    Route::post('/register', [RegisterController::class, 'register'])->name('register');
+    
+    // Login route
+    Route::post('/login', [LoginController::class, 'login'])->name('login');
+    
+    // Logout route
+    Route::post('/logout', [LogoutController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
     
     // Email verification routes
     Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
-        ->middleware(['signed'])
+        ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
     
     Route::post('/email/verification-notification', [EmailVerificationController::class, 'send'])
