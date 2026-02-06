@@ -53,6 +53,14 @@ class EventController extends Controller
                 'message' => 'Event not found.'
             ], 404);
         }
+
+        \Log::info("Event found: ID {$event->id}, Title: {$event->title}");
+        \Log::info("Speakers count: " . $event->speakers()->count());
+        \Log::info("Speakers loaded: " . ($event->relationLoaded('speakers') ? 'Yes' : 'No'));
+        
+        if ($event->speakers()->count() > 0) {
+            \Log::info("Speaker names: " . $event->speakers->pluck('name')->implode(', '));
+        }
         
         // Format speakers - handle null case
         $speakers = $event->speakers ? $event->speakers->map(function($speaker) {
