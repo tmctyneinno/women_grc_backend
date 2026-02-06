@@ -40,6 +40,9 @@ class EventController extends Controller
         $event = Event::where('slug', $identifier)
             ->where('status', 'published')
             ->first();
+        $event = Event::with(['speakers' => function($query) {
+            $query->orderBy('order', 'asc');
+        }])->where('slug', $slug)->firstOrFail();
         
         if (!$event) {
             return response()->json([
@@ -64,6 +67,17 @@ class EventController extends Controller
             'state' => $event->state,
             'country' => $event->country,
             'status' => $event->status,
+            'speakers' => $event->speakers->map(function($speaker) {
+                return [
+                    'id' => $speaker->id,
+                    'name' => $speaker->name,
+                    'title' => $speaker->title,
+                    'brief' => $speaker->brief,
+                    'avatar' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
+                    'image_url' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
+                    'order' => $speaker->order,
+                ];
+            }),
             'type' => $event->type,
             'capacity' => $event->capacity,
             'registered_count' => $event->registered_count,
