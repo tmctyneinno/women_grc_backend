@@ -68,7 +68,7 @@ class EventController extends Controller
                 'name' => $speaker->name,
                 'title' => $speaker->title,
                 'brief' => $speaker->brief,
-                'avatar' => $speaker->image ? asset('storage/' . $speaker->image) : $speaker->image,
+                'avatar' => $speaker->image ? asset('storage/' . $speaker->image) : asset('storage/' . $speaker->image) ,
                 'image_url' => $speaker->image ? asset('storage/' . $speaker->image) : 'wwww',
                 'order' => $speaker->order, 
             ];
