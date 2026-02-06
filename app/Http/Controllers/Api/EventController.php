@@ -40,11 +40,13 @@ class EventController extends Controller
     try {
         \Log::info("Fetching event: {$identifier}");
         
-        $event = Event::with(['speakers' => function($query) {
-            $query->orderBy('order', 'asc');
-        }])->where('slug', $identifier)
-           ->where('status', 'published')
-           ->first();
+        // $event = Event::with(['speakers' => function($query) {
+        //     $query->orderBy('order', 'asc');
+        // }])->where('slug', $identifier)
+        //    ->where('status', 'published')
+        //    ->first();
+        $event = Event::with('speakers')->where('slug', $identifier)->first();
+dd($event->speakers);
         
         if (!$event) {
             \Log::warning("Event not found: {$identifier}");
