@@ -62,21 +62,27 @@ class EventController extends Controller
         
         // Format speakers
         $formattedSpeakers = $speakers->map(function($speaker) {
-            $actualImage = null;
-            if ($speaker->image && file_exists(storage_path('app/public/speakers/' . $speaker->image))) {
-                $actualImage = asset('storage/speakers/' . $speaker->image);
-            } else {
-                // Use a local default image
-                $actualImage = asset('images/default-avatar.png');
-            }
-            
+            $imagePath = null;
+    if ($speaker->image) {
+        $imagePath = asset('storage/speakers/' . $speaker->image);
+    }
+    
+    // Generate initials for placeholder
+    $initials = '';
+    $nameParts = explode(' ', $speaker->name);
+    foreach ($nameParts as $part) {
+        $initials .= strtoupper(substr($part, 0, 1));
+    }
+    $initials = substr($initials, 0, 2); // Get first 2 initials
+    
             return [
                 'id' => $speaker->id,
                 'name' => $speaker->name,
                 'title' => $speaker->title,
                 'brief' => $speaker->brief,
-                'avatar' => $actualImage,
-                'image_url' => $actualImage,
+                'avatar' => $speaker->featured_image ? asset('storage/' . $event->featured_image) : null,
+            
+                'image_url' => $imageField ? asset('storage/speakers/' . $imageField) : null,
                 'order' => $speaker->order, 
             ];
         })->toArray();
