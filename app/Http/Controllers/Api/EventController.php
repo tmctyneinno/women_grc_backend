@@ -35,10 +35,10 @@ class EventController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($identifier)
+   public function show($identifier)
 {
     try {
-       \Log::info("Fetching event: {$identifier}");
+        \Log::info("Fetching event: {$identifier}");
         
         $event = Event::with(['speakers' => function($query) {
             $query->orderBy('order', 'asc');
@@ -46,7 +46,7 @@ class EventController extends Controller
            ->where('status', 'published')
            ->first();
         
-         if (!$event) {
+        if (!$event) {
             \Log::warning("Event not found: {$identifier}");
             return response()->json([
                 'success' => false,
@@ -55,15 +55,10 @@ class EventController extends Controller
         }
 
         \Log::info("Event found: ID {$event->id}, Title: {$event->title}");
-        \Log::info("Speakers count: " . $event->speakers()->count());
-        \Log::info("Speakers loaded: " . ($event->relationLoaded('speakers') ? 'Yes' : 'No'));
+        \Log::info("Speakers count: " . $event->speakers->count());
         
-        if ($event->speakers()->count() > 0) {
-            \Log::info("Speaker names: " . $event->speakers->pluck('name')->implode(', '));
-        }
-        
-        // Format speakers - handle null case
-        $speakers = $event->speakers ? $event->speakers->map(function($speaker) {
+        // Format speakers - always return array even if empty
+        $speakers = $event->speakers->map(function($speaker) {
             return [
                 'id' => $speaker->id,
                 'name' => $speaker->name,
@@ -73,7 +68,7 @@ class EventController extends Controller
                 'image_url' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
                 'order' => $speaker->order, 
             ];
-        }) : [];
+        })->toArray();
         
         // Format the response data properly
         $eventData = [
@@ -92,7 +87,7 @@ class EventController extends Controller
             'state' => $event->state,
             'country' => $event->country,
             'status' => $event->status,
-            'speakers' => $speakers, // Use the formatted speakers
+            'speakers' => $speakers, // This will always be an array
             'type' => $event->type,
             'capacity' => $event->capacity,
             'registered_count' => $event->registered_count,
