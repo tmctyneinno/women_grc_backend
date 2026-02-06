@@ -9,8 +9,8 @@ return [
     //     'https://www.wgrcfp.org',
     //     'https://wgrcfp.org',
     // ],
-    'allowed_origins' => [],
-    
+    'allowed_origins' => ['*'],
+     
     'allowed_origins_patterns' => [],
     
     'allowed_headers' => ['*'],
