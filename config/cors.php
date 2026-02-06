@@ -5,11 +5,11 @@ return [
     
     'allowed_methods' => ['*'],
     
-    // 'allowed_origins' => [
-    //     'https://www.wgrcfp.org',
-    //     'https://wgrcfp.org',
-    // ],
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'https://www.wgrcfp.org',
+        'https://wgrcfp.org',
+    ],
+    // 'allowed_origins' => ['*'],
      
     'allowed_origins_patterns' => [],
     
