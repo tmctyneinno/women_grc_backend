@@ -61,20 +61,46 @@ class EventController extends Controller
         \Log::info("Manually loaded speakers count: " . $speakers->count());
         
         // Format speakers
-        $formattedSpeakers = $speakers->map(function($speaker) {
-           
-            return [
-                'id' => $speaker->id,
-                'name' => $speaker->name,
-                'title' => $speaker->title,
-                'brief' => $speaker->brief,
-               'avatar' => $imagePath,
-        'image_url' => $imagePath,
-        'avatar_placeholder' => $initials, // Add initials for UI
-        'has_image' => !empty($speaker->image), // Add flag
-                'order' => $speaker->order, 
-            ];
-        })->toArray();
+        $formattedSpeakers = $speakers->map(function($speaker) use ($speakers) {
+    $index = $speakers->search(function($item) use ($speaker) {
+        return $item->id === $speaker->id;
+    });
+    
+    // Generate a placeholder image URL based on name
+    $placeholderColor = ['4a90e2', '50c878', 'ff6b6b', 'ffa500', '9b59b6'][$index % 5];
+    $textColor = 'ffffff';
+    $initials = '';
+    
+    $nameParts = explode(' ', trim($speaker->name));
+    if (count($nameParts) >= 2) {
+        $initials = strtoupper($nameParts[0][0] . $nameParts[1][0]);
+    } elseif (count($nameParts) == 1) {
+        $initials = strtoupper(substr($nameParts[0], 0, 2));
+    }
+    
+    $placeholderUrl = "https://ui-avatars.com/api/?name=" . urlencode($speaker->name) . 
+                      "&background=" . $placeholderColor . 
+                      "&color=" . $textColor . 
+                      "&size=200";
+    
+    // Your existing image if it exists
+    $actualImage = null;
+    if ($speaker->image && file_exists(storage_path('app/public/speakers/' . $speaker->image))) {
+        $actualImage = asset('storage/speakers/' . $speaker->image);
+    }
+    
+    return [
+        'id' => $speaker->id,
+        'name' => $speaker->name,
+        'title' => $speaker->title,
+        'brief' => $speaker->brief,
+        'avatar' => $actualImage ?: $placeholderUrl, // Use placeholder if no image
+        'image_url' => $actualImage ?: $placeholderUrl,
+        'avatar_placeholder' => $initials,
+        'has_image' => !empty($actualImage),
+        'order' => $speaker->order, 
+    ];
+})->toArray();
         
         // Format the response data
         $eventData = [
