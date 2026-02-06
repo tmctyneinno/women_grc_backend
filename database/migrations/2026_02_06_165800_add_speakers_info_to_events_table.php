@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('events', function (Blueprint $table) {
-            //
+            $table->boolean('has_speakers')->default(false)->after('description');
+            $table->string('speakers_title')->nullable()->after('has_speakers');
         });
     }
 
@@ -22,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('events', function (Blueprint $table) {
-            //
+            $table->dropColumn(['has_speakers', 'speakers_title']);
         });
     }
 };
