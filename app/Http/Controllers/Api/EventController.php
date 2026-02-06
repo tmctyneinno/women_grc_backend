@@ -36,6 +36,15 @@ class EventController extends Controller
      * Display the specified resource.
      */
   
+    public function show($identifier)
+{
+    try {
+        \Log::info("Fetching event: {$identifier}");
+        
+        // Get event WITHOUT eager loading (since it's not working)
+        $event = Event::where('slug', $identifier)
+                     ->where('status', 'published')
+                     ->first();
         
         if (!$event) {
             \Log::warning("Event not found: {$identifier}");
@@ -47,76 +56,24 @@ class EventController extends Controller
 
         \Log::info("Event found: ID {$event->id}, Title: {$event->title}");
         
-        // SAFE CHECK: Ensure speakers is never null
-        $speakers = [];
+        // MANUALLY load speakers (since eager loading fails)
+        $speakers = $event->speakers()->orderBy('order', 'asc')->get();
+        \Log::info("Manually loaded speakers count: " . $speakers->count());
         
-        // Check if speakers relation exists and is loaded
-        if (method_exists($event, 'speakers')) {
-            if ($event->relationLoaded('speakers')) {
-                // Speakers were eager-loaded
-                \Log::info("Speakers eager-loaded: " . ($event->speakers ? 'Yes' : 'No'));
-                
-                if ($event->speakers) {
-                    \Log::info("Speakers count: " . $event->speakers->count());
-                    if ($event->speakers->count() > 0) {
-                        \Log::info("Speaker names: " . $event->speakers->pluck('name')->implode(', '));
-                    }
-                    
-                    // Format speakers
-                    $speakers = $event->speakers->map(function($speaker) {
-                        return [
-                            'id' => $speaker->id,
-                            'name' => $speaker->name,
-                            'title' => $speaker->title,
-                            'brief' => $speaker->brief,
-                            'avatar' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
-                            'image_url' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
-                            'order' => $speaker->order, 
-                        ];
-                    })->toArray();
-                }
-            } else {
-                // Speakers not eager-loaded, load them explicitly
-                \Log::warning("Speakers were not eager-loaded, loading manually");
-                $loadedSpeakers = $event->speakers()->orderBy('order', 'asc')->get();
-                if ($loadedSpeakers) {
-                    $speakers = $loadedSpeakers->map(function($speaker) {
-                        return [
-                            'id' => $speaker->id,
-                            'name' => $speaker->name,
-                            'title' => $speaker->title,
-                            'brief' => $speaker->brief,
-                            'avatar' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
-                            'image_url' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
-                            'order' => $speaker->order, 
-                        ];
-                    })->toArray();
-                }
-            }
-        } else {
-            \Log::warning("Event model does not have speakers() method - relationship missing");
-        }
+        // Format speakers
+        $formattedSpeakers = $speakers->map(function($speaker) {
+            return [
+                'id' => $speaker->id,
+                'name' => $speaker->name,
+                'title' => $speaker->title,
+                'brief' => $speaker->brief,
+                'avatar' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
+                'image_url' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
+                'order' => $speaker->order, 
+            ];
+        })->toArray();
         
-        // ALTERNATIVE SIMPLER VERSION:
-        // If you want a simpler approach, use this instead of the above:
-        /*
-        $speakers = [];
-        if ($event->relationLoaded('speakers') && $event->speakers) {
-            $speakers = $event->speakers->map(function($speaker) {
-                return [
-                    'id' => $speaker->id,
-                    'name' => $speaker->name,
-                    'title' => $speaker->title,
-                    'brief' => $speaker->brief,
-                    'avatar' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
-                    'image_url' => $speaker->image ? asset('storage/speakers/' . $speaker->image) : null,
-                    'order' => $speaker->order, 
-                ];
-            })->toArray();
-        }
-        */
-        
-        // Format the response data properly
+        // Format the response data
         $eventData = [
             'id' => $event->id,
             'title' => $event->title,
@@ -133,7 +90,7 @@ class EventController extends Controller
             'state' => $event->state,
             'country' => $event->country,
             'status' => $event->status,
-            'speakers' => $speakers, // This will always be an array (empty or with data)
+            'speakers' => $formattedSpeakers, // Use formatted speakers
             'type' => $event->type,
             'capacity' => $event->capacity,
             'registered_count' => $event->registered_count,
@@ -171,6 +128,7 @@ class EventController extends Controller
             'error' => env('APP_DEBUG') ? $e->getMessage() : 'Internal server error'
         ], 500);
     }
+
 }
 
     /**
