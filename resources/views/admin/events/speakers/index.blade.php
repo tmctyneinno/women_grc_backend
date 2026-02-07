@@ -35,12 +35,12 @@
                         @if($speaker->image)
                             @php
                                 // Try different image paths
-                                $imagePath = 'storage/speakers/' . $speaker->image;
+                                $imagePath = $speaker->image;
                                 $fullPath = storage_path('app/public/speakers/' . $speaker->image);
                             @endphp
                             
                             @if(file_exists($fullPath))
-                                <img src="{{ asset($imagePath) }}" 
+                                <img src="{{  asset('storage/' .$imagePath) }}" 
                                      class="card-img-top" 
                                      alt="{{ $speaker->name }}" 
                                      style="height: 200px; object-fit: cover;">
