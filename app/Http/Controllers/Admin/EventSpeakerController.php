@@ -78,7 +78,7 @@ class EventSpeakerController extends Controller
             }
             
             $path = $request->file('image')->store('events/speakers', 'public');
-            $validated['image'] = basename($path);
+            $validated['image'] = $path;
         }
 
         $speaker->update($validated);

@@ -345,7 +345,7 @@
                             
                             <!-- Current Image Preview -->
                             @if($event->featured_image)
-                            <div class="mb-3">
+                            <div class="mb-3"> 
                                 <p class="text-muted small">Current Image:</p>
                                 <img src="{{ asset('storage/' . $event->featured_image) }}"  
                                      alt="Current featured image" 
