@@ -36,13 +36,13 @@
                             @php
                                 // Try different image paths
                                 $imagePath = $speaker->image;
-                                $fullPath = storage_path('app/public/speakers/' . $speaker->image);
+                                $fullPath = storage_path('app/public/events/speakers/' . $speaker->image);
                             @endphp
                             
                             @if(file_exists($fullPath))
                                 <img src="{{  asset('storage/' .$imagePath) }}" 
                                      class="card-img-top" 
-                                     alt="{{ $speaker->name }}" 
+                                     alt="{{ $speaker->image }}" 
                                      style="height: 200px; object-fit: cover;">
                             @else
                                 <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
@@ -58,7 +58,7 @@
                             </div>
                         @endif
                         <div class="card-body">
-                            <h5 class="card-title">{{ $speaker->name }}</h5>
+                            <h5 class="card-title">{{ $speaker->image }}</h5>
                             @if($speaker->title)
                                 <h6 class="card-subtitle mb-2 text-muted">{{ $speaker->title }}</h6>
                             @endif
