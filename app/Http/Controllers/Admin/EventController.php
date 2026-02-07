@@ -169,7 +169,7 @@ class EventController extends Controller
             
             // Store new image
             $path = $request->file('featured_image')->store('events/featured', 'public');
-            $event->featured_image = $path;
+            $event->featured_image = $path; 
             \Log::info('New image saved:', ['path' => $path]);
         }
 
