@@ -77,7 +77,7 @@ class EventSpeakerController extends Controller
                 Storage::disk('public')->delete('speakers/' . $speaker->image);
             }
             
-            $path = $request->file('image')->store('speakers', 'public');
+            $path = $request->file('image')->store('events/speakers', 'public');
             $validated['image'] = basename($path);
         }
 
