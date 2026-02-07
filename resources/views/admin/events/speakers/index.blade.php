@@ -34,13 +34,12 @@
                     <div class="card">
                         @if($speaker->image)
                             @php
-                                // Try different image paths
                                 $imagePath = $speaker->image;
-                                $fullPath = asset('storage/'. $speaker->image);
+                                $imageExists = \Illuminate\Support\Facades\Storage::disk('public')->exists($imagePath);
                             @endphp
-                            
-                            @if(file_exists($fullPath))
-                                <img src="{{  asset('storage/' .$imagePath) }}" 
+
+                            @if($imageExists)
+                                <img src="{{ asset('storage/' . $imagePath) }}" 
                                      class="card-img-top" 
                                      alt="{{ $speaker->name }}" 
                                      style="height: 200px; object-fit: cover;">
