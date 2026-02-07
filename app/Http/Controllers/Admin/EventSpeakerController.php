@@ -43,9 +43,9 @@ class EventSpeakerController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('speakers', 'public');
+            $path = $request->file('image')->store('events/speakers', 'public');
             $validated['image'] = basename($path);
-        }
+        } 
 
         $event->speakers()->create($validated);
 

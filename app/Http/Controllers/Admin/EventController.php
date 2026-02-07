@@ -64,7 +64,7 @@ class EventController extends Controller
         if ($request->hasFile('featured_image')) {
             $path = $request->file('featured_image')->store('events/featured', 'public');
             $data['featured_image'] = $path;
-        }
+        } 
         
         // Auto-generate slug if not provided
         if (empty($data['slug'])) {
