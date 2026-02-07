@@ -36,7 +36,7 @@
                             @php
                                 // Try different image paths
                                 $imagePath = $speaker->image;
-                                $fullPath = sse('app/public/speakers/' . $speaker->image);
+                                $fullPath = asset('storage/'. $speaker->image);
                             @endphp
                             
                             @if(file_exists($fullPath))
