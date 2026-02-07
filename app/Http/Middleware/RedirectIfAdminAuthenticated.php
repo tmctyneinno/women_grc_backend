@@ -16,4 +16,4 @@ class RedirectIfAdminAuthenticated
 
         return $next($request);
     }
-}
+} 
