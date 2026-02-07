@@ -347,7 +347,7 @@
                             @if($event->featured_image)
                             <div class="mb-3">
                                 <p class="text-muted small">Current Image:</p>
-                                <img src="{{ asset('storage/' . $event->featured_image) }}" 
+                                <img src="{{ asset('storage/' . $event->featured_image) }}"  
                                      alt="Current featured image" 
                                      class="img-fluid rounded" 
                                      style="max-height: 200px;">
