@@ -151,7 +151,7 @@
                             @if($speaker->image)
                                 <div class="mb-3">
                                     <p class="mb-1">Current Photo:</p>
-                                    <img src="{{  asset('storage/' .$speaker->image_url }}" alt="{{ $speaker->name }}" class="img-fluid rounded" style="max-height: 200px;">
+                                    <img src="{{  asset('storage/' .$speaker->image_url) }}" alt="{{ $speaker->name }}" class="img-fluid rounded" style="max-height: 200px;">
                                     <div class="form-text mt-2">
                                         <a href="javascript:void(0)" onclick="removeImage()" class="text-danger">
                                             <i class="fa fa-trash me-1"></i> Remove current photo
