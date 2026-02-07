@@ -35,7 +35,7 @@
                         @if($speaker->image)
                             @php
                                 $imagePath = $speaker->image;
-                                $imageExists = \Illuminate\Support\Facades\Storage::disk('public')->exists($imagePath);
+                                $imageExists = Storage::disk('public')->exists($imagePath);
                             @endphp
 
                             @if($imageExists)
