@@ -62,7 +62,7 @@
                                 <h6 class="card-subtitle mb-2 text-muted">{{ $speaker->title }}</h6>
                             @endif
                             @if($speaker->brief)
-                                <p class="card-text">{{ Str::limit($speaker->brief, 100) }}</p>
+                                <p class="card-text">{!! Str::limit($speaker->brief, 100) !!}</p>
                             @endif
                             <p><small class="text-muted">ID: {{ $speaker->id }}</small></p>
                             <div class="btn-group">

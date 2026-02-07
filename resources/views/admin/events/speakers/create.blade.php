@@ -104,7 +104,7 @@
                             <label class="form-label" for="brief">Brief Description</label>
                             <textarea 
                                 class="form-control @error('brief') is-invalid @enderror" 
-                                id="brief"
+                                id="js-ckeditor5-classic"
                                 name="brief" 
                                 rows="4"
                                 placeholder="Brief bio or description of the speaker..."
