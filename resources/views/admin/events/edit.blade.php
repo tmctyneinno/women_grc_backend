@@ -347,7 +347,8 @@
                             @if($event->featured_image)
                             <div class="mb-3"> 
                                 <p class="text-muted small">Current Image:</p>
-                                <p class="text-muted small">Current Image:</p>
+                                <p class="text-muted small">Featured Image:{{ $event->featured_image }}</p>
+                                <p class="text-muted small">Featured Storage:{{ asset('storage/' . $event->featured_image) }}</p>
                                 <img src="{{ asset('storage/' . $event->featured_image) }}"  
                                      alt="Current featured image" 
                                      class="img-fluid rounded" 
