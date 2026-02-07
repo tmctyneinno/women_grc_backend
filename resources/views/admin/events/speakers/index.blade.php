@@ -64,7 +64,7 @@
                             @if($speaker->brief)
                                 <p class="card-text">{!! Str::limit($speaker->brief, 100) !!}</p>
                             @endif
-                            <p><small class="text-muted">ID: {{ $speaker->id }}</small></p>
+                            <p><small class="text-muted">image: {{ $speaker->image }}</small></p>
                             <div class="btn-group">
                                 <a href="{{ route('admin.events.speakers.edit', [$event, $speaker]) }}" 
                                    class="btn btn-sm btn-warning">
