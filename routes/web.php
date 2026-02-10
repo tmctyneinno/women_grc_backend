@@ -13,7 +13,7 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/images/proxy/{path}', function ($path) {
-    $storagePath = storage_path('app/public/' . $path);
+    $storagePath = storage_path('app/public/events/' . $path);
     
     if (!file_exists($storagePath)) {
         abort(404);
@@ -27,3 +27,18 @@ Route::get('/images/proxy/{path}', function ($path) {
         ->header('Access-Control-Allow-Origin', '*')
         ->header('Cache-Control', 'public, max-age=31536000');
 })->where('path', '.*')->name('image.proxy');
+
+// Add a specific route for event images
+Route::get('/proxy/event-images/{path}', function ($path) {
+    $storagePath = storage_path('app/public/events/' . $path);
+    
+    if (!file_exists($storagePath)) {
+        abort(404);
+    }
+    
+    return response()->file($storagePath, [
+        'Content-Type' => mime_content_type($storagePath),
+        'Access-Control-Allow-Origin' => '*',
+        'Cache-Control' => 'public, max-age=31536000'
+    ]);
+})->where('path', '.*')->name('proxy.event-images');
