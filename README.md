@@ -63,3 +63,8 @@ admin@wgrcfp.com
 
 'email'     => 'admin@wgrcfp.com',
 'password'  => Hash::make('password'),
+
+
+
+
+
