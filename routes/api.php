@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\Auth\OAuthController;
 use App\Http\Controllers\Api\EventController;
 
 Route::middleware('api')->prefix('v1')->group(function () {
@@ -25,18 +26,27 @@ Route::middleware('api')->prefix('v1')->group(function () {
         
         Route::post('/login', [LoginController::class, 'login'])->name('login');
         
-        // Logout route
-        Route::post('/logout', [LogoutController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
+        // // Logout route
+        // Route::post('/logout', [LogoutController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
         
-        // Email verification routes
+        // // Email verification routes
         Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
             ->middleware(['signed', 'throttle:6,1'])
             ->name('verification.verify');
         
-        Route::post('/email/verification-notification', [EmailVerificationController::class, 'send'])
+        Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend'])
             ->middleware(['auth:sanctum', 'throttle:6,1'])
             ->name('verification.send');
+
+        // Redirect user to OAuth provider
+        Route::get('/{provider}/redirect', [OAuthController::class, 'redirect']);
+
+        // Handle OAuth callback
+        Route::get('/{provider}/callback', [OAuthController::class, 'callback']);
     });
+
+
+   
 
 });
  

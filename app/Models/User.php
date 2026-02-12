@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Sanctum\HasApiTokens; 
+use App\Notifications\CustomVerifyEmail;
+
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -19,13 +21,15 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
         'linkedin_profile',
         'google_id',
         'is_google_account',
         'email_verified_at',
+        'status', // pending, verified, blocked
         // Add other fields if using comprehensive migration
         'profile_picture',
         'phone_number',
@@ -101,5 +105,10 @@ class User extends Authenticatable implements MustVerifyEmail
         }
         
         return 'https://' . $url;
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new CustomVerifyEmail());
     }
 }
