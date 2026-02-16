@@ -83,7 +83,7 @@
         <p>You're receiving this email because you have an account in WGRFC. If you are not sure why you're receiving this, please contact us by replying to this email.</p>
 
         <div class="footer">
-            &copy; 2026 WGRFC
+            &copy; {{ date('Y') }} WGRFC. All rights reserved.
         </div>
     </div>
 </body>

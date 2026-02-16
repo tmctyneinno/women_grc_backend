@@ -17,7 +17,9 @@ class OAuthController extends Controller
     public function redirect($provider)
     {
         $url = Socialite::driver($provider)->stateless()->redirect()->getTargetUrl();
-        return ApiResponse::success(['url' => $url], 'Redirect to OAuth provider');
+        // return ApiResponse::success(['url' => $url], 'Redirect to OAuth provider');
+
+        return redirect($url);
     }
 
     /**
@@ -47,15 +49,11 @@ class OAuthController extends Controller
             // Create token
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            return ApiResponse::success([
-                'user' => [
-                    'id' => $user->id,
-                    'first_name' => $user->first_name,
-                    'last_name' => $user->last_name,
-                    'email' => $user->email,
-                ],
-                'token' => $token,
-            ], 'Login successful');
+            // Determine redirect path based on user status
+            $redirectPath = $user->status === 'pending' ? '/account/dashboard/guest' : '/account/dashboard';
+
+            // Redirect to frontend with token
+            return redirect(config('app.frontend_url') . $redirectPath . '?token=' . $token);
 
         } catch (\Exception $e) {
             return ApiResponse::error('OAuth login failed', ['error' => $e->getMessage()], 500);

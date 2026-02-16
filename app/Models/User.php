@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Sanctum\HasApiTokens; 
 use App\Notifications\CustomVerifyEmail;
+use App\Notifications\CustomResetPassword;
+
 
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -30,6 +32,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_google_account',
         'email_verified_at',
         'status', // pending, verified, blocked
+        'locked_until',
+        'failed_login_attempts',
+        'is_verified',
         // Add other fields if using comprehensive migration
         'profile_picture',
         'phone_number',
@@ -67,6 +72,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'is_active' => 'boolean',
             'last_login_at' => 'datetime',
             'preferences' => 'array',
+            'locked_until' => 'datetime',
         ];
     }
 
@@ -111,4 +117,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $this->notify(new CustomVerifyEmail());
     }
+
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomResetPassword($token));
+    }
+
 }
