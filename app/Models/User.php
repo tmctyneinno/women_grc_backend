@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Sanctum\HasApiTokens; 
 use App\Notifications\CustomVerifyEmail;
 use App\Notifications\CustomResetPassword;
+use Illuminate\Support\Facades\Storage;
 
 
 
@@ -31,18 +32,17 @@ class User extends Authenticatable implements MustVerifyEmail
         'google_id',
         'is_google_account',
         'email_verified_at',
-        'status', // pending, verified, blocked
+        'status',
         'locked_until',
         'failed_login_attempts',
         'is_verified',
-        // Add other fields if using comprehensive migration
         'profile_picture',
         'phone_number',
         'job_title',
         'company',
         'last_login_at',
         'last_login_ip',
-        'timezone',
+        'timezone_id',
         'preferences'
     ];
 
@@ -122,6 +122,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new CustomResetPassword($token));
+    }
+
+
+    public function getProfilePictureUrlAttribute()
+    {
+        return $this->profile_picture
+            ? Storage::url($this->profile_picture)
+            : null;
     }
 
 }

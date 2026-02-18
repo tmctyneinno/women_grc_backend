@@ -29,7 +29,7 @@ Route::middleware('api')->prefix('v1')->group(function () {
     // User profile routes (protected)
     Route::middleware('auth:sanctum')->prefix('user')->group(function () {
         Route::get('/profile', [UserController::class, 'profile'])->name('profile');
-        Route::put('/profile', [UserController::class, 'update'])->name('update');
+        Route::post('/profile', [UserController::class, 'update'])->name('update');
     });
     
     Route::prefix('auth')->group(function () {

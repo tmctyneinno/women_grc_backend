@@ -31,7 +31,9 @@ class UserController extends Controller
                     'phone_number' => $user->phone_number,
                     'job_title' => $user->job_title,
                     'company' => $user->company,
-                    'profile_picture' => $user->profile_picture,
+                    'profile_picture' => $user->profile_picture
+                        ?  asset('storage/'. $user->profile_picture)
+                        : null,
                     'linkedin_profile' => $user->linkedin_profile,
                     'timezone' => $user->timezone,
                     'status' => $user->status,
@@ -47,6 +49,7 @@ class UserController extends Controller
     /**
      * Update user profile
      */
+    
     public function update(Request $request)
     {
         try {
@@ -56,18 +59,33 @@ class UserController extends Controller
                 return ApiResponse::error('Unauthorized', [], 401);
             }
 
+            // Validate incoming fields
             $validated = $request->validate([
-                'first_name' => 'nullable|string|max:255',
-                'last_name' => 'nullable|string|max:255',
                 'phone_number' => 'nullable|string|max:20',
                 'job_title' => 'nullable|string|max:255',
                 'company' => 'nullable|string|max:255',
                 'timezone' => 'nullable|string|max:255',
-                'linkedin_profile' => 'nullable|url',
+                'linkedin_profile' => [
+                    'nullable', 
+                    'string', 
+                    'url', 
+                    'regex:/https?:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9-]+\/?/'
+                ],
+                'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             ]);
 
-            $user->update($validated);
+            // Handle profile picture upload
+            if ($request->hasFile('profile_picture')) {
+                $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+                $validated['profile_picture'] = $path;
+            }
 
+            // Update user
+            $user->update($validated);
+            // dd($validated, $user->fresh());
+
+
+            // Return full user info, using accessor for profile_picture
             return ApiResponse::success([
                 'user' => [
                     'id' => $user->id,
@@ -78,15 +96,24 @@ class UserController extends Controller
                     'phone_number' => $user->phone_number,
                     'job_title' => $user->job_title,
                     'company' => $user->company,
-                    'profile_picture' => $user->profile_picture,
-                    'linkedin_profile' => $user->linkedin_profile,
-                    'timezone' => $user->timezone,
+                    'timezone_id' => $user->timezone_id,
+                    'profile_picture' => $user->profile_picture
+                        ?  asset('storage/'. $user->profile_picture)
+                        : null,                    'linkedin_profile' => $user->linkedin_profile,
+                    'is_google_account' => $user->is_google_account,
+                    'email_verified_at' => $user->email_verified_at,
                     'status' => $user->status,
-                    'is_verified' => $user->is_verified,
+                    'failed_login_attempts' => $user->failed_login_attempts,
+                    'locked_until' => $user->locked_until,
+                    'created_at' => $user->created_at,
+                    'updated_at' => $user->updated_at,
                 ]
             ], 'Profile updated successfully');
+
         } catch (\Exception $e) {
             return ApiResponse::error('Failed to update profile', ['error' => $e->getMessage()], 500);
         }
     }
+
+
 }

@@ -30,7 +30,17 @@ class EmailVerificationController extends Controller
         $user->markEmailAsVerified();
         event(new Verified($user));
 
-        return response()->json(['message' => 'Email verified successfully.']);
+        // Determine redirect path based on user status
+            $redirectPath = $user->status === 'pending' ? '/account/dashboard/guest' : '/account/dashboard';
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+
+        // Redirect to frontend with token
+        return redirect(config('app.frontend_url') . $redirectPath . '?token=' . $token);
+
+
+        // return response()->json(['message' => 'Email verified successfully.']);
     }
 
 
