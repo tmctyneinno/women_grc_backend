@@ -21,7 +21,11 @@ class TimezoneSeeder extends Seeder
             return;
         }
 
-        DB::unprepared(File::get($path));
-        $this->command->info('Timezones seeded successfully.');
+       try {
+            DB::unprepared(File::get($path));
+            $this->command->info('Timezones seeded successfully.');
+        } catch (\Throwable $e) {
+            $this->command->warn('Timezones already exist. Skipping seeding.');
+        }
     }
 }
