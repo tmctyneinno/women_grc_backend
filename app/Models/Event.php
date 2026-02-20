@@ -57,8 +57,10 @@ class Event extends Model
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
-        'start_time' => 'datetime:H:i',
-        'end_time' => 'datetime:H:i',
+        // 'start_time' => 'datetime:H:i',
+        // 'end_time' => 'datetime:H:i',
+        'start_time' => 'string',
+        'end_time' => 'string',
         'gallery_images' => 'array',
         'registration_fields' => 'array',
         'speakers' => 'array',

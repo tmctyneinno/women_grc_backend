@@ -75,6 +75,14 @@ class LoginController extends Controller
             return ApiResponse::error('Invalid credentials.', [], 401);
         }
 
+        if ($user->status=='blocked') {
+            return ApiResponse::error(
+                'Your account has been blocked. Contact support.',
+                [],
+                403
+            );
+        }
+
         if (!$user->hasVerifiedEmail()) {
             return ApiResponse::error(
                 'Please verify your email before logging in.',

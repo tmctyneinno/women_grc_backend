@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Create Event')
+@section('title', 'Edit Event')
 
 @section('content')
 
@@ -9,10 +9,10 @@
         <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center py-2">
             <div class="flex-grow-1">
                 <h1 class="h3 fw-bold mb-1">
-                    Create New Event
+                    Edit Event: {{ $event->title }}
                 </h1>
                 <h2 class="fs-base lh-base fw-medium text-muted mb-0">
-                    Fill in the details below to create a new event
+                    Update the details below for this event
                 </h2>
             </div>
             <nav class="flex-shrink-0 mt-3 mt-sm-0 ms-sm-3" aria-label="breadcrumb">
@@ -24,7 +24,7 @@
                         <a class="link-fx" href="{{ route('admin.events.index') }}">Events</a>
                     </li>
                     <li class="breadcrumb-item" aria-current="page">
-                        Create
+                        Edit
                     </li>
                 </ol>
             </nav>
@@ -33,27 +33,15 @@
 </div>
 
 <div class="content">
-    <!-- Form Errors Alert -->
-    @if ($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <h5 class="alert-heading">Please fix the following errors:</h5>
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
     <!-- Event Form -->
     <div class="block block-rounded">
         <div class="block-header block-header-default">
-            <h3 class="block-title">Event Information</h3>
+            <h3 class="block-title">Edit Event Information</h3>
         </div>
         <div class="block-content block-content-full">
-            <form action="{{ route('admin.events.store') }}" method="POST" enctype="multipart/form-data" novalidate>
+            <form action="{{ route('admin.events.update', $event->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                @method('PUT')
                 
                 <!-- Basic Information -->
                 <div class="row push">
@@ -71,7 +59,7 @@
                                 class="form-control @error('title') is-invalid @enderror" 
                                 id="title" 
                                 name="title" 
-                                value="{{ old('title') }}"
+                                value="{{ old('title', $event->title) }}"
                                 placeholder="Enter event title"
                                 required
                             />
@@ -80,6 +68,7 @@
                             @enderror
                         </div>
 
+                        
                         <!-- Type -->
                         <div class="mb-4">
                             <label class="form-label" for="type">Event Type *</label>
@@ -89,13 +78,13 @@
                                 name="type"
                                 required
                             >
-                                <option value="" disabled {{ !old('type') ? 'selected' : '' }}>Select event type</option>
-                                <option value="conference" {{ old('type') == 'conference' ? 'selected' : '' }}>Conference</option>
-                                <option value="workshop" {{ old('type') == 'workshop' ? 'selected' : '' }}>Workshop</option>
-                                <option value="seminar" {{ old('type') == 'seminar' ? 'selected' : '' }}>Seminar</option>
-                                <option value="meeting" {{ old('type') == 'meeting' ? 'selected' : '' }}>Meeting</option>
-                                <option value="networking" {{ old('type') == 'networking' ? 'selected' : '' }}>Networking</option>
-                                <option value="other" {{ old('type') == 'other' ? 'selected' : '' }}>Other</option>
+                                <option value="" disabled>Select event type</option>
+                                <option value="conference" {{ old('type', $event->type) == 'conference' ? 'selected' : '' }}>Conference</option>
+                                <option value="workshop" {{ old('type', $event->type) == 'workshop' ? 'selected' : '' }}>Workshop</option>
+                                <option value="seminar" {{ old('type', $event->type) == 'seminar' ? 'selected' : '' }}>Seminar</option>
+                                <option value="meeting" {{ old('type', $event->type) == 'meeting' ? 'selected' : '' }}>Meeting</option>
+                                <option value="networking" {{ old('type', $event->type) == 'networking' ? 'selected' : '' }}>Networking</option>
+                                <option value="other" {{ old('type', $event->type) == 'other' ? 'selected' : '' }}>Other</option>
                             </select>
                             @error('type')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -111,10 +100,10 @@
                                 name="status"
                                 required
                             >
-                                <option value="draft" {{ old('status', 'draft') == 'draft' ? 'selected' : '' }}>Draft</option>
-                                <option value="published" {{ old('status') == 'published' ? 'selected' : '' }}>Published</option>
-                                <option value="cancelled" {{ old('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                                <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                                <option value="draft" {{ old('status', $event->status) == 'draft' ? 'selected' : '' }}>Draft</option>
+                                <option value="published" {{ old('status', $event->status) == 'published' ? 'selected' : '' }}>Published</option>
+                                <option value="cancelled" {{ old('status', $event->status) == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                <option value="completed" {{ old('status', $event->status) == 'completed' ? 'selected' : '' }}>Completed</option>
                             </select>
                             @error('status')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -130,9 +119,9 @@
                                 name="visibility"
                                 required
                             >
-                                <option value="public" {{ old('visibility', 'public') == 'public' ? 'selected' : '' }}>Public</option>
-                                <option value="private" {{ old('visibility') == 'private' ? 'selected' : '' }}>Private</option>
-                                <option value="members_only" {{ old('visibility') == 'members_only' ? 'selected' : '' }}>Members Only</option>
+                                <option value="public" {{ old('visibility', $event->visibility) == 'public' ? 'selected' : '' }}>Public</option>
+                                <option value="private" {{ old('visibility', $event->visibility) == 'private' ? 'selected' : '' }}>Private</option>
+                                <option value="members_only" {{ old('visibility', $event->visibility) == 'members_only' ? 'selected' : '' }}>Members Only</option>
                             </select>
                             @error('visibility')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -157,7 +146,7 @@
                                 class="form-control @error('start_date') is-invalid @enderror" 
                                 id="start_date" 
                                 name="start_date" 
-                                value="{{ old('start_date', date('Y-m-d')) }}"
+                                value="{{ old('start_date', $event->start_date ? $event->start_date->format('Y-m-d') : '') }}"
                                 required
                             />
                             @error('start_date')
@@ -173,7 +162,7 @@
                                 class="form-control @error('end_date') is-invalid @enderror" 
                                 id="end_date" 
                                 name="end_date" 
-                                value="{{ old('end_date', date('Y-m-d', strtotime('+1 day'))) }}"
+                                value="{{ old('end_date', $event->end_date ? $event->end_date->format('Y-m-d') : '') }}"
                                 required
                             />
                             @error('end_date')
@@ -189,12 +178,14 @@
                                 class="form-control @error('start_time') is-invalid @enderror" 
                                 id="start_time" 
                                 name="start_time" 
-                                 required
+                                value="{{ old('start_time', $event->start_time ? $event->start_time->format('H:i') : '09:00') }}"
+                                required
                             />
                             @error('start_time')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
                          <!-- End Date -->
                         <div class="mb-4">
                             <label class="form-label" for="end_time">End Time *</label>
@@ -203,13 +194,13 @@
                                 class="form-control @error('end_time') is-invalid @enderror" 
                                 id="end_time" 
                                 name="end_time" 
+                                value="{{ old('end_time', $event->end_time ? $event->end_time->format('H:i') : '17:00') }}"
                                 required
                             />
                             @error('end_time')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-
                         <!-- End Time -->
 
                     </div>
@@ -231,7 +222,7 @@
                                 class="form-control @error('venue') is-invalid @enderror" 
                                 id="venue" 
                                 name="venue" 
-                                value="{{ old('venue') }}"
+                                value="{{ old('venue', $event->venue) }}"
                                 placeholder="Enter venue name and address"
                                 required
                             />
@@ -240,17 +231,18 @@
                             @enderror
                         </div>
 
-                        <!-- Registration Link -->
+                         <!-- Registration Link -->
                         <div class="mb-4">
                             <label class="form-label" for="meeting_link">Registration Link  *</label>
                             <input 
-                                type="url" 
+                                type="text" 
                                 class="form-control @error('meeting_link') is-invalid @enderror" 
                                 id="meeting_link" 
                                 name="meeting_link" 
-                                value="{{ old('meeting_link') }}"
-                                placeholder="https://zoom.us/..."
-                                >
+                                value="{{ old('meeting_link', $event->meeting_link) }}"
+                                placeholder="Enter Meeting link"
+                                required
+                            />
                             @error('meeting_link')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -264,7 +256,7 @@
                                 class="form-control @error('capacity') is-invalid @enderror" 
                                 id="capacity" 
                                 name="capacity" 
-                                value="{{ old('capacity') }}"
+                                value="{{ old('capacity', $event->capacity) }}"
                                 min="1"
                                 placeholder="Maximum number of attendees"
                             />
@@ -284,7 +276,7 @@
                                     class="form-control @error('price') is-invalid @enderror" 
                                     id="price" 
                                     name="price" 
-                                    value="{{ old('price') }}"
+                                    value="{{ old('price', $event->price) }}"
                                     min="0"
                                     step="0.01"
                                     placeholder="0.00"
@@ -311,11 +303,11 @@
                             <label class="form-label" for="short_description">Short Description</label>
                             <textarea 
                                 class="form-control @error('short_description') is-invalid @enderror" 
-                                id="short_description"
+                                id="short_description" 
                                 name="short_description" 
                                 rows="3"
                                 placeholder="Brief summary (max 500 characters)"
-                            >{{ old('short_description') }}</textarea>
+                            >{{ old('short_description', $event->short_description) }}</textarea>
                             @error('short_description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -325,22 +317,18 @@
                         <!-- Full Description -->
                         <div class="mb-4">
                             <label class="form-label" for="description">Full Description *</label>
-                            <!-- Hidden input for HTML5 validation -->
-                            <input type="hidden" id="description-validation" name="description-validation" required>
-                            
-                            <!-- Textarea without required attribute -->
                             <textarea 
                                 class="form-control @error('description') is-invalid @enderror" 
                                 id="js-ckeditor5-classic" 
-                                name="description"  
-                                rows="3"
+                                name="description" 
+                                rows=""
                                 placeholder="Describe your event in detail..."
-                            >{{ old('description') }}</textarea>
+                                required
+                            >{{ old('description', $event->description) }}</textarea>
                             @error('description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-
                     </div>
                 </div>
 
@@ -354,6 +342,25 @@
                     <div class="col-lg-8 col-xl-8">
                         <div class="mb-4">
                             <label class="form-label" for="featured_image">Featured Image</label>
+                            
+                            <!-- Current Image Preview -->
+                            @if($event->featured_image)
+                            <div class="mb-3"> 
+                                <p class="text-muted small">Current Image:</p>
+                                <img src="{{ asset('storage/' . $event->featured_image) }}"  
+                                     alt="Current featured image" 
+                                     class="img-fluid rounded" 
+                                     style="max-height: 200px;">
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="remove_image" name="remove_image" value="1">
+                                    <label class="form-check-label text-danger" for="remove_image">
+                                        Remove current image
+                                    </label>
+                                </div>
+                            </div>
+                            @endif
+                            
+                            <!-- New Image Upload -->
                             <input 
                                 type="file" 
                                 class="form-control @error('featured_image') is-invalid @enderror" 
@@ -365,11 +372,12 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <div class="form-text">
-                                Accepted formats: JPEG, PNG, JPG, GIF, WebP. Maximum size: 5MB
+                                Accepted formats: JPEG, PNG, JPG, GIF, WebP. Maximum size: 5MB. Leave empty to keep current image.
                             </div>
                             
-                            <!-- Image Preview -->
+                            <!-- New Image Preview -->
                             <div id="imagePreview" class="mt-3" style="display: none;">
+                                <p class="text-muted small">New Image Preview:</p>
                                 <img id="previewImage" src="" alt="Preview" class="img-fluid rounded" style="max-height: 200px;" />
                             </div>
                         </div>
@@ -385,13 +393,13 @@
                                 <a href="{{ route('admin.events.index') }}" class="btn btn-alt-secondary">
                                     Cancel
                                 </a>
-                                <button type="submit" name="action" value="draft" class="btn btn-alt-primary ms-2">
-                                    Save as Draft
-                                </button>
                             </div>
                             <div>
-                                <button type="submit" name="action" value="publish" class="btn btn-primary">
-                                    Create & Publish
+                                <button type="submit" name="action" value="draft" class="btn btn-alt-warning me-2">
+                                    Save as Draft
+                                </button>
+                                <button type="submit" name="action" value="update" class="btn btn-primary">
+                                    Update Event
                                 </button>
                             </div>
                         </div>
@@ -406,91 +414,59 @@
 
 @push('scripts')
 <script>
-    // Initialize CKEditor and handle form submission
-    document.addEventListener('DOMContentLoaded', function() {
-    
-        const form = document.querySelector('form');
-        const validationInput = document.getElementById('description-validation');
-        const descriptionField = document.getElementById('js-ckeditor5-classic');
+    // Image preview functionality
+    document.getElementById('featured_image').addEventListener('change', function(e) {
+        const preview = document.getElementById('imagePreview');
+        const previewImage = document.getElementById('previewImage');
         
-        form.addEventListener('submit', function(e) {
-            let descriptionContent = '';
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
             
-            // Get content from CKEditor if available
-            if (typeof ClassicEditor !== 'undefined' && ClassicEditor.instances[0]) {
-                const editor = ClassicEditor.instances[0];
-                editor.updateSourceElement(); // Sync content
-                descriptionContent = descriptionField.value.trim();
-            } else {
-                descriptionContent = descriptionField.value.trim();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                preview.style.display = 'block';
             }
             
-            // Update hidden input for validation
-            validationInput.value = descriptionContent;
-            
-            // Custom validation
-            if (!descriptionContent) {
-                e.preventDefault();
-                alert('Please enter a description for the event.');
-                
-                // Focus on CKEditor or textarea
-                if (typeof ClassicEditor !== 'undefined' && ClassicEditor.instances[0]) {
-                    ClassicEditor.instances[0].editing.view.focus();
-                } else {
-                    descriptionField.style.display = 'block';
-                    descriptionField.focus();
-                }
-                return false;
-            }
-            
-            return true;
-        });
-
-        
-        // Image preview functionality
-        document.getElementById('featured_image').addEventListener('change', function(e) {
-            const preview = document.getElementById('imagePreview');
-            const previewImage = document.getElementById('previewImage');
-            
-            if (this.files && this.files[0]) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    previewImage.src = e.target.result;
-                    preview.style.display = 'block';
-                }
-                
-                reader.readAsDataURL(this.files[0]);
-            } else {
-                preview.style.display = 'none';
-                previewImage.src = '';
-            }
-        });
-
-        // Update end date min when start date changes
-        document.getElementById('start_date').addEventListener('change', function() {
-            const endDate = document.getElementById('end_date');
-            if (this.value > endDate.value) {
-                endDate.value = this.value;
-            }
-            endDate.min = this.value;
-        });
-
-        // Set min date for start date to today
-        document.getElementById('start_date').min = new Date().toISOString().split('T')[0];
-
-        // Character counter for short description
-        const shortDesc = document.getElementById('short_description');
-        if (shortDesc) {
-            shortDesc.addEventListener('input', function() {
-                const maxLength = 500;
-                const currentLength = this.value.length;
-                
-                if (currentLength > maxLength) {
-                    this.value = this.value.substring(0, maxLength);
-                }
-            });
+            reader.readAsDataURL(this.files[0]);
+        } else {
+            preview.style.display = 'none';
+            previewImage.src = '';
         }
     });
+
+    // Update end date min when start date changes
+    document.getElementById('start_date').addEventListener('change', function() {
+        const endDate = document.getElementById('end_date');
+        if (this.value > endDate.value) {
+            endDate.value = this.value;
+        }
+        endDate.min = this.value;
+    });
+
+    // Auto-generate slug from title
+    document.getElementById('title').addEventListener('input', function() {
+        const slugField = document.getElementById('slug');
+        if (!slugField.value || slugField.value === '{{ $event->slug }}') {
+            const slug = this.value
+                .toLowerCase()
+                .replace(/[^\w\s]/gi, '')
+                .replace(/\s+/g, '-')
+                .trim();
+            slugField.value = slug;
+        }
+    });
+
+    // Character counter for short description
+    const shortDesc = document.getElementById('short_description');
+    if (shortDesc) {
+        shortDesc.addEventListener('input', function() {
+            const maxLength = 500;
+            const currentLength = this.value.length;
+            
+            if (currentLength > maxLength) {
+                this.value = this.value.substring(0, maxLength);
+            }
+        });
+    }
 </script>
 @endpush

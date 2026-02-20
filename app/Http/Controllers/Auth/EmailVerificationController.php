@@ -31,13 +31,10 @@ class EmailVerificationController extends Controller
         event(new Verified($user));
 
         // Determine redirect path based on user status
-            $redirectPath = $user->status === 'pending' ? '/account/dashboard/guest' : '/account/dashboard';
+        $redirectPath =  '/auth/login';
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-
-        // Redirect to frontend with token
-        return redirect(config('app.frontend_url') . $redirectPath . '?token=' . $token);
+        // Redirect to frontend with success message
+        return redirect(config('app.frontend_url') . $redirectPath . '?verified=1&message=Your%20email%20has%20been%20verified!');
 
 
         // return response()->json(['message' => 'Email verified successfully.']);

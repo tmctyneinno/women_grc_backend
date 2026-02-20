@@ -244,13 +244,14 @@
                         <div class="mb-4">
                             <label class="form-label" for="meeting_link">Registration Link  *</label>
                             <input 
-                                type="url" 
+                                type="text" 
                                 class="form-control @error('meeting_link') is-invalid @enderror" 
                                 id="meeting_link" 
                                 name="meeting_link" 
                                 value="{{ old('meeting_link') }}"
-                                placeholder="https://zoom.us/..."
-                                >
+                                placeholder="Enter Registration link"
+                                required
+                            />
                             @error('meeting_link')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
