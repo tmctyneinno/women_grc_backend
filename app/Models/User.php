@@ -8,6 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Sanctum\HasApiTokens; 
+use App\Notifications\CustomVerifyEmail;
+use App\Notifications\CustomResetPassword;
+use Illuminate\Support\Facades\Storage;
+
+ 
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -19,21 +24,25 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
         'linkedin_profile',
         'google_id',
         'is_google_account',
         'email_verified_at',
-        // Add other fields if using comprehensive migration
+        'status',
+        'locked_until',
+        'failed_login_attempts',
+        'is_verified',
         'profile_picture',
         'phone_number',
         'job_title',
         'company',
         'last_login_at',
         'last_login_ip',
-        'timezone',
+        'timezone_id',
         'preferences'
     ];
 
@@ -63,6 +72,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'is_active' => 'boolean',
             'last_login_at' => 'datetime',
             'preferences' => 'array',
+            'locked_until' => 'datetime',
         ];
     }
 
@@ -102,4 +112,24 @@ class User extends Authenticatable implements MustVerifyEmail
         
         return 'https://' . $url;
     }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new CustomVerifyEmail());
+    }
+
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomResetPassword($token));
+    }
+
+
+    public function getProfilePictureUrlAttribute()
+    {
+        return $this->profile_picture
+            ? Storage::url($this->profile_picture)
+            : null;
+    }
+
 }

@@ -15,11 +15,13 @@ class DatabaseSeeder extends Seeder
         // Call AdminSeeder
         $this->call([
             AdminSeeder::class,
-        ]);
+            TimezoneSeeder::class
+        ]);       
 
         // Create a test user
         User::factory()->create([
-            'name' => 'Test User',
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'test@example.com',
         ]);
     }

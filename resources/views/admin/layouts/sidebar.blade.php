@@ -125,6 +125,49 @@
         <li class="nav-main-item">
             <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
                 <i class="nav-main-link-icon si si-calendar"></i>
+                <span class="nav-main-link-name">Users</span>
+            </a>
+            <ul class="nav-main-submenu">
+                <li class="nav-main-item">
+                    <a class="nav-main-link" href="{{ route('admin.users.index') }}">
+                        <span class="nav-main-link-name">All Users</span>
+                    </a>
+                </li>
+                <li class="nav-main-item">
+                    <a class="nav-main-link" href="{{ route('admin.users.pend') }}">
+                        <span class="nav-main-link-name">Pending users</span>
+                    </a>
+                </li>
+                <li class="nav-main-item">
+                    <a class="nav-main-link" href="{{ route('admin.users.blocked') }}">
+                        <span class="nav-main-link-name">Blocked Users</span>
+                    </a>
+                </li>
+               
+            </ul>
+        </li>
+
+
+        {{-- In your admin layout file --}}
+        <li class="nav-main-item">
+            <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
+                <i class="nav-main-link-icon si si-calendar"></i>
+                <span class="nav-main-link-name">Courses</span>
+            </a>
+            <ul class="nav-main-submenu">
+                <li class="nav-main-item">
+                    <a class="nav-main-link" href="{{ route('admin.courses.index') }}">
+                        <span class="nav-main-link-name">All Courses</span>
+                    </a>
+                </li>
+               
+            </ul>
+        </li>
+        
+        {{-- In your admin layout file --}}
+        <li class="nav-main-item">
+            <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
+                <i class="nav-main-link-icon si si-calendar"></i>
                 <span class="nav-main-link-name">Events</span>
             </a>
             <ul class="nav-main-submenu">
