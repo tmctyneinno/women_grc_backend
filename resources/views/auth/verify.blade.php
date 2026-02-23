@@ -74,13 +74,13 @@
 
         <h1>Please verify your email &#x1F600;</h1>
 
-        <p>To use WGRFC, click the verification button. This helps keep your account secure.</p>
+        <p>To use Women in GRCFP, click the verification button. This helps keep your account secure.</p>
 
         <a href="{{ $url ?? '#' }}" class="btn">Verify my account</a>
 
       
 
-        <p>You're receiving this email because you have an account in WGRFC. If you are not sure why you're receiving this, please contact us by replying to this email.</p>
+        <p>You're receiving this email because you have an account in WGRCFP. If you are not sure why you're receiving this, please contact us by replying to this email.</p>
 
         <div class="footer">
             &copy; {{ date('Y') }} WGRFC. All rights reserved.

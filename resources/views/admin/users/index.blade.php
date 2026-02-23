@@ -13,6 +13,8 @@
                 <h2 class="fs-base lh-base fw-medium text-muted mb-0">
                     Manage all registered users.
                 </h2>
+                <p class="fs-sm text-bold my-0"><b>{{ $users->count() }}</b> users registered</p>
+
             </div>
             <nav class="flex-shrink-0 mt-3 mt-sm-0 ms-sm-3" aria-label="breadcrumb">
                 <ol class="breadcrumb breadcrumb-alt">
@@ -70,6 +72,7 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Status</th>
+                        <th>LinkedIn</th>
                         <th>Verified</th>
                         <th>Joined</th>
                         <th class="text-center">Actions</th>
@@ -106,6 +109,15 @@
                                    ($user->status === 'pending' ? 'bg-warning' : 'bg-danger') }}">
                                 {{ ucfirst($user->status ?? 'unknown') }}
                             </span>
+                        </td>
+                        <td>
+                            @if($user->linkedin_profile)
+                                <a href="{{ $user->linkedin_profile}}" target="_blank" class="text-muted">
+                                    <i class="fa fa-linkedin"></i> View Profile
+                                </a>
+                            @else
+                                <span class="text-muted">N/A</span>
+                            @endif
                         </td>
 
                         <td>
