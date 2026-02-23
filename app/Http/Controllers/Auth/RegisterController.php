@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\ApiResponse;
 
 class RegisterController extends Controller
 {
@@ -44,21 +45,6 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'linkedin_profile' => ['required', 'string', 'url', 'regex:/https?:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9-]+\/?/'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-    }
 
     /**
      * Create a new user instance after a valid registration.
@@ -69,12 +55,13 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
+            'first_name' => $data['first_name'],
+            'last_name' => $data['last_name'],
             'email' => strtolower(trim($data['email'])),
-            'linkedin_profile' => trim($data['linkedin_profile']),
+            'linkedin_profile' => trim($data['linkedin_profile']??""),
             'password' => Hash::make($data['password']),
             'is_google_account' => $data['is_google_account'] ?? false,
-            'email_verified_at' => ($data['is_google_account'] ?? false) ? now() : null,
+            // 'email_verified_at' => ($data['is_google_account'] ?? false) ? now() : null,
         ]);
     }
 
@@ -84,36 +71,98 @@ class RegisterController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function register(\Illuminate\Http\Request $request)
+
+
+
+    public function register(RegisterRequest $request)
     {
-        $this->validator($request->all())->validate();
+        try {
+            $user = User::create([
+                'first_name' => $request->first_name,
+                'last_name'  => $request->last_name,
+                'email'      => $request->email,
+                'linkedin_profile' => $request->linkedin_profile ?? "",
+                'password'   => Hash::make($request->password),
+                'is_google_account' => $request->boolean('is_google_account') ?? false,
+            ]);
 
-        event(new Registered($user = $this->create($request->all())));
+            // auto login
+            $this->guard()->login($user);
 
-        $this->guard()->login($user);
+            // send verification email if not Google
+            if (!$request->boolean('is_google_account')) {
+                $user->sendEmailVerificationNotification();
+            }
 
-        if ($response = $this->registered($request, $user)) {
-            return $response;
-        }
-
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Registration successful! ' . 
-                (($request->boolean('is_google_account') ?? false) 
-                    ? 'You are now logged in.' 
-                    : 'Please check your email to verify your account.'),
-            'data' => [
+            return ApiResponse::success([
                 'user' => [
                     'id' => $user->id,
-                    'name' => $user->name,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
                     'email' => $user->email,
                     'linkedin_profile' => $user->linkedin_profile,
-                    'email_verified' => (bool) $user->email_verified_at,
                 ],
-                'token' => $user->createToken('auth_token')->plainTextToken,
-            ]
-        ], 201);
+                'token' => $user->createToken('auth_token')->plainTextToken
+            ], $request->boolean('is_google_account') 
+                ? 'Registration successful! You are now logged in.' 
+                : 'Registration successful! Please check your email to verify your account.', 201);
+
+        } catch (\Exception $e) {
+            return ApiResponse::error('Registration failed. Please try again.', ['error' => $e->getMessage()], 500);
+        }
     }
+
+
+
+
+
+
+
+    // public function register(Request $request)
+    // {
+    //     try {
+    //     $this->validator($request->all())->validate();
+
+    //     event(new Registered($user = $this->create($request->all())));
+
+    //     $this->guard()->login($user);
+
+    //     // if ($response = $this->registered($request, $user)) {
+    //     //     return $response;
+    //     // }
+
+    //     return new JsonResponse([
+    //         'success' => true,
+    //         'message' => 'Registration successful! ' . 
+    //             (($request->boolean('is_google_account') ?? false) 
+    //                 ? 'You are now logged in.' 
+    //                 : 'Please check your email to verify your account.'),
+    //         'data' => [
+    //             'user' => [
+    //                 'id' => $user->id,
+    //                 'first_name' => $user->first_name,
+    //                 'last_name' => $user->last_name,
+    //                 'email' => $user->email,
+    //                 'linkedin_profile' => $user->linkedin_profile,
+    //                 'status' => $user->status,
+    //             ],
+    //             'token' => $user->createToken('auth_token')->plainTextToken,
+    //         ]
+    //     ], 201);
+    //     } catch (\Illuminate\Validation\ValidationException $e) {
+    //         return new JsonResponse([
+    //             'success' => false,
+    //             'message' => 'Validation failed.',
+    //             'errors' => $e->errors(),
+    //         ], 422);
+    //     } catch (\Exception $e) {
+    //         return new JsonResponse([
+    //             'success' => false,
+    //             'message' => 'Registration failed. Please try again.',
+    //             'error' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
 
     /**
      * The user has been registered.
