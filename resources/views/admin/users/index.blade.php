@@ -138,7 +138,7 @@
                                 <form action="{{ route('admin.users.approve', $user->id) }}" method="POST">
                                     @csrf
                                     @method('PATCH')
-                                    <button class="btn btn-sm btn-alt-success" data-bs-toggle="tooltip" title="Approve">
+                                    <button class="btn btn-sm btn-alt-success mx-1" data-bs-toggle="tooltip" title="Approve">
                                         <i class="fa fa-check"></i>
                                     </button>
                                 </form>
@@ -150,7 +150,7 @@
                                       onsubmit="return confirm('Block this user?')">
                                     @csrf
                                     @method('PATCH')
-                                    <button class="btn btn-sm btn-alt-danger" data-bs-toggle="tooltip" title="Block">
+                                    <button class="btn btn-sm btn-alt-danger mx-1" data-bs-toggle="tooltip" title="Block">
                                         <i class="fa fa-ban"></i>
                                     </button>
                                 </form>
