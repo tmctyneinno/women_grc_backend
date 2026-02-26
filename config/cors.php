@@ -8,6 +8,7 @@ return [
     'allowed_origins' => [
         'https://www.wgrcfp.org',
         'https://wgrcfp.org',
+        'http://localhost:3000',
     ],
     // 'allowed_origins' => ['*'],
      

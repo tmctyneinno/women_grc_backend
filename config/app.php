@@ -54,6 +54,9 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'frontend_url' => env('FRONTEND_URL', "https://wgrcfp.org"),
+
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
@@ -104,6 +107,7 @@ return [
             explode(',', (string) env('APP_PREVIOUS_KEYS', ''))
         ),
     ],
+
 
     /*
     |--------------------------------------------------------------------------

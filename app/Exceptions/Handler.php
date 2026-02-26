@@ -51,4 +51,10 @@ class Handler extends ExceptionHandler
         // Or if you only have admin, redirect to admin login
         return redirect()->guest(route('admin.login'));
     }
+
+    public function report(Throwable $exception)
+    {
+        parent::report($exception);
+    }
+
 }
