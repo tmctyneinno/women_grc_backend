@@ -12,7 +12,7 @@ use App\Notifications\CustomVerifyEmail;
 use App\Notifications\CustomResetPassword;
 use Illuminate\Support\Facades\Storage;
 
-
+ 
 
 class User extends Authenticatable implements MustVerifyEmail
 {

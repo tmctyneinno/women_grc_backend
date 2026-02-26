@@ -7,7 +7,7 @@ use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\EventSpeakerController;
 use App\Http\Controllers\Admin\CourseController;
 use Illuminate\Support\Facades\Route;
-
+ 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {
     // Guest Routes 
@@ -24,7 +24,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Redirect admin root to dashboard
         Route::get('/', function () {
             return redirect()->route('admin.dashboard');
-        });
+        }); 
 
         // Users Management Routes
         Route::prefix('users')->name('users.')->group(function () {
