@@ -128,6 +128,13 @@
                                         title="Manage Speakers">
                                             <i class="fa fa-fw fa-users"></i>
                                         </a>
+
+                                        <a href="{{ route('admin.events.bookings', $event->id) }}" 
+                                            class="btn btn-sm btn-alt-success"
+                                            data-bs-toggle="tooltip"
+                                            title="View Bookings">
+                                                <i class="fa fa-fw fa-ticket-alt"></i>
+                                        </a>
                                         <form action="{{ route('admin.events.destroy', $event->id) }}" 
                                               method="POST" 
                                               class="d-inline"

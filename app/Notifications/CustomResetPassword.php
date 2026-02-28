@@ -24,13 +24,14 @@ class CustomResetPassword extends ResetPassword
 
     public function toMail($notifiable)
     {
-        $url = url('/api/v1/auth/reset-password?token=' . $this->token . '&email=' . urlencode($notifiable->email));
+        $url = url('/reset-password?token=' . $this->token . '&email=' . urlencode($notifiable->email));
 
         return (new MailMessage)
             ->subject('Reset Your Password - WGRFC')
             ->view('auth.reset_link', [
                 'url' => $url,
                 'user' => $notifiable,
+                'token' => $this->token,
             ]);
     }
 

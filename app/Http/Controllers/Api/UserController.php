@@ -6,9 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Timezone;
 
 class UserController extends Controller
 {
+
+    public function timezone(){
+        $timezone = Timezone::orderBy('timezone', 'asc')->get();
+
+        return ApiResponse::success($timezone);
+    }
     /**
      * Get authenticated user profile
      */
@@ -35,7 +42,7 @@ class UserController extends Controller
                         ?  asset('storage/'. $user->profile_picture)
                         : null,
                     'linkedin_profile' => $user->linkedin_profile,
-                    'timezone' => $user->timezone,
+                    'timezone_id' => $user->timezone_id,
                     'status' => $user->status,
                     'is_verified' => $user->is_verified,
                     'email_verified_at' => $user->email_verified_at,
@@ -61,10 +68,12 @@ class UserController extends Controller
 
             // Validate incoming fields
             $validated = $request->validate([
+                'first_name' => 'nullable|string|max:255',
+                'last_name' => 'nullable|string|max:255',
                 'phone_number' => 'nullable|string|max:20',
                 'job_title' => 'nullable|string|max:255',
                 'company' => 'nullable|string|max:255',
-                'timezone' => 'nullable|string|max:255',
+                'timezone_id' => 'nullable|integer|exists:timezone,id',
                 'linkedin_profile' => [
                     'nullable', 
                     'string', 

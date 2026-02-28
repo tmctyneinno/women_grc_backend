@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -42,3 +44,5 @@ Route::get('/proxy/event-images/{path}', function ($path) {
         'Cache-Control' => 'public, max-age=31536000'
     ]);
 })->where('path', '.*')->name('proxy.event-images');
+
+Route::get('/reset-password', [ForgotPasswordController::class, 'reset'])->name('reset');
