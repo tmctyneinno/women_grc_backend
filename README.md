@@ -68,3 +68,7 @@ admin@wgrcfp.com
 
 
 
+{success: false, message: 'Registration failed. Please try again.', errors: {…}}
+errors: {error: 'Route [verification.resend] not defined. (View: /h…fp_backend/resources/views/auth/verify.blade.php)'}
+message: "Registration failed. Please try again."
+success: false

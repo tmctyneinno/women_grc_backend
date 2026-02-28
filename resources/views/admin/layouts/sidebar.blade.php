@@ -163,13 +163,7 @@
                
             </ul>
         </li>
-
-
-
-
-
-
-
+        
         {{-- In your admin layout file --}}
         <li class="nav-main-item">
             <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">

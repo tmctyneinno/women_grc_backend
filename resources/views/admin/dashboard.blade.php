@@ -146,7 +146,7 @@
     </div>
     <!-- END Overview -->
 
-    <!-- Statistics -->
+    <!-- Statistics --> 
     <div class="row">
     <div class="col-xl-8 col-xxl-9 d-flex flex-column">
         <!-- Earnings Summary -->
