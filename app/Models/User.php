@@ -132,4 +132,9 @@ class User extends Authenticatable implements MustVerifyEmail
             : null;
     }
 
+    public function eventBookings()
+    {
+        return $this->hasMany(EventBooking::class);
+    }
+
 }

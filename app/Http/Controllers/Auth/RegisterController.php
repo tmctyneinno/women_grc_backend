@@ -113,6 +113,24 @@ class RegisterController extends Controller
     }
 
 
+    public function resendLink(Request $request)
+    {
+        $email = $request->email;
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return ApiResponse::error('User not found.', [], 404);
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return ApiResponse::error('Email is already verified.', [], 400);
+        }
+
+        $user->sendEmailVerificationNotification();
+
+        return ApiResponse::success([], 'Verification email resent successfully.');
+    }
+    
 
 
 

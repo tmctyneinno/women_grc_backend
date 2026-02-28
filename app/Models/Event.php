@@ -264,4 +264,17 @@ class Event extends Model
             }
         });
     }
+
+
+    public function bookings()
+        {
+            return $this->hasMany(EventBooking::class);
+        }
+
+        public function confirmedBookings()
+        {
+            return $this->hasMany(EventBooking::class)->where('status', 'confirmed');
+        }
+
+        
 }

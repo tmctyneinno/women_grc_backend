@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\EventSpeakerController;
 use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\Admin\ModuleController;
 use Illuminate\Support\Facades\Route;
 
 // Admin Routes
@@ -57,6 +58,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
             
             // CREATE route (POST method)
             Route::post('/', [EventController::class, 'store'])->name('store');
+
+            Route::get('/{event}/bookings', [EventController::class, 'bookings'])->name('bookings');
+
         });
      
         // Event Speakers Management Routes
@@ -69,8 +73,30 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('/{speaker}', [EventSpeakerController::class, 'destroy'])->name('destroy');
         });
 
-        Route::prefix('courses')->name('courses.')->group(function () {
-            Route::resource('/', CourseController::class);
+        // Route::prefix('courses')->name('courses.')->group(function () {
+        //     Route::resource('/', CourseController::class);
+        // });
+
+        Route::resource('courses', \App\Http\Controllers\Admin\CourseController::class);
+
+        Route::prefix('courses/{course}/modules')->name('courses.modules.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\ModuleController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\Admin\ModuleController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Admin\ModuleController::class, 'store'])->name('store');
+            Route::get('/{module}/edit', [\App\Http\Controllers\Admin\ModuleController::class, 'edit'])->name('edit');
+            Route::put('/{module}', [\App\Http\Controllers\Admin\ModuleController::class, 'update'])->name('update');
+            Route::delete('/{module}', [\App\Http\Controllers\Admin\ModuleController::class, 'destroy'])->name('destroy');
         });
+
+
+        Route::prefix('courses/{course}/modules')->name('courses.modules.')->group(function () {
+            Route::get('/', [ModuleController::class, 'index'])->name('index');
+            Route::get('/create', [ModuleController::class, 'create'])->name('create');
+            Route::post('/', [ModuleController::class, 'store'])->name('store');
+            Route::get('/{module}/edit', [ModuleController::class, 'edit'])->name('edit');
+            Route::put('/{module}', [ModuleController::class, 'update'])->name('update');
+            Route::delete('/{module}', [ModuleController::class, 'destroy'])->name('destroy');
+        });
+
     });
 });

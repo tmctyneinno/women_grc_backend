@@ -10,8 +10,11 @@
                 <div class="card-body">
                     {{ __('Please confirm your password before continuing.') }}
 
-                    <form method="POST" action="{{ route('password.confirm') }}">
+                    <form method="POST" action="{{ route('reset-password') }}">
                         @csrf
+
+                        <input type="hidden" name="email" value="{{ $email }}">          
+                        <input type="hidden" name="token" value="{{ $token }}">          
 
                         <div class="row mb-3">
                             <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>

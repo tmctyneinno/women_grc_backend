@@ -37,9 +37,19 @@
                             {{ $course->has_certificate ? 'Yes' : 'No' }}
                         </td>
                         <td class="text-center">
-                            <a href="{{ route('admin.courses.edit',$course) }}" class="btn btn-sm btn-alt-secondary">
+                            <a href="{{ route('admin.courses.edit', ['course' => $course->id]) }}"
+                            class="btn btn-sm btn-alt-secondary">
                                 <i class="fa fa-pencil-alt"></i>
                             </a>
+
+
+                            {{-- NEW: Manage Modules --}}
+                            <a href="{{ route('admin.courses.modules.index', $course) }}" 
+                            class="btn btn-sm btn-alt-primary"
+                            title="Manage Modules">
+                                <i class="fa fa-layer-group"></i>
+                            </a>
+
                             <form method="POST" class="d-inline" action="{{ route('admin.courses.destroy',$course) }}"
                                   onsubmit="return confirm('Delete this course?')">
                                 @csrf @method('DELETE')

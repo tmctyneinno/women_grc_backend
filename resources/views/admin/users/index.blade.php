@@ -86,10 +86,11 @@
 
                         <td>
                             <img 
-                                src="{{ $user->profile_picture_url ?: asset('images/default-avatar.png') }}" 
+                                src="{{ $user->profile_picture_url ?: asset('storage/profile_pictures/avatar.png') }}" 
                                 class="img-avatar img-avatar48"
+                                background-color="#f0f0f0"
                                 alt="Profile"
-                                onerror="this.src='{{ asset('images/default-avatar.png') }}'"
+                                onerror="this.src='{{ asset('storage/profile_pictures/avatar.png') }}'"
                             >
                         </td>
 

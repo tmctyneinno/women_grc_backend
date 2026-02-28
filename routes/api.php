@@ -24,6 +24,7 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::get('/featured', [EventController::class, 'featured'])->name('featured');
         Route::get('/upcoming', [EventController::class, 'upcoming'])->name('upcoming');
         Route::get('/{id}', [EventController::class, 'show'])->name('show');
+        Route::post('{event}/book', [EventController::class, 'book']);
     });
 
     // User profile routes (protected)
@@ -31,9 +32,13 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::get('/profile', [UserController::class, 'profile'])->name('profile');
         Route::post('/profile', [UserController::class, 'update'])->name('update');
     });
+
+    Route::get('/timezone', [UserController::class, 'timezone'])->name('timezones');
     
     Route::prefix('auth')->group(function () {
         Route::post('/register', [RegisterController::class, 'register'])->name('register');
+
+        Route::post('resend-email', [EmailVerificationController::class, 'resend'])->middleware('auth:sanctum')->name('verification.resend');
         
         Route::post('/login', [LoginController::class, 'login'])->name('login');
         
@@ -57,6 +62,9 @@ Route::middleware('api')->prefix('v1')->group(function () {
 
         //forgot password and reset password
         Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
+
+        // Route::get('/reset', [ForgotPasswordController::class, 'reset'])->name('password.reset');
+
 
         Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('reset-password');
 

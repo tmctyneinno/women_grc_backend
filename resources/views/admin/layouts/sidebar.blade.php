@@ -114,7 +114,7 @@
     <div class="content-side">
     <ul class="nav-main">
         <li class="nav-main-item">
-        <a class="nav-main-link active" href="be_pages_dashboard.html">
+        <a class="nav-main-link active" href="{{ route('admin.dashboard') }}">
             <i class="nav-main-link-icon si si-speedometer"></i>
             <span class="nav-main-link-name">Dashboard</span>
         </a>
@@ -170,7 +170,7 @@
 
 
 
-                {{-- In your admin layout file --}}
+        {{-- In your admin layout file --}}
         <li class="nav-main-item">
             <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
                 <i class="nav-main-link-icon si si-calendar"></i>

@@ -470,4 +470,16 @@ class EventController extends Controller
 
         return $colors[$status] ?? '#gray';
     }
+
+
+
+    public function bookings(Event $event)
+    {
+        $bookings = $event->bookings()
+            ->with('user')
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.events.bookings', compact('event', 'bookings'));
+    }
 }

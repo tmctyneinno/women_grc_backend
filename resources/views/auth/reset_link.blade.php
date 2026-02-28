@@ -99,8 +99,18 @@
             </p>
 
             <a href="{{ $url }}" class="btn">
+            
                 Reset Your Password
             </a>
+
+            <!-- <form action="{{ $url }}" method="POST" style="margin-top: 20px;">
+                @csrf
+                <input type="hidden" name="token" value="{{ $token }}">
+                <input type="hidden" name="email" value="{{ $user->email }}">
+                <button type="submit" class="btn">
+                    Reset Your Password
+                </button>
+            </form> -->
 
             
 
