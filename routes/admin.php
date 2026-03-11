@@ -7,6 +7,11 @@ use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\EventSpeakerController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\ModuleController;
+use App\Http\Controllers\Admin\LessonController;
+use App\Http\Controllers\Admin\QuizController;
+use App\Http\Controllers\Admin\TransactionController;
+use App\Http\Controllers\Admin\ForumController;
+use App\Http\Controllers\Admin\MembershipApprovalController;
 use Illuminate\Support\Facades\Route;
  
 // Admin Routes
@@ -35,6 +40,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::patch('/{user}/approve', [UserController::class, 'approve'])->name('approve');
             Route::patch('/{user}/block', [UserController::class, 'block'])->name('block');
+        });
+
+        Route::prefix('memberships')->name('memberships.')->group(function () {
+            Route::get('/pending', [MembershipApprovalController::class, 'index'])->name('pending');
+            Route::patch('/{userMembership}/approve', [MembershipApprovalController::class, 'approve'])->name('approve');
         });
 
         // Events Management Routes
@@ -77,17 +87,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         //     Route::resource('/', CourseController::class);
         // });
 
-        Route::resource('courses', \App\Http\Controllers\Admin\CourseController::class);
-
-        Route::prefix('courses/{course}/modules')->name('courses.modules.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Admin\ModuleController::class, 'index'])->name('index');
-            Route::get('/create', [\App\Http\Controllers\Admin\ModuleController::class, 'create'])->name('create');
-            Route::post('/', [\App\Http\Controllers\Admin\ModuleController::class, 'store'])->name('store');
-            Route::get('/{module}/edit', [\App\Http\Controllers\Admin\ModuleController::class, 'edit'])->name('edit');
-            Route::put('/{module}', [\App\Http\Controllers\Admin\ModuleController::class, 'update'])->name('update');
-            Route::delete('/{module}', [\App\Http\Controllers\Admin\ModuleController::class, 'destroy'])->name('destroy');
-        });
-
+        Route::resource('courses', CourseController::class);
+        Route::get('modules', [ModuleController::class, 'all'])->name('modules.all');
+        Route::get('lessons', [LessonController::class, 'all'])->name('lessons.all');
+        Route::get('quizzes', [QuizController::class, 'all'])->name('quizzes.all');
+        Route::get('forums', [ForumController::class, 'index'])->name('forums.index');
+        Route::get('forums/{forum}', [ForumController::class, 'show'])->name('forums.show');
+        Route::patch('forums/{forum}/deactivate', [ForumController::class, 'deactivate'])->name('forums.deactivate');
+        Route::patch('forums/{forum}/activate', [ForumController::class, 'activate'])->name('forums.activate');
+        Route::delete('forums/{forum}', [ForumController::class, 'destroy'])->name('forums.destroy');
+        Route::get('transactions', [TransactionController::class, 'index'])->name('transactions.index');
+        Route::get('transactions/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
 
         Route::prefix('courses/{course}/modules')->name('courses.modules.')->group(function () {
             Route::get('/', [ModuleController::class, 'index'])->name('index');
@@ -96,6 +106,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/{module}/edit', [ModuleController::class, 'edit'])->name('edit');
             Route::put('/{module}', [ModuleController::class, 'update'])->name('update');
             Route::delete('/{module}', [ModuleController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('courses/{course}/modules/{module}/lessons')->name('courses.modules.lessons.')->group(function () {
+            Route::get('/', [LessonController::class, 'index'])->name('index');
+            Route::get('/create', [LessonController::class, 'create'])->name('create');
+            Route::post('/', [LessonController::class, 'store'])->name('store');
+            Route::get('/{lesson}/edit', [LessonController::class, 'edit'])->name('edit');
+            Route::put('/{lesson}', [LessonController::class, 'update'])->name('update');
+            Route::delete('/{lesson}', [LessonController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('courses/{course}/modules/{module}/quizzes')->name('courses.modules.quizzes.')->group(function () {
+            Route::get('/', [QuizController::class, 'index'])->name('index');
+            Route::get('/create', [QuizController::class, 'create'])->name('create');
+            Route::post('/', [QuizController::class, 'store'])->name('store');
+            Route::get('/{quiz}/edit', [QuizController::class, 'edit'])->name('edit');
+            Route::put('/{quiz}', [QuizController::class, 'update'])->name('update');
+            Route::delete('/{quiz}', [QuizController::class, 'destroy'])->name('destroy');
         });
 
     });

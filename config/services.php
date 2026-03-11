@@ -40,5 +40,16 @@ return [
     'redirect' => env('GOOGLE_REDIRECT_URI'),
 ],
 
+    'recaptcha' => [
+        'secret' => env('RECAPTCHA_SECRET_KEY'),
+        'project_id' => env('GOOGLE_CLOUD_PROJECT_ID'),
+    ],
+
+    'stripe' => [
+        'public_key' => env('STRIPE_PUBLIC_KEY'),
+        'secret_key' => env('STRIPE_SECRET_KEY'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
 
 ];

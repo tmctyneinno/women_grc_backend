@@ -2,11 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Admin\MembershipApprovalController;
+use Illuminate\Support\Str;
 
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+Route::get('/', function () {
+    // return view('welcome');
+    return redirect('/admin/login');
+});
 
 Auth::routes();
 
@@ -15,7 +18,17 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/images/proxy/{path}', function ($path) {
-    $storagePath = storage_path('app/public/events/' . $path);
+    $path = ltrim($path, '/');
+
+    // Basic traversal guard (route allows `.*`).
+    if (str_contains($path, '..')) {
+        abort(400);
+    }
+
+    // Accept both `featured/...` and `events/featured/...` inputs.
+    $storagePath = Str::startsWith($path, 'events/')
+        ? storage_path('app/public/' . $path)
+        : storage_path('app/public/events/' . $path);
     
     if (!file_exists($storagePath)) {
         abort(404);
@@ -32,7 +45,15 @@ Route::get('/images/proxy/{path}', function ($path) {
 
 // Add a specific route for event images
 Route::get('/proxy/event-images/{path}', function ($path) {
-    $storagePath = storage_path('app/public/events/' . $path);
+    $path = ltrim($path, '/');
+
+    if (str_contains($path, '..')) {
+        abort(400);
+    }
+
+    $storagePath = Str::startsWith($path, 'events/')
+        ? storage_path('app/public/' . $path)
+        : storage_path('app/public/events/' . $path);
     
     if (!file_exists($storagePath)) {
         abort(404);
@@ -46,3 +67,7 @@ Route::get('/proxy/event-images/{path}', function ($path) {
 })->where('path', '.*')->name('proxy.event-images');
 
 Route::get('/reset-password', [ForgotPasswordController::class, 'reset'])->name('reset');
+
+Route::get('/memberships/approve/{userMembership}', [MembershipApprovalController::class, 'approveFromEmail'])
+    ->middleware('signed')
+    ->name('memberships.email-approve');

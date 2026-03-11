@@ -26,8 +26,15 @@
         </div>
 
         <div class="form-check mb-3">
+            <input type="hidden" name="is_active" value="0">
             <input class="form-check-input" type="checkbox" name="is_active" value="1" checked>
             <label class="form-check-label">Active</label>
+        </div>
+
+        <div class="form-check mb-3">
+            <input type="hidden" name="require_quiz_to_unlock" value="0">
+            <input class="form-check-input" type="checkbox" name="require_quiz_to_unlock" value="1">
+            <label class="form-check-label">Require quiz pass to unlock next module</label>
         </div>
 
         <button class="btn btn-primary">Create Module</button>

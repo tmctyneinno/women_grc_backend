@@ -137,4 +137,69 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(EventBooking::class);
     }
 
+    public function courseEnrollments()
+    {
+        return $this->hasMany(CourseEnrollment::class);
+    }
+
+    public function quizAttempts()
+    {
+        return $this->hasMany(QuizAttempt::class);
+    }
+
+    public function learningPoints()
+    {
+        return $this->hasMany(LearningPoint::class);
+    }
+
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
+    public function coursePurchases()
+    {
+        return $this->hasMany(CoursePurchase::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function memberships()
+    {
+        return $this->hasMany(UserMembership::class);
+    }
+
+    public function createdForums()
+    {
+        return $this->hasMany(Forum::class, 'created_by');
+    }
+
+    public function forumMemberships()
+    {
+        return $this->hasMany(ForumMembership::class);
+    }
+
+    public function forumInvitations()
+    {
+        return $this->hasMany(ForumInvitation::class, 'invited_user_id');
+    }
+
+    public function forumThreads()
+    {
+        return $this->hasMany(ForumThread::class);
+    }
+
+    public function forumPosts()
+    {
+        return $this->hasMany(ForumPost::class);
+    }
+
+    public function forumNotifications()
+    {
+        return $this->hasMany(ForumNotification::class);
+    }
+
 }

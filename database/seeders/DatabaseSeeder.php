@@ -15,7 +15,8 @@ class DatabaseSeeder extends Seeder
         // Call AdminSeeder
         $this->call([
             AdminSeeder::class,
-            TimezoneSeeder::class
+            TimezoneSeeder::class,
+            MembershipSeeder::class
         ]);       
 
         // Create a test user

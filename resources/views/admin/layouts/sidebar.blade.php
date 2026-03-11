@@ -147,7 +147,6 @@
             </ul>
         </li>
 
-
         {{-- In your admin layout file --}}
         <li class="nav-main-item">
             <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
@@ -158,6 +157,21 @@
                 <li class="nav-main-item">
                     <a class="nav-main-link" href="{{ route('admin.courses.index') }}">
                         <span class="nav-main-link-name">All Courses</span>
+                    </a>
+                </li>
+                <li class="nav-main-item">
+                    <a class="nav-main-link" href="{{ route('admin.modules.all') }}">
+                        <span class="nav-main-link-name">All Modules</span>
+                    </a>
+                </li>
+                <li class="nav-main-item">
+                    <a class="nav-main-link" href="{{ route('admin.lessons.all') }}">
+                        <span class="nav-main-link-name">All Lessons</span>
+                    </a>
+                </li>
+                <li class="nav-main-item">
+                    <a class="nav-main-link" href="{{ route('admin.quizzes.all') }}">
+                        <span class="nav-main-link-name">All Quiz</span>
                     </a>
                 </li>
                
@@ -188,6 +202,29 @@
                 </li>
                
             </ul>
+        </li>
+        
+        <li class="nav-main-item">
+            <a class="nav-main-link" href="{{ route('admin.memberships.pending') }}">
+                <i class="nav-main-link-icon si si-badge"></i>
+                <span class="nav-main-link-name">Membership Approvals</span>
+            </a>
+        </li>
+
+
+
+        <li class="nav-main-item">
+            <a class="nav-main-link" href="{{ route('admin.transactions.index') }}">
+                <i class="nav-main-link-icon si si-wallet"></i>
+                <span class="nav-main-link-name">Transactions</span>
+            </a>
+        </li>
+
+        <li class="nav-main-item">
+            <a class="nav-main-link" href="{{ route('admin.forums.index') }}">
+                <i class="nav-main-link-icon si si-bubbles"></i>
+                <span class="nav-main-link-name">Forums</span>
+            </a>
         </li>
       
        

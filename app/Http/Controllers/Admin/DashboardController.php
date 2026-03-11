@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Event;
 use App\Models\EventBooking;
 use App\Models\Course;
+use App\Models\Transaction;
 
 class DashboardController extends Controller
 {
@@ -38,6 +39,13 @@ class DashboardController extends Controller
         $confirmedBookings = EventBooking::where('status', 'confirmed')->count();
 
         $totalCourses = Course::count();
+        $totalTransactions = Transaction::count();
+        $paidTransactions = Transaction::where('status', 'paid')->count();
+        $totalRevenueGbp = (float) Transaction::where('status', 'paid')->sum('total_amount');
+        $recentTransactions = Transaction::with(['user', 'items'])
+            ->latest()
+            ->take(8)
+            ->get();
 
         return view('admin.dashboard', compact(
             'totalUsers',
@@ -47,7 +55,11 @@ class DashboardController extends Controller
             'upcomingEvents',
             'totalBookings',
             'confirmedBookings',
-            'totalCourses'
+            'totalCourses',
+            'totalTransactions',
+            'paidTransactions',
+            'totalRevenueGbp',
+            'recentTransactions'
         ));
     }
 

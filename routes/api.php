@@ -11,6 +11,12 @@ use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Api\MembershipController;
+use App\Http\Controllers\Api\MembershipTierController;
+use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\LearningController;
+use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\ForumController;
 
 
 
@@ -23,6 +29,7 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::get('/', [EventController::class, 'index'])->name('index');
         Route::get('/featured', [EventController::class, 'featured'])->name('featured');
         Route::get('/upcoming', [EventController::class, 'upcoming'])->name('upcoming');
+        Route::middleware('auth:sanctum')->get('/my-bookings', [EventController::class, 'myBookings']);
         Route::get('/{id}', [EventController::class, 'show'])->name('show');
         Route::post('{event}/book', [EventController::class, 'book']);
     });
@@ -32,6 +39,85 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::get('/profile', [UserController::class, 'profile'])->name('profile');
         Route::post('/profile', [UserController::class, 'update'])->name('update');
     });
+
+    Route::middleware('auth:sanctum')->prefix('memberships')->group(function () {
+        // Memberships
+        Route::get('/', [MembershipController::class, 'index']);
+        Route::get('/my-status', [MembershipController::class, 'myStatus']);
+        Route::get('/{id}', [MembershipController::class, 'show']);
+
+        // Membership Tiers
+        Route::get('/tiers', [MembershipTierController::class, 'index']);
+        Route::get('/tiers/{id}', [MembershipTierController::class, 'show']);
+    });
+
+
+    Route::middleware('auth:sanctum')->prefix('carts')->group(function () {
+        Route::get('/', [CartController::class, 'index']);
+        Route::post('/add', [CartController::class, 'add']);
+        Route::delete('/{id}', [CartController::class, 'remove']);
+        Route::post('/checkout', [PaymentController::class, 'checkout']);
+        Route::get('/checkout/status/{sessionId}', [PaymentController::class, 'checkoutStatus']);
+    });
+
+    Route::post('/payments/stripe/webhook', [PaymentController::class, 'stripeWebhook']);
+
+    Route::prefix('learning')->group(function () {
+        Route::get('/courses', [LearningController::class, 'courses']);
+        Route::get('/courses/{course}', [LearningController::class, 'show']);
+        Route::get('/certificates/verify/{verificationCode}', [LearningController::class, 'verifyCertificate']);
+
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/courses/{course}/purchase/initiate', [LearningController::class, 'initiatePurchase']);
+            Route::post('/courses/{course}/purchase/confirm', [LearningController::class, 'confirmPurchase']);
+            Route::post('/courses/{course}/enroll', [LearningController::class, 'enroll']);
+            Route::get('/my-courses', [LearningController::class, 'myCourses']);
+            Route::get('/achievements/{certificate}/download', [LearningController::class, 'downloadCertificate']);
+            Route::post('/courses/{course}/modules/{module}/progress', [LearningController::class, 'updateModuleProgress']);
+            Route::post('/courses/{course}/modules/{module}/quiz/submit', [LearningController::class, 'submitModuleQuiz']);
+            Route::get('/leaderboard', [LearningController::class, 'leaderboard']);
+            Route::get('/achievements', [LearningController::class, 'achievements']);
+        });
+    });
+
+    Route::middleware('auth:sanctum')->prefix('forums')->group(function () {
+        Route::get('/', [ForumController::class, 'index']);
+        Route::post('/', [ForumController::class, 'store']);
+        Route::get('/invitations', [ForumController::class, 'myInvitations']);
+        Route::post('/invitations/{invitation}/respond', [ForumController::class, 'respondInvitation']);
+        Route::get('/notifications', [ForumController::class, 'notifications']);
+        Route::patch('/notifications/{notification}/read', [ForumController::class, 'markNotificationRead']);
+        Route::get('/notification-preferences', [ForumController::class, 'notificationPreferences']);
+        Route::post('/notification-preferences', [ForumController::class, 'updateNotificationPreferences']);
+
+        Route::get('/{forum}', [ForumController::class, 'show']);
+        Route::put('/{forum}', [ForumController::class, 'update']);
+        Route::delete('/{forum}', [ForumController::class, 'destroy']);
+        Route::post('/{forum}/close', [ForumController::class, 'close']);
+        Route::post('/{forum}/archive', [ForumController::class, 'archive']);
+        Route::post('/{forum}/reopen', [ForumController::class, 'reopen']);
+        Route::post('/{forum}/join', [ForumController::class, 'join']);
+        Route::post('/{forum}/leave', [ForumController::class, 'leave']);
+        Route::post('/{forum}/invite', [ForumController::class, 'invite']);
+        Route::get('/{forum}/members', [ForumController::class, 'members']);
+        Route::delete('/{forum}/members/{member}', [ForumController::class, 'removeMember']);
+        Route::post('/{forum}/members/{member}/moderator', [ForumController::class, 'assignModerator']);
+        Route::get('/{forum}/analytics', [ForumController::class, 'analytics']);
+
+        Route::get('/{forum}/threads', [ForumController::class, 'threads']);
+        Route::post('/{forum}/threads', [ForumController::class, 'createThread']);
+        Route::put('/{forum}/threads/{thread}', [ForumController::class, 'updateThread']);
+        Route::delete('/{forum}/threads/{thread}', [ForumController::class, 'deleteThread']);
+        Route::post('/{forum}/threads/{thread}/pin', [ForumController::class, 'pinThread']);
+
+        Route::get('/{forum}/threads/{thread}/posts', [ForumController::class, 'posts']);
+        Route::post('/{forum}/threads/{thread}/posts', [ForumController::class, 'createPost']);
+        Route::put('/{forum}/threads/{thread}/posts/{post}', [ForumController::class, 'updatePost']);
+        Route::delete('/{forum}/threads/{thread}/posts/{post}', [ForumController::class, 'deletePost']);
+    });
+
+    Route::middleware('auth:sanctum')->post('/forums/posts/{post}/react', [ForumController::class, 'reactPost']);
+    Route::middleware('auth:sanctum')->post('/forums/posts/{post}/report', [ForumController::class, 'reportPost']);
 
     Route::get('/timezone', [UserController::class, 'timezone'])->name('timezones');
     
@@ -92,4 +178,3 @@ Route::get('/test-cors', function() {
         'cors_working' => true
     ]);
 });
-

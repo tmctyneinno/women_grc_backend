@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\ApiResponse;
+use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends Controller
 {
@@ -94,6 +95,8 @@ class RegisterController extends Controller
                 $user->sendEmailVerificationNotification();
             }
 
+            $this->notifyAdminOfRegistration($user);
+
             return ApiResponse::success([
                 'user' => [
                     'id' => $user->id,
@@ -109,6 +112,31 @@ class RegisterController extends Controller
 
         } catch (\Exception $e) {
             return ApiResponse::error('Registration failed. Please try again.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    private function notifyAdminOfRegistration(User $user): void
+    {
+        $adminEmail = config('mail.admin.address', 'enquiries@wgrcfp.org');
+        if (!$adminEmail) {
+            return;
+        }
+
+        $data = [
+            'user' => $user,
+            'linkedinUrl' => $user->linkedin_profile ?: null,
+        ];
+
+        try {
+            Mail::send('emails.admin.new-user', $data, function ($mail) use ($adminEmail, $user) {
+                $mail->to($adminEmail)
+                    ->subject("New User Registration: {$user->first_name} {$user->last_name}");
+            });
+        } catch (\Throwable $e) {
+            \Log::warning('Failed to send admin new-user email', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 

@@ -14,7 +14,7 @@
                 </p>
             </div>
             <a href="{{ route('admin.courses.modules.index', $course) }}" class="btn btn-alt-secondary">
-                ← Back to Modules
+                Back to Modules
             </a>
         </div>
     </div>
@@ -50,7 +50,6 @@
                 @csrf
                 @method('PUT')
 
-                {{-- Title --}}
                 <div class="mb-4">
                     <label class="form-label">Module Title</label>
                     <input type="text"
@@ -61,7 +60,6 @@
                     @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
-                {{-- Description --}}
                 <div class="mb-4">
                     <label class="form-label">Description</label>
                     <textarea name="description"
@@ -70,18 +68,16 @@
                     @error('description') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
-                {{-- Order --}}
                 <div class="mb-4">
                     <label class="form-label">Order</label>
                     <input type="number"
-                           name="order"
+                           name="position"
                            min="1"
-                           class="form-control @error('order') is-invalid @enderror"
-                           value="{{ old('order', $module->order) }}">
-                    @error('order') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                           class="form-control @error('position') is-invalid @enderror"
+                           value="{{ old('position', $module->position) }}">
+                    @error('position') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
-                {{-- Active --}}
                 <div class="mb-4 form-check form-switch">
                     <input type="hidden" name="is_active" value="0">
                     <input class="form-check-input"
@@ -89,12 +85,19 @@
                            name="is_active"
                            value="1"
                            {{ old('is_active', $module->is_active) ? 'checked' : '' }}>
-                    <label class="form-check-label">
-                        Active
-                    </label>
+                    <label class="form-check-label">Active</label>
                 </div>
 
-                {{-- Actions --}}
+                <div class="mb-4 form-check form-switch">
+                    <input type="hidden" name="require_quiz_to_unlock" value="0">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="require_quiz_to_unlock"
+                           value="1"
+                           {{ old('require_quiz_to_unlock', $module->require_quiz_to_unlock) ? 'checked' : '' }}>
+                    <label class="form-check-label">Require quiz pass to unlock next module</label>
+                </div>
+
                 <div class="d-flex justify-content-end gap-2">
                     <a href="{{ route('admin.courses.modules.index', $course) }}" class="btn btn-alt-secondary">
                         Cancel
@@ -109,3 +112,4 @@
 
 </div>
 @endsection
+

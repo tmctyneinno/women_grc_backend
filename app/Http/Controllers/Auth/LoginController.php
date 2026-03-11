@@ -84,6 +84,7 @@ class LoginController extends Controller
         }
 
         if (!$user->hasVerifiedEmail()) {
+            $user->sendEmailVerificationNotification();
             return ApiResponse::error(
                 'Please verify your email before logging in.',
                 [],

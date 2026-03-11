@@ -14,10 +14,10 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         Admin::updateOrCreate(
-            ['email' => 'admin@wgrcfp.com'], // prevents duplicates
+            ['email' => 'enquiries@wgrcfp.org'], // prevents duplicates
             [
                 'name'      => 'Super Admin',
-                'email'     => 'admin@wgrcfp.com',
+                'email'     => 'enquiries@wgrcfp.org',
                 'password'  => Hash::make('password'), // change this!
                 'role'      => 'admin',
                 'is_active' => true,

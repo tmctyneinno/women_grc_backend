@@ -133,6 +133,121 @@
                     </label>
                 </div>
 
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-select @error('status') is-invalid @enderror">
+                            <option value="draft" {{ old('status', 'draft') === 'draft' ? 'selected' : '' }}>Draft</option>
+                            <option value="published" {{ old('status') === 'published' ? 'selected' : '' }}>Published</option>
+                        </select>
+                        @error('status')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Enrollment Type</label>
+                        <select name="enrollment_type" class="form-select @error('enrollment_type') is-invalid @enderror">
+                            <option value="open" {{ old('enrollment_type', 'open') === 'open' ? 'selected' : '' }}>Open</option>
+                            <option value="invite_only" {{ old('enrollment_type') === 'invite_only' ? 'selected' : '' }}>Invite Only</option>
+                            <option value="premium" {{ old('enrollment_type') === 'premium' ? 'selected' : '' }}>Premium</option>
+                        </select>
+                        @error('enrollment_type')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Navigation Mode</label>
+                        <select name="navigation_mode" class="form-select @error('navigation_mode') is-invalid @enderror">
+                            <option value="free" {{ old('navigation_mode', 'free') === 'free' ? 'selected' : '' }}>Free Navigation</option>
+                            <option value="locked" {{ old('navigation_mode') === 'locked' ? 'selected' : '' }}>Locked Progression</option>
+                        </select>
+                        @error('navigation_mode')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Pass Threshold (%)</label>
+                        <input type="number"
+                               min="1"
+                               max="100"
+                               name="passing_threshold"
+                               value="{{ old('passing_threshold', 70) }}"
+                               class="form-control @error('passing_threshold') is-invalid @enderror">
+                        @error('passing_threshold')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="mb-4 form-check form-switch">
+                    <input type="hidden" name="requires_quiz_pass" value="0">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="requires_quiz_pass"
+                           id="requires_quiz_pass"
+                           value="1"
+                           {{ old('requires_quiz_pass') ? 'checked' : '' }}>
+                    <label class="form-check-label" for="requires_quiz_pass">
+                        Require learners to pass quizzes before completion
+                    </label>
+                </div>
+
+                <div class="mb-4 form-check form-switch">
+                    <input type="hidden" name="is_active" value="0">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="is_active"
+                           id="is_active"
+                           value="1"
+                           {{ old('is_active', 1) ? 'checked' : '' }}>
+                    <label class="form-check-label" for="is_active">
+                        Active
+                    </label>
+                </div>
+
+                <div class="mb-4 form-check form-switch">
+                    <input type="hidden" name="is_paid" value="0">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="is_paid"
+                           id="is_paid"
+                           value="1"
+                           {{ old('is_paid') ? 'checked' : '' }}>
+                    <label class="form-check-label" for="is_paid">
+                        Paid Course
+                    </label>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Price</label>
+                        <input type="number"
+                               min="0"
+                               step="0.01"
+                               name="price"
+                               value="{{ old('price', 0) }}"
+                               class="form-control @error('price') is-invalid @enderror">
+                        @error('price')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Currency</label>
+                        <input type="text"
+                               maxlength="3"
+                               name="currency"
+                               value="{{ old('currency', 'GBP') }}"
+                               class="form-control @error('currency') is-invalid @enderror">
+                        @error('currency')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
                 {{-- Actions --}}
                 <div class="d-flex justify-content-end gap-2">
                     <a href="{{ route('admin.courses.index') }}" class="btn btn-alt-secondary">

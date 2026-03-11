@@ -115,4 +115,9 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    'admin' => [
+        'address' => env('ADMIN_EMAIL', 'enquiries@wgrcfp.org'),
+        'name' => env('ADMIN_NAME', 'WGRCFP Admin'),
+    ],
+
 ];

@@ -123,6 +123,34 @@
                     </select>
                 </div>
 
+                <div class="mb-4">
+                    <label class="form-label">Enrollment Type</label>
+                    <select name="enrollment_type" class="form-select">
+                        <option value="open" {{ old('enrollment_type', $course->enrollment_type) === 'open' ? 'selected' : '' }}>Open</option>
+                        <option value="invite_only" {{ old('enrollment_type', $course->enrollment_type) === 'invite_only' ? 'selected' : '' }}>Invite Only</option>
+                        <option value="premium" {{ old('enrollment_type', $course->enrollment_type) === 'premium' ? 'selected' : '' }}>Premium</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Navigation Mode</label>
+                    <select name="navigation_mode" class="form-select">
+                        <option value="free" {{ old('navigation_mode', $course->navigation_mode) === 'free' ? 'selected' : '' }}>Free Navigation</option>
+                        <option value="locked" {{ old('navigation_mode', $course->navigation_mode) === 'locked' ? 'selected' : '' }}>Locked Progression</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Pass Threshold (%)</label>
+                    <input type="number"
+                           min="1"
+                           max="100"
+                           name="passing_threshold"
+                           class="form-control @error('passing_threshold') is-invalid @enderror"
+                           value="{{ old('passing_threshold', $course->passing_threshold ?? 70) }}">
+                    @error('passing_threshold') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                </div>
+
                 {{-- Certificate --}}
                 <div class="mb-4 form-check form-switch">
                     <input type="hidden" name="has_certificate" value="0">
@@ -135,6 +163,67 @@
                     <label class="form-check-label" for="has_certificate">
                         Issue certificate on completion
                     </label>
+                </div>
+
+                <div class="mb-4 form-check form-switch">
+                    <input type="hidden" name="requires_quiz_pass" value="0">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="requires_quiz_pass"
+                           id="requires_quiz_pass"
+                           value="1"
+                           {{ old('requires_quiz_pass', $course->requires_quiz_pass) ? 'checked' : '' }}>
+                    <label class="form-check-label" for="requires_quiz_pass">
+                        Require learners to pass quizzes before completion
+                    </label>
+                </div>
+
+                <div class="mb-4 form-check form-switch">
+                    <input type="hidden" name="is_active" value="0">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="is_active"
+                           id="is_active"
+                           value="1"
+                           {{ old('is_active', $course->is_active ?? true) ? 'checked' : '' }}>
+                    <label class="form-check-label" for="is_active">
+                        Active
+                    </label>
+                </div>
+
+                <div class="mb-4 form-check form-switch">
+                    <input type="hidden" name="is_paid" value="0">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="is_paid"
+                           id="is_paid"
+                           value="1"
+                           {{ old('is_paid', $course->is_paid ?? false) ? 'checked' : '' }}>
+                    <label class="form-check-label" for="is_paid">
+                        Paid Course
+                    </label>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Price</label>
+                        <input type="number"
+                               min="0"
+                               step="0.01"
+                               name="price"
+                               class="form-control @error('price') is-invalid @enderror"
+                               value="{{ old('price', $course->price ?? 0) }}">
+                        @error('price') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Currency</label>
+                        <input type="text"
+                               maxlength="3"
+                               name="currency"
+                               class="form-control @error('currency') is-invalid @enderror"
+                               value="{{ old('currency', $course->currency ?? 'GBP') }}">
+                        @error('currency') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
                 </div>
 
                 {{-- Actions --}}
@@ -171,7 +260,7 @@
                 @forelse($course->modules as $module)
                     <tr>
                         <td>{{ $module->title }}</td>
-                        <td>{{ $module->order }}</td>
+                        <td>{{ $module->position }}</td>
                         <td>
                             <span class="badge {{ $module->is_active ? 'bg-success' : 'bg-secondary' }}">
                                 {{ $module->is_active ? 'Active' : 'Inactive' }}
