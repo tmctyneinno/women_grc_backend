@@ -1,27 +1,3 @@
-<p>Hello Admin,</p>
-
-<p>A membership payment has been completed and needs approval.</p>
-
-<ul>
-    <li><strong>User:</strong> {{ $user->first_name }} {{ $user->last_name }}</li>
-    <li><strong>Email:</strong> {{ $user->email }}</li>
-    <li><strong>Membership:</strong> {{ $membership?->name ?? 'N/A' }}</li>
-    <li><strong>Tier:</strong> {{ $tier?->name ?? 'N/A' }}</li>
-    <li><strong>Transaction Ref:</strong> {{ $transaction?->reference ?? 'N/A' }}</li>
-</ul>
-
-<p>
-    Approve this membership directly:
-    <a href="{{ $approvalUrl }}" target="_blank" rel="noopener">Approve Membership</a>
-</p>
-
-<p>Regards,<br>WGRCFP</p>
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -13,7 +13,13 @@ class CourseController extends Controller
 {
     public function index() {
         $courses = Course::withCount(['modules', 'enrollments', 'purchases'])->latest()->paginate(10);
-        return view('admin.courses.index', compact('courses'));
+        $stats = [
+            'total' => Course::count(),
+            'published' => Course::where('status', 'published')->count(),
+            'draft' => Course::where('status', 'draft')->count(),
+            'paid' => Course::where('is_paid', true)->count(),
+        ];
+        return view('admin.courses.index', compact('courses', 'stats'));
     }
 
     public function show(Course $course)

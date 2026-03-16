@@ -529,9 +529,20 @@ class ForumController extends Controller
             'quote:id,user_id,content',
             'quote.user:id,first_name,last_name',
             'reactions',
-            'replies.user:id,first_name,last_name',
-            'replies.reactions',
+            'replies' => function ($query) {
+                $query->with([
+                    'user:id,first_name,last_name',
+                    'reactions',
+                ])->withCount([
+                    'reactions as likes_count' => fn ($q) => $q->where('reaction', 'like'),
+                    'reactions as dislikes_count' => fn ($q) => $q->where('reaction', 'dislike'),
+                ]);
+            },
         ])
+            ->withCount([
+                'reactions as likes_count' => fn ($q) => $q->where('reaction', 'like'),
+                'reactions as dislikes_count' => fn ($q) => $q->where('reaction', 'dislike'),
+            ])
             ->where('forum_thread_id', $thread->id)
             ->whereNull('parent_post_id')
             ->latest()

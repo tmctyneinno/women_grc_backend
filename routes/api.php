@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\LearningController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ForumController;
+use App\Http\Controllers\Api\PodcastController;
 
 
 
@@ -32,6 +33,16 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::middleware('auth:sanctum')->get('/my-bookings', [EventController::class, 'myBookings']);
         Route::get('/{id}', [EventController::class, 'show'])->name('show');
         Route::post('{event}/book', [EventController::class, 'book']);
+    });
+
+    Route::prefix('podcasts')->group(function () {
+        Route::get('/', [PodcastController::class, 'index']);
+        Route::get('/{podcast}', [PodcastController::class, 'show']);
+    });
+
+    Route::middleware('auth:sanctum')->prefix('podcasts')->group(function () {
+        Route::get('/progress/list', [PodcastController::class, 'progress']);
+        Route::post('/{podcast}/progress', [PodcastController::class, 'updateProgress']);
     });
 
     // User profile routes (protected)

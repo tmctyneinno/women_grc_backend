@@ -46,9 +46,20 @@ class EventController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $q = trim((string) $request->query('q', ''));
+
         $events = Event::where('status', 'published')
+                      ->when($q !== '', function ($query) use ($q) {
+                          $query->where(function ($nested) use ($q) {
+                              $nested->where('title', 'like', "%{$q}%")
+                                  ->orWhere('description', 'like', "%{$q}%")
+                                  ->orWhere('short_description', 'like', "%{$q}%")
+                                  ->orWhere('venue', 'like', "%{$q}%")
+                                  ->orWhere('type', 'like', "%{$q}%");
+                          });
+                      })
                       ->orderBy('start_date', 'asc')
                       ->paginate(10);
         

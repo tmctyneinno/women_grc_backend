@@ -114,63 +114,61 @@
     <div class="content-side">
     <ul class="nav-main">
         <li class="nav-main-item">
-        <a class="nav-main-link active" href="{{ route('admin.dashboard') }}">
+        <a class="nav-main-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
             <i class="nav-main-link-icon si si-speedometer"></i>
             <span class="nav-main-link-name">Dashboard</span>
         </a>
         </li>
         
-        <li class="nav-main-heading">Menu</li>
-        {{-- In your admin layout file --}}
+        <li class="nav-main-heading">Core</li>
         <li class="nav-main-item">
-            <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
-                <i class="nav-main-link-icon si si-calendar"></i>
+            <a class="nav-main-link nav-main-link-submenu {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
+                <i class="nav-main-link-icon si si-users"></i>
                 <span class="nav-main-link-name">Users</span>
             </a>
             <ul class="nav-main-submenu">
                 <li class="nav-main-item">
-                    <a class="nav-main-link" href="{{ route('admin.users.index') }}">
+                    <a class="nav-main-link {{ request()->routeIs('admin.users.index') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
                         <span class="nav-main-link-name">All Users</span>
                     </a>
                 </li>
                 <li class="nav-main-item">
-                    <a class="nav-main-link" href="{{ route('admin.users.pend') }}">
-                        <span class="nav-main-link-name">Pending users</span>
+                    <a class="nav-main-link {{ request()->routeIs('admin.users.pend') ? 'active' : '' }}" href="{{ route('admin.users.pend') }}">
+                        <span class="nav-main-link-name">Pending Users</span>
                     </a>
                 </li>
                 <li class="nav-main-item">
-                    <a class="nav-main-link" href="{{ route('admin.users.blocked') }}">
+                    <a class="nav-main-link {{ request()->routeIs('admin.users.blocked') ? 'active' : '' }}" href="{{ route('admin.users.blocked') }}">
                         <span class="nav-main-link-name">Blocked Users</span>
                     </a>
                 </li>
-               
             </ul>
         </li>
 
-        {{-- In your admin layout file --}}
+        <li class="nav-main-heading">Learning</li>
         <li class="nav-main-item">
-            <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
-                <i class="nav-main-link-icon si si-calendar"></i>
+            <a class="nav-main-link nav-main-link-submenu {{ request()->routeIs('admin.courses.*') || request()->routeIs('admin.modules.*') || request()->routeIs('admin.lessons.*') || request()->routeIs('admin.quizzes.*') ? 'active' : '' }}" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
+                <i class="nav-main-link-icon si si-graduation"></i>
                 <span class="nav-main-link-name">Courses</span>
             </a>
             <ul class="nav-main-submenu">
                 <li class="nav-main-item">
-                    <a class="nav-main-link" href="{{ route('admin.courses.index') }}">
+                    <a class="nav-main-link {{ request()->routeIs('admin.courses.index') ? 'active' : '' }}" href="{{ route('admin.courses.index') }}">
                         <span class="nav-main-link-name">All Courses</span>
                     </a>
                 </li>
                 <li class="nav-main-item">
-                    <a class="nav-main-link" href="{{ route('admin.modules.all') }}">
+                    <a class="nav-main-link {{ request()->routeIs('admin.modules.all') ? 'active' : '' }}" href="{{ route('admin.modules.all') }}">
                         <span class="nav-main-link-name">All Modules</span>
                     </a>
                 </li>
                 <li class="nav-main-item">
-                    <a class="nav-main-link" href="{{ route('admin.lessons.all') }}">
+                    <a class="nav-main-link {{ request()->routeIs('admin.lessons.all') ? 'active' : '' }}" href="{{ route('admin.lessons.all') }}">
                         <span class="nav-main-link-name">All Lessons</span>
                     </a>
                 </li>
                 <li class="nav-main-item">
-                    <a class="nav-main-link" href="{{ route('admin.quizzes.all') }}">
+                    <a class="nav-main-link {{ request()->routeIs('admin.quizzes.all') ? 'active' : '' }}" href="{{ route('admin.quizzes.all') }}">
                         <span class="nav-main-link-name">All Quiz</span>
                     </a>
                 </li>
@@ -178,26 +176,31 @@
             </ul>
         </li>
         
-        {{-- In your admin layout file --}}
+        <li class="nav-main-heading">Engagement</li>
         <li class="nav-main-item">
-            <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
+            <a class="nav-main-link nav-main-link-submenu {{ request()->routeIs('admin.events.*') || request()->routeIs('admin.podcasts.*') ? 'active' : '' }}" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
                 <i class="nav-main-link-icon si si-calendar"></i>
                 <span class="nav-main-link-name">Events</span>
             </a>
             <ul class="nav-main-submenu">
                 <li class="nav-main-item">
-                    <a class="nav-main-link" href="{{ route('admin.events.index') }}">
+                    <a class="nav-main-link {{ request()->routeIs('admin.events.index') ? 'active' : '' }}" href="{{ route('admin.events.index') }}">
                         <span class="nav-main-link-name">All Events</span>
                     </a>
                 </li>
                 <li class="nav-main-item">
-                    <a class="nav-main-link" href="{{ route('admin.events.create') }}">
+                    <a class="nav-main-link {{ request()->routeIs('admin.events.create') ? 'active' : '' }}" href="{{ route('admin.events.create') }}">
                         <span class="nav-main-link-name">Create Event</span>
                     </a>
                 </li>
                 <li class="nav-main-item">
-                    <a class="nav-main-link" href="{{ route('admin.events.calendar') }}">
+                    <a class="nav-main-link {{ request()->routeIs('admin.events.calendar') ? 'active' : '' }}" href="{{ route('admin.events.calendar') }}">
                         <span class="nav-main-link-name">Calendar View</span>
+                    </a>
+                </li>
+                <li class="nav-main-item">
+                    <a class="nav-main-link {{ request()->routeIs('admin.podcasts.index') ? 'active' : '' }}" href="{{ route('admin.podcasts.index') }}">
+                        <span class="nav-main-link-name">Podcasts</span>
                     </a>
                 </li>
                
@@ -205,36 +208,53 @@
         </li>
         
         <li class="nav-main-item">
-            <a class="nav-main-link" href="{{ route('admin.memberships.pending') }}">
+            <a class="nav-main-link nav-main-link-submenu {{ request()->routeIs('admin.membership-plans.*') || request()->routeIs('admin.memberships.*') ? 'active' : '' }}" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
                 <i class="nav-main-link-icon si si-badge"></i>
-                <span class="nav-main-link-name">Membership Approvals</span>
+                <span class="nav-main-link-name">Memberships</span>
             </a>
+            <ul class="nav-main-submenu">
+                <li class="nav-main-item">
+                    <a class="nav-main-link {{ request()->routeIs('admin.membership-plans.index') ? 'active' : '' }}" href="{{ route('admin.membership-plans.index') }}">
+                        <span class="nav-main-link-name">Membership Plans</span>
+                    </a>
+                </li>
+                <li class="nav-main-item">
+                    <a class="nav-main-link {{ request()->routeIs('admin.memberships.pending') ? 'active' : '' }}" href="{{ route('admin.memberships.pending') }}">
+                        <span class="nav-main-link-name">Membership Approvals</span>
+                    </a>
+                </li>
+            </ul>
         </li>
 
-
-
         <li class="nav-main-item">
-            <a class="nav-main-link" href="{{ route('admin.transactions.index') }}">
+            <a class="nav-main-link {{ request()->routeIs('admin.transactions.*') ? 'active' : '' }}" href="{{ route('admin.transactions.index') }}">
                 <i class="nav-main-link-icon si si-wallet"></i>
                 <span class="nav-main-link-name">Transactions</span>
             </a>
         </li>
 
         <li class="nav-main-item">
-            <a class="nav-main-link" href="{{ route('admin.forums.index') }}">
+            <a class="nav-main-link {{ request()->routeIs('admin.forums.*') ? 'active' : '' }}" href="{{ route('admin.forums.index') }}">
                 <i class="nav-main-link-icon si si-bubbles"></i>
                 <span class="nav-main-link-name">Forums</span>
             </a>
         </li>
       
-       
-        <li class="nav-main-heading">Log out</li>
-        
+        <li class="nav-main-heading">Account</li>
         <li class="nav-main-item">
-        <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
-            <i class="nav-main-link-icon si si-cup"></i>
-            <span class="nav-main-link-name">Get Started</span>
-        </a>
+            <a class="nav-main-link {{ request()->routeIs('admin.account.password') ? 'active' : '' }}" href="{{ route('admin.account.password') }}">
+                <i class="nav-main-link-icon si si-lock"></i>
+                <span class="nav-main-link-name">Change Password</span>
+            </a>
+        </li>
+        <li class="nav-main-item">
+            <form method="POST" action="{{ route('admin.logout') }}">
+                @csrf
+                <button type="submit" class="nav-main-link border-0 bg-transparent w-100 text-start">
+                    <i class="nav-main-link-icon si si-logout"></i>
+                    <span class="nav-main-link-name">Log Out</span>
+                </button>
+            </form>
         </li>
     </ul>
     </div>

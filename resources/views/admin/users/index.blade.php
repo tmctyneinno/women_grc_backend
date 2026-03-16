@@ -13,7 +13,7 @@
                 <h2 class="fs-base lh-base fw-medium text-muted mb-0">
                     Manage all registered users.
                 </h2>
-                <p class="fs-sm text-bold my-0"><b>{{ $users->count() }}</b> users registered</p>
+                <p class="fs-sm text-bold my-0"><b>{{ $stats['total'] ?? $users->count() }}</b> users registered</p>
 
             </div>
             <nav class="flex-shrink-0 mt-3 mt-sm-0 ms-sm-3" aria-label="breadcrumb">
@@ -52,19 +52,91 @@
         </div>
     @endif
 
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="block block-rounded h-100">
+                <div class="block-content p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fs-xs text-uppercase text-muted">Total Users</div>
+                            <div class="fs-3 fw-semibold">{{ $stats['total'] ?? 0 }}</div>
+                        </div>
+                        <div class="rounded-3 bg-body-light p-2">
+                            <i class="fa fa-users text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="block block-rounded h-100">
+                <div class="block-content p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fs-xs text-uppercase text-muted">Verified</div>
+                            <div class="fs-3 fw-semibold text-success">{{ $stats['verified'] ?? 0 }}</div>
+                        </div>
+                        <div class="rounded-3 bg-success-light p-2">
+                            <i class="fa fa-check text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="block block-rounded h-100">
+                <div class="block-content p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fs-xs text-uppercase text-muted">Pending</div>
+                            <div class="fs-3 fw-semibold text-warning">{{ $stats['pending'] ?? 0 }}</div>
+                        </div>
+                        <div class="rounded-3 bg-warning-light p-2">
+                            <i class="fa fa-hourglass-half text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="block block-rounded h-100">
+                <div class="block-content p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fs-xs text-uppercase text-muted">Blocked</div>
+                            <div class="fs-3 fw-semibold text-danger">{{ $stats['blocked'] ?? 0 }}</div>
+                        </div>
+                        <div class="rounded-3 bg-danger-light p-2">
+                            <i class="fa fa-ban text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="block block-rounded">
         <div class="block-header block-header-default">
             <h3 class="block-title">All Users</h3>
 
             <div class="block-options">
-                <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-alt-secondary">All</a>
-                <a href="{{ route('admin.users.pend') }}" class="btn btn-sm btn-alt-warning">Pending</a>
-                <a href="{{ route('admin.users.blocked') }}" class="btn btn-sm btn-alt-danger">Blocked</a>
+                <a href="{{ route('admin.users.index') }}" class="btn btn-sm {{ request()->routeIs('admin.users.index') ? 'btn-primary' : 'btn-alt-secondary' }}">
+                    All
+                    <span class="badge bg-white text-dark ms-1">{{ $stats['total'] ?? 0 }}</span>
+                </a>
+                <a href="{{ route('admin.users.pend') }}" class="btn btn-sm {{ request()->routeIs('admin.users.pend') ? 'btn-warning' : 'btn-alt-warning' }}">
+                    Pending
+                    <span class="badge bg-white text-dark ms-1">{{ $stats['pending'] ?? 0 }}</span>
+                </a>
+                <a href="{{ route('admin.users.blocked') }}" class="btn btn-sm {{ request()->routeIs('admin.users.blocked') ? 'btn-danger' : 'btn-alt-danger' }}">
+                    Blocked
+                    <span class="badge bg-white text-dark ms-1">{{ $stats['blocked'] ?? 0 }}</span>
+                </a>
             </div>
         </div>
 
         <div class="block-content table-responsive">
-            <table class="table table-hover table-vcenter">
+            <table class="table table-hover table-striped table-vcenter">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -102,19 +174,20 @@
                             </div>
                         </td>
 
-                        <td>{{ $user->email ?? 'N/A' }}</td>
+                        <td><span class="fw-semibold">{{ $user->email ?? 'N/A' }}</span></td>
 
                         <td>
                             <span class="badge 
-                                {{ $user->status === 'active' ? 'bg-success' : 
-                                   ($user->status === 'pending' ? 'bg-warning' : 'bg-danger') }}">
+                                {{ $user->status === 'verified' ? 'bg-success' : 
+                                   ($user->status === 'pending' ? 'bg-warning' : 
+                                   ($user->status === 'blocked' ? 'bg-danger' : 'bg-secondary')) }}">
                                 {{ ucfirst($user->status ?? 'unknown') }}
                             </span>
                         </td>
                         <td>
                             @if($user->linkedin_profile)
                                 <a href="{{ $user->linkedin_profile}}" target="_blank" class="text-muted">
-                                    <i class="fa fa-linkedin"></i> View Profile
+                                    <i class="fa fa-link"></i> View Profile
                                 </a>
                             @else
                                 <span class="text-muted">N/A</span>

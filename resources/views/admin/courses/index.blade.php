@@ -4,6 +4,68 @@
 
 @section('content')
 <div class="content">
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="block block-rounded h-100">
+                <div class="block-content p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fs-xs text-uppercase text-muted">Total Courses</div>
+                            <div class="fs-3 fw-semibold">{{ $stats['total'] ?? 0 }}</div>
+                        </div>
+                        <div class="rounded-3 bg-body-light p-2">
+                            <i class="fa fa-layer-group text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="block block-rounded h-100">
+                <div class="block-content p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fs-xs text-uppercase text-muted">Published</div>
+                            <div class="fs-3 fw-semibold text-success">{{ $stats['published'] ?? 0 }}</div>
+                        </div>
+                        <div class="rounded-3 bg-success-light p-2">
+                            <i class="fa fa-check text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="block block-rounded h-100">
+                <div class="block-content p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fs-xs text-uppercase text-muted">Draft</div>
+                            <div class="fs-3 fw-semibold text-warning">{{ $stats['draft'] ?? 0 }}</div>
+                        </div>
+                        <div class="rounded-3 bg-warning-light p-2">
+                            <i class="fa fa-pen text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="block block-rounded h-100">
+                <div class="block-content p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fs-xs text-uppercase text-muted">Paid Courses</div>
+                            <div class="fs-3 fw-semibold text-primary">{{ $stats['paid'] ?? 0 }}</div>
+                        </div>
+                        <div class="rounded-3 bg-primary-light p-2">
+                            <i class="fa fa-credit-card text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="block block-rounded">
         <div class="block-header">
             <h3 class="block-title">Courses</h3>
@@ -31,8 +93,12 @@
                 @forelse($courses as $course)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $course->title }}</td>
-                        <td>{{ $course->category ?? '-' }}</td>
+                        <td class="fw-semibold">{{ $course->title }}</td>
+                        <td>
+                            <span class="badge bg-body-light text-dark">
+                                {{ $course->category ?? 'General' }}
+                            </span>
+                        </td>
                         <td>{{ $course->modules_count }}</td>
                         <td>{{ $course->enrollments_count }}</td>
                         <td>

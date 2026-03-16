@@ -21,12 +21,22 @@ use Illuminate\Support\Str;
 
 class LearningController extends Controller
 {
-    public function courses()
+    public function courses(Request $request)
     {
+        $q = trim((string) $request->query('q', ''));
+
         $courses = Course::query()
             ->withCount(['modules', 'enrollments'])
             ->where('status', 'published')
             ->where('is_active', true)
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($nested) use ($q) {
+                    $nested->where('title', 'like', "%{$q}%")
+                        ->orWhere('description', 'like', "%{$q}%")
+                        ->orWhere('category', 'like', "%{$q}%")
+                        ->orWhere('tags', 'like', "%{$q}%");
+                });
+            })
             ->orderBy('created_at', 'desc')
             ->paginate(12);
 
@@ -205,7 +215,7 @@ class LearningController extends Controller
         return ApiResponse::success($purchase, 'Payment confirmed successfully.');
     }
 
-    public function myCourses()
+    public function myCourses(Request $request)
     {
         $user = Auth::guard('sanctum')->user();
         $verificationError = $this->ensureVerifiedMember($user);
@@ -213,9 +223,20 @@ class LearningController extends Controller
             return $verificationError;
         }
 
+        $q = trim((string) $request->query('q', ''));
+
         $enrollments = CourseEnrollment::query()
             ->with(['course', 'lastModule'])
             ->where('user_id', $user->id)
+            ->when($q !== '', function ($query) use ($q) {
+                $query->whereHas('course', function ($courseQuery) use ($q) {
+                    $courseQuery->where(function ($nested) use ($q) {
+                        $nested->where('title', 'like', "%{$q}%")
+                            ->orWhere('category', 'like', "%{$q}%")
+                            ->orWhere('description', 'like', "%{$q}%");
+                    });
+                });
+            })
             ->latest()
             ->paginate(12);
 
