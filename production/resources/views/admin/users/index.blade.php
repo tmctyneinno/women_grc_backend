@@ -59,7 +59,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="fs-xs text-uppercase text-muted">Total Users</div>
-                            <div class="fs-4 fw-semibold">{{ $stats['total'] ?? 0 }}</div>
+                            <div class="fs-3 fw-semibold">{{ $stats['total'] ?? 0 }}</div>
                         </div>
                         <div class="rounded-3 bg-body-light p-2">
                             <i class="fa fa-users text-muted"></i>
@@ -74,7 +74,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="fs-xs text-uppercase text-muted">Verified</div>
-                            <div class="fs-4 fw-semibold text-success">{{ $stats['verified'] ?? 0 }}</div>
+                            <div class="fs-3 fw-semibold text-success">{{ $stats['verified'] ?? 0 }}</div>
                         </div>
                         <div class="rounded-3 bg-success-light p-2">
                             <i class="fa fa-check text-success"></i>
@@ -89,7 +89,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="fs-xs text-uppercase text-muted">Pending</div>
-                            <div class="fs-4 fw-semibold text-warning">{{ $stats['pending'] ?? 0 }}</div>
+                            <div class="fs-3 fw-semibold text-warning">{{ $stats['pending'] ?? 0 }}</div>
                         </div>
                         <div class="rounded-3 bg-warning-light p-2">
                             <i class="fa fa-hourglass-half text-warning"></i>
@@ -104,7 +104,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="fs-xs text-uppercase text-muted">Blocked</div>
-                            <div class="fs-4 fw-semibold text-danger">{{ $stats['blocked'] ?? 0 }}</div>
+                            <div class="fs-3 fw-semibold text-danger">{{ $stats['blocked'] ?? 0 }}</div>
                         </div>
                         <div class="rounded-3 bg-danger-light p-2">
                             <i class="fa fa-ban text-danger"></i>
@@ -135,8 +135,8 @@
             </div>
         </div>
 
-        <div class="block-content table-responsive-md">
-            <table class="table table-hover table-striped table-vcenter table-sm">
+        <div class="block-content table-responsive">
+            <table class="table table-hover table-striped table-vcenter">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -144,9 +144,9 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Status</th>
-                        <th class="d-none d-lg-table-cell">LinkedIn</th>
-                        <th class="d-none d-md-table-cell">Verified</th>
-                        <th class="d-none d-lg-table-cell">Joined</th>
+                        <th>LinkedIn</th>
+                        <th>Verified</th>
+                        <th>Joined</th>
                         <th class="text-center">Actions</th>
                     </tr>
                 </thead>
@@ -174,9 +174,7 @@
                             </div>
                         </td>
 
-                        <td class="text-truncate" style="max-width: 220px;">
-                            <span class="fw-semibold">{{ $user->email ?? 'N/A' }}</span>
-                        </td>
+                        <td><span class="fw-semibold">{{ $user->email ?? 'N/A' }}</span></td>
 
                         <td>
                             <span class="badge 
@@ -186,7 +184,7 @@
                                 {{ ucfirst($user->status ?? 'unknown') }}
                             </span>
                         </td>
-                        <td class="d-none d-lg-table-cell">
+                        <td>
                             @if($user->linkedin_profile)
                                 <a href="{{ $user->linkedin_profile}}" target="_blank" class="text-muted">
                                     <i class="fa fa-link"></i> View Profile
@@ -196,13 +194,13 @@
                             @endif
                         </td>
 
-                        <td class="d-none d-md-table-cell">
+                        <td>
                             <span class="badge {{ $user->email_verified_at ? 'bg-success' : 'bg-secondary' }}">
                                 {{ $user->email_verified_at ? 'Yes' : 'No' }}
                             </span>
                         </td>
 
-                        <td class="fs-sm text-muted d-none d-lg-table-cell">
+                        <td class="fs-sm text-muted">
                             {{ optional($user->created_at)->format('M d, Y') ?? '—' }}
                         </td>
 
@@ -256,4 +254,3 @@
     </div>
 </div>
 @endsection
-
