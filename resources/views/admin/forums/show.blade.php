@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="content">
+    @php($admin = auth('admin')->user())
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 mb-0">Forum Details</h1>
         <a href="{{ route('admin.forums.index') }}" class="btn btn-alt-secondary">Back to Forums</a>
@@ -33,7 +34,13 @@
                 <div class="block-content">
                     <h4 class="fs-5 mb-3">Creator Details</h4>
                     <p class="mb-2"><strong>Name:</strong> {{ $forum->creator?->first_name }} {{ $forum->creator?->last_name }}</p>
-                    <p class="mb-2"><strong>Email:</strong> {{ $forum->creator?->email }}</p>
+                    <p class="mb-2"><strong>Email:</strong> {{ $forum->creator?->email }}
+                        @if($admin && $admin->isSuperAdmin() && $forum->creator)
+                            <a href="{{ route('admin.users.profile', $forum->creator) }}" class="ms-2 text-muted" title="View User Profile">
+                                <i class="fa fa-user"></i>
+                            </a>
+                        @endif
+                    </p>
                     <p class="mb-2"><strong>Status:</strong> {{ ucfirst($forum->creator?->status ?? 'unknown') }}</p>
                     <p class="mb-0"><strong>Created At:</strong> {{ optional($forum->creator?->created_at)->format('Y-m-d H:i:s') }}</p>
                 </div>
@@ -87,7 +94,14 @@
                             @forelse($forum->memberships as $membership)
                                 <tr>
                                     <td>{{ $membership->user?->first_name }} {{ $membership->user?->last_name }}</td>
-                                    <td>{{ $membership->user?->email }}</td>
+                                    <td>
+                                        {{ $membership->user?->email }}
+                                        @if($admin && $admin->isSuperAdmin() && $membership->user)
+                                            <a href="{{ route('admin.users.profile', $membership->user) }}" class="ms-2 text-muted" title="View User Profile">
+                                                <i class="fa fa-user"></i>
+                                            </a>
+                                        @endif
+                                    </td>
                                     <td><span class="badge bg-primary">{{ ucfirst($membership->role) }}</span></td>
                                 </tr>
                             @empty
@@ -135,4 +149,3 @@
     </div>
 </div>
 @endsection
-

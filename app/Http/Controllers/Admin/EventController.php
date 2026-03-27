@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\EventBooking;
+use App\Services\AdminActivityService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -146,7 +149,10 @@ class EventController extends Controller
                     ->withInput();
             }
 
-            Event::create($data);
+            $event = Event::create($data);
+            AdminActivityService::log(auth('admin')->user(), 'event_create', $event, [
+                'title' => $event->title,
+            ], 'Created event');
 
             return redirect()->route('admin.events.index')
                 ->with('success', 'Event created successfully.');
@@ -166,6 +172,7 @@ class EventController extends Controller
     public function edit($id)
     {
         $event = Event::findOrFail($id);
+        $this->ensureEventOwner($event);
         return view('admin.events.edit', compact('event'));
     }
 
@@ -176,6 +183,7 @@ class EventController extends Controller
     {
         // Check if it's the correct event
         $event = Event::findOrFail($id);
+        $this->ensureEventOwner($event);
         
 
         // Validate the request data
@@ -258,6 +266,7 @@ class EventController extends Controller
         // Save the event
         try {
             $event->save();
+            AdminActivityService::log(auth('admin')->user(), 'event_update', $event, [], 'Updated event');
             
             \Log::info('=== EVENT SAVED SUCCESSFULLY ===');
             \Log::info('Updated event data:', [
@@ -304,6 +313,7 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
+        $this->ensureEventOwner($event);
         // Delete featured image if exists
         if ($event->featured_image) {
             Storage::disk('public')->delete($event->featured_image);
@@ -317,6 +327,7 @@ class EventController extends Controller
         }
 
         $event->delete();
+        AdminActivityService::log(auth('admin')->user(), 'event_delete', $event, [], 'Deleted event');
 
         return redirect()->route('admin.events.index')
             ->with('success', 'Event deleted successfully.');
@@ -329,6 +340,7 @@ class EventController extends Controller
     {
         try {
             $event = Event::findOrFail($id);
+            $this->ensureEventOwner($event);
 
             $validated = $request->validate([
                 'status' => 'required|in:draft,published,cancelled,completed'
@@ -338,6 +350,9 @@ class EventController extends Controller
                 'status' => $validated['status'],
                 'updated_by' => auth()->guard('admin')->id()
             ]);
+            AdminActivityService::log(auth('admin')->user(), 'event_status_update', $event, [
+                'status' => $validated['status'],
+            ], 'Updated event status');
 
             return redirect()->back()
                 ->with('success', 'Event status updated successfully.');
@@ -354,6 +369,7 @@ class EventController extends Controller
     {
         try {
             $event = Event::findOrFail($id);
+            $this->ensureEventOwner($event);
 
             $validated = $request->validate([
                 'image_index' => 'required|integer|min:0'
@@ -475,11 +491,99 @@ class EventController extends Controller
 
     public function bookings(Event $event)
     {
+        $this->ensureEventOwner($event);
         $bookings = $event->bookings()
             ->with('user')
             ->latest()
             ->paginate(20);
 
         return view('admin.events.bookings', compact('event', 'bookings'));
+    }
+
+    public function emailBookingsForm(Event $event)
+    {
+        $this->ensureEventOwner($event);
+        $bookingsCount = $event->bookings()->count();
+        return view('admin.events.email-bookers', compact('event', 'bookingsCount'));
+    }
+
+    public function emailBookings(Request $request, Event $event)
+    {
+        $this->ensureEventOwner($event);
+        $validated = $request->validate([
+            'subject' => 'required|string|max:150',
+            'message' => 'required|string|max:2000',
+            'button_url' => 'nullable|url|max:2000',
+            'button_text' => 'nullable|string|max:60',
+        ]);
+
+        $bookings = $event->bookings()->with('user')->get();
+
+        $emails = $bookings
+            ->map(fn ($booking) => $booking->user?->email)
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($emails->isEmpty()) {
+            return redirect()
+                ->route('admin.events.bookings', $event)
+                ->with('error', 'No booking emails found for this event.');
+        }
+
+        $buttonUrl = $validated['button_url'] ?? null;
+        $buttonText = $validated['button_text'] ?? 'View details';
+
+        foreach ($emails as $email) {
+            Mail::send('emails.admin.event-booking-message', [
+                'event' => $event,
+                'messageText' => $validated['message'],
+                'buttonUrl' => $buttonUrl,
+                'buttonText' => $buttonText,
+            ], function ($mail) use ($email, $validated) {
+                $mail->to($email)
+                    ->subject($validated['subject']);
+            });
+        }
+        AdminActivityService::log(auth('admin')->user(), 'event_email_bookers', $event, [
+            'recipients' => $emails->count(),
+            'subject' => $validated['subject'],
+        ], 'Sent email to event bookers');
+
+        return redirect()
+            ->route('admin.events.bookings', $event)
+            ->with('success', 'Email sent to event bookers.');
+    }
+
+    public function deleteBooking(Event $event, EventBooking $booking)
+    {
+        $this->ensureEventOwner($event);
+        if ($booking->event_id !== $event->id) {
+            return redirect()
+                ->route('admin.events.bookings', $event)
+                ->with('error', 'That booking does not belong to this event.');
+        }
+
+        $booking->delete();
+        AdminActivityService::log(auth('admin')->user(), 'event_booking_delete', $event, [
+            'booking_id' => $booking->id,
+            'user_id' => $booking->user_id,
+        ], 'Deleted event booking');
+
+        return redirect()
+            ->route('admin.events.bookings', $event)
+            ->with('success', 'Booking removed successfully.');
+    }
+
+    private function ensureEventOwner(Event $event): void
+    {
+        $admin = auth()->guard('admin')->user();
+        if (!$admin || $admin->isSuperAdmin()) {
+            return;
+        }
+
+        if ((int) $event->created_by !== (int) $admin->id) {
+            abort(403);
+        }
     }
 }

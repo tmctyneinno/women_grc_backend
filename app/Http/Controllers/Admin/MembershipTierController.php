@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Membership;
 use App\Models\MembershipTier;
+use App\Services\AdminActivityService;
 use Illuminate\Http\Request;
 
 class MembershipTierController extends Controller
@@ -31,7 +32,11 @@ class MembershipTierController extends Controller
         ]);
 
         $validated['benefits'] = $this->parseBenefits($validated['benefits'] ?? '');
-        $membership->tiers()->create($validated);
+        $validated['created_by'] = auth()->guard('admin')->id();
+        $tier = $membership->tiers()->create($validated);
+        AdminActivityService::log(auth('admin')->user(), 'membership_tier_create', $tier, [
+            'membership_id' => $membership->id,
+        ], 'Created membership tier');
 
         return redirect()->route('admin.membership-plans.tiers.index', $membership)
             ->with('success', 'Membership tier created successfully.');
@@ -57,6 +62,7 @@ class MembershipTierController extends Controller
 
         $validated['benefits'] = $this->parseBenefits($validated['benefits'] ?? '');
         $tier->update($validated);
+        AdminActivityService::log(auth('admin')->user(), 'membership_tier_update', $tier, [], 'Updated membership tier');
 
         return redirect()->route('admin.membership-plans.tiers.index', $membership)
             ->with('success', 'Membership tier updated successfully.');
@@ -66,6 +72,7 @@ class MembershipTierController extends Controller
     {
         $this->ensureTierBelongsToMembership($membership, $tier);
         $tier->delete();
+        AdminActivityService::log(auth('admin')->user(), 'membership_tier_delete', $tier, [], 'Deleted membership tier');
 
         return back()->with('success', 'Membership tier deleted.');
     }

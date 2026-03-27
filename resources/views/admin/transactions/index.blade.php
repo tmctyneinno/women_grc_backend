@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="content">
+    @php($admin = auth('admin')->user())
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 mb-0">Transactions</h1>
     </div>
@@ -41,7 +42,16 @@
                         @forelse($transactions as $tx)
                             <tr>
                                 <td>{{ $tx->reference }}</td>
-                                <td>{{ $tx->user?->first_name }} {{ $tx->user?->last_name }}<br><span class="text-muted fs-sm">{{ $tx->user?->email }}</span></td>
+                                <td>
+                                    {{ $tx->user?->first_name }} {{ $tx->user?->last_name }}
+                                    @if($admin && $admin->isSuperAdmin() && $tx->user)
+                                        <a href="{{ route('admin.users.profile', $tx->user) }}" class="ms-1 text-muted" title="View User Profile">
+                                            <i class="fa fa-user"></i>
+                                        </a>
+                                    @endif
+                                    <br>
+                                    <span class="text-muted fs-sm">{{ $tx->user?->email }}</span>
+                                </td>
                                 <td>
                                     <span class="badge {{ $tx->status === 'paid' ? 'bg-success' : ($tx->status === 'failed' ? 'bg-danger' : 'bg-warning') }}">
                                         {{ strtoupper($tx->status) }}
@@ -68,4 +78,3 @@
     </div>
 </div>
 @endsection
-

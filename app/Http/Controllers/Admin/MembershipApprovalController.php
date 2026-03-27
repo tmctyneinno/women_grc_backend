@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\UserMembership;
+use App\Services\AdminActivityService;
 use Illuminate\Http\Request;
 
 class MembershipApprovalController extends Controller
@@ -29,6 +30,9 @@ class MembershipApprovalController extends Controller
         $userMembership->approved_at = now();
         $userMembership->approved_by_admin_id = $request->user()->id ?? null;
         $userMembership->save();
+        AdminActivityService::log(auth('admin')->user(), 'membership_approve', $userMembership, [
+            'user_id' => $userMembership->user_id,
+        ], 'Approved membership');
 
         return redirect()->back()->with('success', 'Membership approved successfully.');
     }

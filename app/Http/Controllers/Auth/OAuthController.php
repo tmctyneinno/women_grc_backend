@@ -43,6 +43,13 @@ class OAuthController extends Controller
                     'is_google_account' => true,
                     'email_verified_at' => now(),
                     'linkedin_profile' => '',
+                    'last_login_at' => now(),
+                    'last_login_ip' => request()->ip(),
+                ]);
+            } else {
+                $user->update([
+                    'last_login_at' => now(),
+                    'last_login_ip' => request()->ip(),
                 ]);
             }
 

@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\LearningController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ForumController;
 use App\Http\Controllers\Api\PodcastController;
+use App\Http\Controllers\Api\ArticleController;
 
 
 
@@ -38,6 +39,15 @@ Route::middleware('api')->prefix('v1')->group(function () {
     Route::prefix('podcasts')->group(function () {
         Route::get('/', [PodcastController::class, 'index']);
         Route::get('/{podcast}', [PodcastController::class, 'show']);
+    });
+
+    Route::prefix('articles')->group(function () {
+        Route::get('/', [ArticleController::class, 'index']);
+        Route::get('/{article}', [ArticleController::class, 'show']);
+    });
+
+    Route::middleware('auth:sanctum')->prefix('articles')->group(function () {
+        Route::post('/', [ArticleController::class, 'store']);
     });
 
     Route::middleware('auth:sanctum')->prefix('podcasts')->group(function () {

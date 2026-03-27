@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="content">
+    @php($admin = auth('admin')->user())
     <div class="block block-rounded">
         <div class="block-header block-header-default">
             <h3 class="block-title">Pending Membership Approvals</h3>
@@ -31,7 +32,14 @@
                             @foreach ($pendingMemberships as $membership)
                                 <tr>
                                     <td>{{ $membership->user?->first_name }} {{ $membership->user?->last_name }}</td>
-                                    <td>{{ $membership->user?->email }}</td>
+                                    <td>
+                                        {{ $membership->user?->email }}
+                                        @if($admin && $admin->isSuperAdmin() && $membership->user)
+                                            <a href="{{ route('admin.users.profile', $membership->user) }}" class="ms-2 text-muted" title="View User Profile">
+                                                <i class="fa fa-user"></i>
+                                            </a>
+                                        @endif
+                                    </td>
                                     <td>
                                         @if ($membership->user?->linkedin_profile)
                                             <a href="{{ $membership->user->linkedin_profile }}" target="_blank" rel="noopener">View</a>

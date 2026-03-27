@@ -85,6 +85,8 @@ class RegisterController extends Controller
                 'linkedin_profile' => $request->linkedin_profile ?? "",
                 'password'   => Hash::make($request->password),
                 'is_google_account' => $request->boolean('is_google_account') ?? false,
+                'last_login_at' => now(),
+                'last_login_ip' => $request->ip(),
             ]);
 
             // auto login

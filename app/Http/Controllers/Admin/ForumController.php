@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Forum;
+use App\Services\AdminActivityService;
 use Illuminate\Http\Request;
 
 class ForumController extends Controller
@@ -58,6 +59,7 @@ class ForumController extends Controller
             'status' => 'archived',
             'archived_at' => now(),
         ]);
+        AdminActivityService::log(auth('admin')->user(), 'forum_deactivate', $forum, [], 'Deactivated forum');
 
         return back()->with('success', 'Forum has been deactivated (archived).');
     }
@@ -69,6 +71,7 @@ class ForumController extends Controller
             'archived_at' => null,
             'closed_at' => null,
         ]);
+        AdminActivityService::log(auth('admin')->user(), 'forum_activate', $forum, [], 'Activated forum');
 
         return back()->with('success', 'Forum has been activated.');
     }
@@ -76,8 +79,8 @@ class ForumController extends Controller
     public function destroy(Forum $forum)
     {
         $forum->delete();
+        AdminActivityService::log(auth('admin')->user(), 'forum_delete', $forum, [], 'Deleted forum');
 
         return redirect()->route('admin.forums.index')->with('success', 'Forum deleted successfully.');
     }
 }
-

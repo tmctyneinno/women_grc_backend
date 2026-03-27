@@ -27,7 +27,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
  
     // Authenticated Routes
-    Route::middleware('auth:admin')->group(function () {
+    Route::middleware('admin.auth')->group(function () {
         Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         

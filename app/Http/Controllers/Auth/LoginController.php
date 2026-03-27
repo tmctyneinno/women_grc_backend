@@ -95,6 +95,8 @@ class LoginController extends Controller
         $user->update([
             'failed_login_attempts' => 0,
             'locked_until' => null,
+            'last_login_at' => now(),
+            'last_login_ip' => $request->ip(),
         ]);
 
 

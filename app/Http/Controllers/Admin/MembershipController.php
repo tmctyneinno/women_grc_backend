@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Membership;
+use App\Services\AdminActivityService;
 use Illuminate\Http\Request;
 
 class MembershipController extends Controller
@@ -26,7 +27,10 @@ class MembershipController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        Membership::create($validated);
+        $membership = Membership::create($validated);
+        AdminActivityService::log(auth('admin')->user(), 'membership_create', $membership, [
+            'name' => $membership->name,
+        ], 'Created membership plan');
 
         return redirect()->route('admin.membership-plans.index')
             ->with('success', 'Membership plan created successfully.');
@@ -46,6 +50,7 @@ class MembershipController extends Controller
         ]);
 
         $membership->update($validated);
+        AdminActivityService::log(auth('admin')->user(), 'membership_update', $membership, [], 'Updated membership plan');
 
         return redirect()->route('admin.membership-plans.index')
             ->with('success', 'Membership plan updated successfully.');
@@ -54,6 +59,7 @@ class MembershipController extends Controller
     public function destroy(Membership $membership)
     {
         $membership->delete();
+        AdminActivityService::log(auth('admin')->user(), 'membership_delete', $membership, [], 'Deleted membership plan');
         return back()->with('success', 'Membership plan deleted.');
     }
 }

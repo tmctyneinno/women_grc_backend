@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Admin;
 
 class MembershipTier extends Model
 {
@@ -15,7 +16,8 @@ class MembershipTier extends Model
         'annual_fee',
         'target_audience',
         'benefits', 
-        'invitation_only' 
+        'invitation_only',
+        'created_by',
     ];
 
     protected $casts = [
@@ -31,5 +33,10 @@ class MembershipTier extends Model
     public function userMemberships()
     {
         return $this->hasMany(UserMembership::class, 'membership_tier_id');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(Admin::class, 'created_by');
     }
 }

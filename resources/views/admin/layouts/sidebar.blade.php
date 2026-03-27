@@ -112,6 +112,7 @@
 <div class="js-sidebar-scroll">
     <!-- Side Navigation -->
     <div class="content-side">
+    @php($admin = auth('admin')->user())
     <ul class="nav-main">
         <li class="nav-main-item">
         <a class="nav-main-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
@@ -121,6 +122,7 @@
         </li>
         
         <li class="nav-main-heading">Core</li>
+        @if($admin && ($admin->isSuperAdmin() || $admin->hasPermission('users')))
         <li class="nav-main-item">
             <a class="nav-main-link nav-main-link-submenu {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
                 <i class="nav-main-link-icon si si-users"></i>
@@ -144,8 +146,24 @@
                 </li>
             </ul>
         </li>
+        @endif
+        @if($admin && $admin->isSuperAdmin())
+        <li class="nav-main-item">
+            <a class="nav-main-link {{ request()->routeIs('admin.admins.*') ? 'active' : '' }}" href="{{ route('admin.admins.index') }}">
+                <i class="nav-main-link-icon si si-user-follow"></i>
+                <span class="nav-main-link-name">Admins</span>
+            </a>
+        </li>
+        <li class="nav-main-item">
+            <a class="nav-main-link {{ request()->routeIs('admin.admins.activity') ? 'active' : '' }}" href="{{ route('admin.admins.activity') }}">
+                <i class="nav-main-link-icon si si-clock"></i>
+                <span class="nav-main-link-name">Admin Activity</span>
+            </a>
+        </li>
+        @endif
 
         <li class="nav-main-heading">Learning</li>
+        @if($admin && $admin->hasPermission('courses'))
         <li class="nav-main-item">
             <a class="nav-main-link nav-main-link-submenu {{ request()->routeIs('admin.courses.*') || request()->routeIs('admin.modules.*') || request()->routeIs('admin.lessons.*') || request()->routeIs('admin.quizzes.*') ? 'active' : '' }}" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
                 <i class="nav-main-link-icon si si-graduation"></i>
@@ -175,14 +193,17 @@
                
             </ul>
         </li>
+        @endif
         
         <li class="nav-main-heading">Engagement</li>
+        @if($admin && ($admin->hasPermission('events') || $admin->hasPermission('articles')))
         <li class="nav-main-item">
             <a class="nav-main-link nav-main-link-submenu {{ request()->routeIs('admin.events.*') || request()->routeIs('admin.podcasts.*') ? 'active' : '' }}" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
                 <i class="nav-main-link-icon si si-calendar"></i>
                 <span class="nav-main-link-name">Events</span>
             </a>
             <ul class="nav-main-submenu">
+                @if($admin->hasPermission('events'))
                 <li class="nav-main-item">
                     <a class="nav-main-link {{ request()->routeIs('admin.events.index') ? 'active' : '' }}" href="{{ route('admin.events.index') }}">
                         <span class="nav-main-link-name">All Events</span>
@@ -203,10 +224,20 @@
                         <span class="nav-main-link-name">Podcasts</span>
                     </a>
                 </li>
+                @endif
+                @if($admin && ($admin->isSuperAdmin() || $admin->hasPermission('articles')))
+                <li class="nav-main-item">
+                    <a class="nav-main-link {{ request()->routeIs('admin.articles.*') ? 'active' : '' }}" href="{{ route('admin.articles.index') }}">
+                        <span class="nav-main-link-name">Articles</span>
+                    </a>
+                </li>
+                @endif
                
             </ul>
         </li>
+        @endif
         
+        @if($admin && $admin->hasPermission('memberships'))
         <li class="nav-main-item">
             <a class="nav-main-link nav-main-link-submenu {{ request()->routeIs('admin.membership-plans.*') || request()->routeIs('admin.memberships.*') ? 'active' : '' }}" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
                 <i class="nav-main-link-icon si si-badge"></i>
@@ -225,20 +256,25 @@
                 </li>
             </ul>
         </li>
+        @endif
 
+        @if($admin && $admin->canViewTransactions())
         <li class="nav-main-item">
             <a class="nav-main-link {{ request()->routeIs('admin.transactions.*') ? 'active' : '' }}" href="{{ route('admin.transactions.index') }}">
                 <i class="nav-main-link-icon si si-wallet"></i>
                 <span class="nav-main-link-name">Transactions</span>
             </a>
         </li>
+        @endif
 
+        @if($admin && $admin->hasPermission('forums'))
         <li class="nav-main-item">
             <a class="nav-main-link {{ request()->routeIs('admin.forums.*') ? 'active' : '' }}" href="{{ route('admin.forums.index') }}">
                 <i class="nav-main-link-icon si si-bubbles"></i>
                 <span class="nav-main-link-name">Forums</span>
             </a>
         </li>
+        @endif
       
         <li class="nav-main-heading">Account</li>
         <li class="nav-main-item">

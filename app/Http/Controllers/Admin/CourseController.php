@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\CoursePurchase;
 use App\Models\LearningPoint;
 use App\Models\QuizAttempt;
+use App\Services\AdminActivityService;
 
 class CourseController extends Controller
 {
@@ -93,8 +94,12 @@ class CourseController extends Controller
         $validated['is_paid'] = $request->boolean('is_paid');
         $validated['currency'] = strtoupper($request->input('currency', 'GBP'));
         $validated['price'] = $validated['is_paid'] ? (float) ($validated['price'] ?? 0) : 0;
+        $validated['created_by'] = auth()->guard('admin')->id();
 
-        Course::create($validated);
+        $course = Course::create($validated);
+        AdminActivityService::log(auth('admin')->user(), 'course_create', $course, [
+            'title' => $course->title,
+        ], 'Created course');
 
         return redirect()->route('admin.courses.index')
             ->with('success', 'Course created successfully');
@@ -134,12 +139,14 @@ class CourseController extends Controller
         $validated['price'] = $validated['is_paid'] ? (float) ($validated['price'] ?? 0) : 0;
 
         $course->update($validated);
+        AdminActivityService::log(auth('admin')->user(), 'course_update', $course, [], 'Updated course');
 
         return redirect()->route("admin.courses.index")->with('success', 'Course updated');
     }
 
     public function destroy(Course $course) {
         $course->delete();
+        AdminActivityService::log(auth('admin')->user(), 'course_delete', $course, [], 'Deleted course');
         return back()->with('success', 'Course deleted');
     }
 }

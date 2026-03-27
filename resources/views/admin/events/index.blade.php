@@ -33,6 +33,8 @@
 
 <!-- Page Content -->
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canSeeActions = $admin && ($admin->isSuperAdmin() || $events->getCollection()->contains('created_by', $admin->id)))
     <!-- Success Message -->
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -63,7 +65,9 @@
                                 <th class="d-none d-sm-table-cell" style="width: 15%;">Status</th>
                                 <th class="d-none d-sm-table-cell" style="width: 15%;">Visibility</th>
                                 <th class="d-none d-sm-table-cell" style="width: 15%;">Date</th>
-                                <th class="text-center" style="width: 100px;">Actions</th>
+                                @if($canSeeActions)
+                                    <th class="text-center" style="width: 100px;">Actions</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -113,47 +117,54 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td class="text-center">
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.events.edit', $event->id) }}" 
-                                           class="btn btn-sm btn-alt-secondary" 
-                                           data-bs-toggle="tooltip" 
-                                           title="Edit Event">
-                                            <i class="fa fa-fw fa-pencil-alt"></i>
-                                        </a>
-                                        <!-- Add Speakers Button -->
-                                        <a href="{{ route('admin.events.speakers.index', $event->id) }}" 
-                                        class="btn btn-sm btn-alt-info" 
-                                        data-bs-toggle="tooltip" 
-                                        title="Manage Speakers">
-                                            <i class="fa fa-fw fa-users"></i>
-                                        </a>
+                                @if($canSeeActions)
+                                    <td class="text-center">
+                                        @php($canManage = $admin && ($admin->isSuperAdmin() || (int) $event->created_by === (int) $admin->id))
+                                        @if($canManage)
+                                            <div class="btn-group">
+                                                <a href="{{ route('admin.events.edit', $event->id) }}" 
+                                                   class="btn btn-sm btn-alt-secondary" 
+                                                   data-bs-toggle="tooltip" 
+                                                   title="Edit Event">
+                                                    <i class="fa fa-fw fa-pencil-alt"></i>
+                                                </a>
+                                                <!-- Add Speakers Button -->
+                                                <a href="{{ route('admin.events.speakers.index', $event->id) }}" 
+                                                class="btn btn-sm btn-alt-info" 
+                                                data-bs-toggle="tooltip" 
+                                                title="Manage Speakers">
+                                                    <i class="fa fa-fw fa-users"></i>
+                                                </a>
 
-                                        <a href="{{ route('admin.events.bookings', $event->id) }}" 
-                                            class="btn btn-sm btn-alt-success"
-                                            data-bs-toggle="tooltip"
-                                            title="View Bookings">
-                                                <i class="fa fa-fw fa-ticket-alt"></i>
-                                        </a>
-                                        <form action="{{ route('admin.events.destroy', $event->id) }}" 
-                                              method="POST" 
-                                              class="d-inline"
-                                              onsubmit="return confirm('Are you sure you want to delete this event?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" 
-                                                    class="btn btn-sm btn-alt-secondary" 
-                                                    data-bs-toggle="tooltip" 
-                                                    title="Delete Event">
-                                                <i class="fa fa-fw fa-times"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
+                                                <a href="{{ route('admin.events.bookings', $event->id) }}" 
+                                                    class="btn btn-sm btn-alt-success"
+                                                    data-bs-toggle="tooltip"
+                                                    title="View Bookings">
+                                                        <i class="fa fa-fw fa-ticket-alt"></i>
+                                                </a>
+                                                <form action="{{ route('admin.events.destroy', $event->id) }}" 
+                                                      method="POST" 
+                                                      class="d-inline"
+                                                      onsubmit="return confirm('Are you sure you want to delete this event?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" 
+                                                            class="btn btn-sm btn-alt-secondary" 
+                                                            data-bs-toggle="tooltip" 
+                                                            title="Delete Event">
+                                                        <i class="fa fa-fw fa-times"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                @endif
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4">
+                                <td colspan="{{ $canSeeActions ? 7 : 6 }}" class="text-center py-4">
                                     <div class="text-muted">
                                         <i class="fa fa-calendar-times fa-2x mb-3"></i>
                                         <h5>No events found</h5>

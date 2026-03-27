@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="content">
+    @php($admin = auth('admin')->user())
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
             <h3 class="mb-1">{{ $course->title }}</h3>
@@ -36,7 +37,14 @@
                 @forelse($enrollments as $enrollment)
                     <tr>
                         <td>{{ $enrollment->user?->first_name }} {{ $enrollment->user?->last_name }}</td>
-                        <td>{{ $enrollment->user?->email }}</td>
+                        <td>
+                            {{ $enrollment->user?->email }}
+                            @if($admin && $admin->isSuperAdmin() && $enrollment->user)
+                                <a href="{{ route('admin.users.profile', $enrollment->user) }}" class="ms-2 text-muted" title="View User Profile">
+                                    <i class="fa fa-user"></i>
+                                </a>
+                            @endif
+                        </td>
                         <td>{{ ucfirst($enrollment->status) }}</td>
                         <td>{{ $enrollment->completion_percentage }}%</td>
                         <td>{{ $enrollment->time_spent_minutes }}</td>

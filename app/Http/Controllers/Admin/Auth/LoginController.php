@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\AdminActivityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -37,6 +38,10 @@ class LoginController extends Controller
                 ]);
             }
 
+            AdminActivityService::log($admin, 'admin_login', null, [
+                'remember' => $request->boolean('remember'),
+            ], 'Admin logged in');
+
             return redirect()->intended(route('admin.dashboard'));
         }
 
@@ -47,6 +52,11 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
+        $admin = Auth::guard('admin')->user();
+        if ($admin) {
+            AdminActivityService::log($admin, 'admin_logout', null, [], 'Admin logged out');
+        }
+
         Auth::guard('admin')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

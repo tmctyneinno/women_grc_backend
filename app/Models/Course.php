@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Admin;
 
 class Course extends Model
 {
@@ -14,6 +15,7 @@ class Course extends Model
         'tags',
         'has_certificate',
         'status',
+        'created_by',
         'enrollment_type',
         'navigation_mode',
         'passing_threshold',
@@ -55,5 +57,10 @@ class Course extends Model
     public function purchases()
     {
         return $this->hasMany(CoursePurchase::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(Admin::class, 'created_by');
     }
 }

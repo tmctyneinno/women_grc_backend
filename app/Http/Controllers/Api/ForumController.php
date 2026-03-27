@@ -32,6 +32,7 @@ class ForumController extends Controller
                 'memberships as members_count' => fn ($query) => $query->where('status', 'active'),
                 'threads',
             ])
+            ->where('status', 'open')
             ->when($mine, function ($query) use ($user) {
                 $query->whereHas('memberships', function ($memberQuery) use ($user) {
                     $memberQuery->where('user_id', $user->id)->where('status', 'active');
@@ -105,6 +106,9 @@ class ForumController extends Controller
     public function show(Forum $forum)
     {
         $user = $this->authUser();
+        if ($forum->status !== 'open') {
+            return ApiResponse::error('This forum is not available.', [], 403);
+        }
         if (!$this->canViewForum($forum, $user)) {
             return ApiResponse::error('You do not have access to this forum.', [], 403);
         }

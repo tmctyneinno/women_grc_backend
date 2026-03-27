@@ -32,6 +32,8 @@
 <!-- END Hero -->
 
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($isSuperAdmin = $admin && $admin->isSuperAdmin())
 
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show">
@@ -147,7 +149,9 @@
                         <th class="d-none d-lg-table-cell">LinkedIn</th>
                         <th class="d-none d-md-table-cell">Verified</th>
                         <th class="d-none d-lg-table-cell">Joined</th>
-                        <th class="text-center">Actions</th>
+                        @if($isSuperAdmin)
+                            <th class="text-center">Actions</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -167,7 +171,7 @@
                         </td>
 
                         <td class="fw-semibold">
-                            {{ trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) ?: '—' }}
+                            {{ trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) ?: '-' }}
                             <div class="fs-xs text-muted">
                                 {{ $user->job_title ?? 'No job title' }}
                                 {{ $user->company ? ' @ ' . $user->company : '' }}
@@ -203,11 +207,15 @@
                         </td>
 
                         <td class="fs-sm text-muted d-none d-lg-table-cell">
-                            {{ optional($user->created_at)->format('M d, Y') ?? '—' }}
+                            {{ optional($user->created_at)->format('M d, Y') ?? '-' }}
                         </td>
 
+                        @if($isSuperAdmin)
                         <td class="text-center">
                             <div class="btn-group">
+                                <a href="{{ route('admin.users.profile', $user) }}" class="btn btn-sm btn-alt-primary mx-1" data-bs-toggle="tooltip" title="View Profile">
+                                    <i class="fa fa-user"></i>
+                                </a>
 
                                 {{-- Approve --}}
                                 @if($user->status === 'pending')
@@ -234,10 +242,11 @@
 
                             </div>
                         </td>
+                        @endif
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="text-center py-4 text-muted">
+                        <td colspan="{{ $isSuperAdmin ? 9 : 8 }}" class="text-center py-4 text-muted">
                             <i class="fa fa-users fa-2x mb-3"></i>
                             <p>No users found</p>
                         </td>
@@ -256,4 +265,3 @@
     </div>
 </div>
 @endsection
-
