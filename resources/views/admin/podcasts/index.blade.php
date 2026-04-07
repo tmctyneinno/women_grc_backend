@@ -4,12 +4,19 @@
 
 @section('content')
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canCreate = $admin && $admin->hasPermission('podcasts.create'))
+    @php($canUpdate = $admin && $admin->hasPermission('podcasts.update'))
+    @php($canDelete = $admin && $admin->hasPermission('podcasts.delete'))
+    @php($canSeeActions = $admin && ($canUpdate || $canDelete))
     <div class="block block-rounded">
         <div class="block-header">
             <h3 class="block-title">Podcasts</h3>
-            <a href="{{ route('admin.podcasts.create') }}" class="btn btn-primary">
-                <i class="fa fa-plus"></i> Add Podcast
-            </a>
+            @if($canCreate)
+                <a href="{{ route('admin.podcasts.create') }}" class="btn btn-primary">
+                    <i class="fa fa-plus"></i> Add Podcast
+                </a>
+            @endif
         </div>
 
         <div class="block-content table-responsive">
@@ -22,7 +29,9 @@
                         <th>Tag</th>
                         <th>Status</th>
                         <th>Contributors</th>
-                        <th class="text-center">Actions</th>
+                        @if($canSeeActions)
+                            <th class="text-center">Actions</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -44,23 +53,29 @@
                             </span>
                         </td>
                         <td>{{ $podcast->contributors_count }}</td>
-                        <td class="text-center">
-                            <a href="{{ route('admin.podcasts.edit', $podcast) }}" class="btn btn-sm btn-alt-secondary">
-                                <i class="fa fa-pencil-alt"></i>
-                            </a>
-                            <form method="POST" class="d-inline" action="{{ route('admin.podcasts.destroy', $podcast) }}"
-                                  onsubmit="return confirm('Delete this podcast?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-sm btn-alt-danger">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </form>
-                        </td>
+                        @if($canSeeActions)
+                            <td class="text-center">
+                                @if($canUpdate)
+                                    <a href="{{ route('admin.podcasts.edit', $podcast) }}" class="btn btn-sm btn-alt-secondary">
+                                        <i class="fa fa-pencil-alt"></i>
+                                    </a>
+                                @endif
+                                @if($canDelete)
+                                    <form method="POST" class="d-inline" action="{{ route('admin.podcasts.destroy', $podcast) }}"
+                                          onsubmit="return confirm('Delete this podcast?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-sm btn-alt-danger">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                            </td>
+                        @endif
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center text-muted py-4">No podcasts yet</td>
+                        <td colspan="{{ $canSeeActions ? 7 : 6 }}" class="text-center text-muted py-4">No podcasts yet</td>
                     </tr>
                 @endforelse
                 </tbody>

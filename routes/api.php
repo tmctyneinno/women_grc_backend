@@ -103,9 +103,6 @@ Route::middleware('api')->prefix('v1')->group(function () {
 
     Route::middleware('auth:sanctum')->prefix('forums')->group(function () {
         Route::get('/', [ForumController::class, 'index']);
-        Route::post('/', [ForumController::class, 'store']);
-        Route::get('/invitations', [ForumController::class, 'myInvitations']);
-        Route::post('/invitations/{invitation}/respond', [ForumController::class, 'respondInvitation']);
         Route::get('/notifications', [ForumController::class, 'notifications']);
         Route::patch('/notifications/{notification}/read', [ForumController::class, 'markNotificationRead']);
         Route::get('/notification-preferences', [ForumController::class, 'notificationPreferences']);
@@ -119,7 +116,6 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::post('/{forum}/reopen', [ForumController::class, 'reopen']);
         Route::post('/{forum}/join', [ForumController::class, 'join']);
         Route::post('/{forum}/leave', [ForumController::class, 'leave']);
-        Route::post('/{forum}/invite', [ForumController::class, 'invite']);
         Route::get('/{forum}/members', [ForumController::class, 'members']);
         Route::delete('/{forum}/members/{member}', [ForumController::class, 'removeMember']);
         Route::post('/{forum}/members/{member}/moderator', [ForumController::class, 'assignModerator']);

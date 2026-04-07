@@ -5,10 +5,11 @@
 @section('content')
 <div class="content">
     @php($admin = auth('admin')->user())
+    @php($canViewUser = $admin && $admin->hasPermission('users.view'))
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 mb-0">Transaction {{ $transaction->reference }}</h1>
         <div class="d-flex gap-2">
-            @if($admin && $admin->isSuperAdmin() && $transaction->user)
+            @if($canViewUser && $transaction->user)
                 <a href="{{ route('admin.users.profile', $transaction->user) }}" class="btn btn-alt-primary">
                     <i class="fa fa-user me-1"></i> View User
                 </a>

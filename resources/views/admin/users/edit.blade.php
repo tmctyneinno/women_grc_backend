@@ -33,6 +33,8 @@
 </div>
 
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canUpdate = $admin && $admin->hasPermission('events.update'))
     <!-- Event Form -->
     <div class="block block-rounded">
         <div class="block-header block-header-default">
@@ -395,12 +397,16 @@
                                 </a>
                             </div>
                             <div>
-                                <button type="submit" name="action" value="draft" class="btn btn-alt-warning me-2">
-                                    Save as Draft
-                                </button>
-                                <button type="submit" name="action" value="update" class="btn btn-primary">
-                                    Update Event
-                                </button>
+                                @if($canUpdate)
+                                    <button type="submit" name="action" value="draft" class="btn btn-alt-warning me-2">
+                                        Save as Draft
+                                    </button>
+                                @endif
+                                @if($canUpdate)
+                                    <button type="submit" name="action" value="update" class="btn btn-primary">
+                                        Update Event
+                                    </button>
+                                @endif
                             </div>
                         </div>
                     </div>

@@ -14,6 +14,14 @@ class ForumPost extends Model
         'quote_post_id',
         'content',
         'attachment_path',
+        'is_blocked',
+        'blocked_reason',
+        'blocked_at',
+    ];
+
+    protected $casts = [
+        'is_blocked' => 'boolean',
+        'blocked_at' => 'datetime',
     ];
 
     public function forum()
@@ -56,4 +64,3 @@ class ForumPost extends Model
         return $this->hasMany(ForumReport::class);
     }
 }
-

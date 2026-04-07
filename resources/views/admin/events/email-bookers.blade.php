@@ -4,6 +4,8 @@
 
 @section('content')
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canEmailBookers = $admin && $admin->hasPermission('events.update'))
     <div class="block block-rounded overflow-hidden">
         <div class="block-content block-content-full bg-primary-light">
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
@@ -54,9 +56,11 @@
                                 </div>
 
                                 <div class="mt-4 d-flex flex-column flex-sm-row gap-2">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fa fa-paper-plane me-1"></i> Send Email
-                                    </button>
+                                    @if($canEmailBookers)
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fa fa-paper-plane me-1"></i> Send Email
+                                        </button>
+                                    @endif
                                     <a href="{{ route('admin.events.bookings', $event) }}" class="btn btn-alt-secondary">Cancel</a>
                                 </div>
                             </form>

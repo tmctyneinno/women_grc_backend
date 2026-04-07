@@ -9,14 +9,15 @@ use Illuminate\Http\Request;
 
 class AdminManagementController extends Controller
 {
-    private array $availablePermissions = [
-        'users',
-        'events',
-        'articles',
-        'courses',
-        'memberships',
-        'forums',
-        'transactions',
+    private array $permissionGroups = [
+        'users' => ['view', 'approve', 'block', 'unblock', 'update'],
+        'events' => ['view', 'create', 'update', 'delete'],
+        'articles' => ['view', 'create', 'update', 'approve', 'delete'],
+        'courses' => ['view', 'create', 'update', 'delete'],
+        'memberships' => ['view', 'create', 'update', 'delete', 'approve'],
+        'forums' => ['view', 'create', 'update', 'delete', 'moderate', 'invite'],
+        'transactions' => ['view'],
+        'podcasts' => ['view', 'create', 'update', 'delete'],
     ];
 
     public function index()
@@ -24,14 +25,16 @@ class AdminManagementController extends Controller
         $admins = Admin::query()->latest()->paginate(15);
         return view('admin.admins.index', [
             'admins' => $admins,
-            'permissions' => $this->availablePermissions,
+            'permissions' => $this->flattenPermissions(),
+            'permissionGroups' => $this->permissionGroups,
         ]);
     }
 
     public function create()
     {
         return view('admin.admins.create', [
-            'permissions' => $this->availablePermissions,
+            'permissions' => $this->flattenPermissions(),
+            'permissionGroups' => $this->permissionGroups,
         ]);
     }
 
@@ -52,7 +55,7 @@ class AdminManagementController extends Controller
 
         if ($this->isSuperAdminEmail($validated['email'])) {
             $validated['role'] = 'super_admin';
-            $validated['permissions'] = $this->availablePermissions;
+            $validated['permissions'] = $this->flattenPermissions();
         }
 
         $createdAdmin = Admin::create($validated);
@@ -68,7 +71,8 @@ class AdminManagementController extends Controller
     {
         return view('admin.admins.edit', [
             'admin' => $admin,
-            'permissions' => $this->availablePermissions,
+            'permissions' => $this->flattenPermissions(),
+            'permissionGroups' => $this->permissionGroups,
         ]);
     }
 
@@ -89,7 +93,7 @@ class AdminManagementController extends Controller
 
         if ($this->isSuperAdminEmail($validated['email']) || $admin->isSuperAdmin()) {
             $validated['role'] = 'super_admin';
-            $validated['permissions'] = $this->availablePermissions;
+            $validated['permissions'] = $this->flattenPermissions();
             $validated['is_active'] = true;
         }
 
@@ -120,12 +124,24 @@ class AdminManagementController extends Controller
 
     private function sanitizePermissions(array $permissions): array
     {
-        return array_values(array_intersect($this->availablePermissions, $permissions));
+        return array_values(array_intersect($this->flattenPermissions(), $permissions));
     }
 
     private function isSuperAdminEmail(string $email): bool
     {
         $email = strtolower($email);
         return in_array($email, ['enquiries@wgrcfp.org'], true);
+    }
+
+    private function flattenPermissions(): array
+    {
+        $flat = [];
+        foreach ($this->permissionGroups as $module => $actions) {
+            foreach ($actions as $action) {
+                $flat[] = "{$module}.{$action}";
+            }
+        }
+
+        return $flat;
     }
 }

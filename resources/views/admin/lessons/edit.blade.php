@@ -4,6 +4,8 @@
 
 @section('content')
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canUpdate = $admin && $admin->hasPermission('courses.update'))
     <h3 class="mb-3">Edit Lesson - {{ $module->title }}</h3>
 
     <form action="{{ route('admin.courses.modules.lessons.update', [$course, $module, $lesson]) }}" method="POST" enctype="multipart/form-data">
@@ -47,7 +49,9 @@
 
         <div class="d-flex gap-2">
             <a href="{{ route('admin.courses.modules.lessons.index', [$course, $module]) }}" class="btn btn-alt-secondary">Cancel</a>
-            <button class="btn btn-primary">Update Lesson</button>
+            @if($canUpdate)
+                <button class="btn btn-primary">Update Lesson</button>
+            @endif
         </div>
     </form>
 </div>

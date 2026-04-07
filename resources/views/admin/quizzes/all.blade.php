@@ -4,6 +4,8 @@
 
 @section('content')
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canUpdate = $admin && $admin->hasPermission('courses.update'))
     <div class="block block-rounded">
         <div class="block-header">
             <h3 class="block-title">All Quiz</h3>
@@ -19,7 +21,9 @@
                         <th>Course</th>
                         <th>Pass Mark</th>
                         <th>Attempts</th>
-                        <th class="text-center">Actions</th>
+                        @if($canUpdate)
+                            <th class="text-center">Actions</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -32,12 +36,14 @@
                         <td>{{ $quiz->module?->course?->title }}</td>
                         <td>{{ $quiz->passing_threshold }}%</td>
                         <td>{{ $quiz->max_attempts }}</td>
-                        <td class="text-center">
-                            <a href="{{ route('admin.courses.modules.quizzes.edit', [$quiz->module?->course_id, $quiz->module_id, $quiz->id]) }}" class="btn btn-sm btn-alt-primary">Edit</a>
-                        </td>
+                        @if($canUpdate)
+                            <td class="text-center">
+                                <a href="{{ route('admin.courses.modules.quizzes.edit', [$quiz->module?->course_id, $quiz->module_id, $quiz->id]) }}" class="btn btn-sm btn-alt-primary">Edit</a>
+                            </td>
+                        @endif
                     </tr>
                 @empty
-                    <tr><td colspan="8" class="text-center text-muted">No quiz records found.</td></tr>
+                    <tr><td colspan="{{ $canUpdate ? 8 : 7 }}" class="text-center text-muted">No quiz records found.</td></tr>
                 @endforelse
                 </tbody>
             </table>
@@ -47,4 +53,3 @@
     </div>
 </div>
 @endsection
-

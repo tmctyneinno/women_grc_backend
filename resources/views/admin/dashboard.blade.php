@@ -5,6 +5,11 @@
 @section('content')
 <!-- Hero -->
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canUsers = $admin && $admin->hasPermission('users.view'))
+    @php($canEvents = $admin && $admin->hasPermission('events.view'))
+    @php($canCourses = $admin && $admin->hasPermission('courses.view'))
+    @php($canTransactions = $admin && $admin->hasPermission('transactions.view'))
     <div class="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center py-2 text-center text-md-start">
         <div class="flex-grow-1 mb-1 mb-md-0">
             <h1 class="h3 fw-bold mb-2">Dashboard</h1>
@@ -21,6 +26,7 @@
     <!-- Overview -->
     <div class="row items-push">
 
+        @if($canUsers)
         <!-- Total Users -->
         <div class="col-sm-6 col-xxl-3">
             <div class="block block-rounded d-flex flex-column h-100 mb-0">
@@ -37,8 +43,10 @@
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Pending Users -->
+        @if($canUsers)
         <div class="col-sm-6 col-xxl-3">
             <div class="block block-rounded d-flex flex-column h-100 mb-0">
                 <div class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center">
@@ -52,8 +60,10 @@
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Total Events -->
+        @if($canEvents)
         <div class="col-sm-6 col-xxl-3">
             <div class="block block-rounded d-flex flex-column h-100 mb-0">
                 <div class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center">
@@ -67,8 +77,10 @@
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Upcoming Events -->
+        @if($canEvents)
         <div class="col-sm-6 col-xxl-3">
             <div class="block block-rounded d-flex flex-column h-100 mb-0">
                 <div class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center">
@@ -82,8 +94,10 @@
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Total Bookings -->
+        @if($canEvents)
         <div class="col-sm-6 col-xxl-3">
             <div class="block block-rounded d-flex flex-column h-100 mb-0">
                 <div class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center">
@@ -97,8 +111,10 @@
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Confirmed Bookings -->
+        @if($canEvents)
         <div class="col-sm-6 col-xxl-3">
             <div class="block block-rounded d-flex flex-column h-100 mb-0">
                 <div class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center">
@@ -112,8 +128,10 @@
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Total Courses -->
+        @if($canCourses)
         <div class="col-sm-6 col-xxl-3">
             <div class="block block-rounded d-flex flex-column h-100 mb-0">
                 <div class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center">
@@ -127,8 +145,10 @@
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Blocked Users -->
+        @if($canUsers)
         <div class="col-sm-6 col-xxl-3">
             <div class="block block-rounded d-flex flex-column h-100 mb-0">
                 <div class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center">
@@ -142,7 +162,9 @@
                 </div>
             </div>
         </div>
+        @endif
 
+        @if($canTransactions)
         <div class="col-sm-6 col-xxl-3">
             <div class="block block-rounded d-flex flex-column h-100 mb-0">
                 <div class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center">
@@ -158,7 +180,9 @@
                 </div>
             </div>
         </div>
+        @endif
 
+        @if($canTransactions)
         <div class="col-sm-6 col-xxl-3">
             <div class="block block-rounded d-flex flex-column h-100 mb-0">
                 <div class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center">
@@ -172,6 +196,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
     </div>
     <!-- END Overview -->
@@ -304,6 +329,7 @@
     <!-- END Statistics -->
 
     <!-- Recent Transactions -->
+    @if($canTransactions)
     <div class="block block-rounded">
     <div class="block-header block-header-default">
         <h3 class="block-title">Recent Transactions</h3>
@@ -356,6 +382,7 @@
     </div>
     </div>
     <!-- END Recent Transactions -->
+    @endif
 </div>
 <!-- END Page Content -->
 @endsection

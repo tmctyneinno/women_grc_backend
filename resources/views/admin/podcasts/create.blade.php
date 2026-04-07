@@ -4,6 +4,8 @@
 
 @section('content')
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canCreate = $admin && $admin->hasPermission('podcasts.create'))
     <div class="block block-rounded">
         <div class="block-header">
             <h3 class="block-title">Create Podcast</h3>
@@ -65,9 +67,11 @@
 
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">Contributors</h5>
-                    <button type="button" class="btn btn-sm btn-alt-primary" id="addContributor">
-                        <i class="fa fa-plus"></i> Add Contributor
-                    </button>
+                    @if($canCreate)
+                        <button type="button" class="btn btn-sm btn-alt-primary" id="addContributor">
+                            <i class="fa fa-plus"></i> Add Contributor
+                        </button>
+                    @endif
                 </div>
 
                 <div id="contributorsWrapper" class="d-grid gap-3">
@@ -90,7 +94,9 @@
                 </div>
 
                 <div class="mt-4">
-                    <button class="btn btn-primary">Save Podcast</button>
+                    @if($canCreate)
+                        <button class="btn btn-primary">Save Podcast</button>
+                    @endif
                 </div>
             </form>
         </div>

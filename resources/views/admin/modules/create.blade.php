@@ -5,6 +5,8 @@
 @section('content')
 
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canUpdate = $admin && $admin->hasPermission('courses.update'))
     <h3>Create Module for "{{ $course->title }}"</h3>
 
     <form method="POST" action="{{ route('admin.courses.modules.store', $course) }}">
@@ -37,7 +39,9 @@
             <label class="form-check-label">Require quiz pass to unlock next module</label>
         </div>
 
-        <button class="btn btn-primary">Create Module</button>
+        @if($canUpdate)
+            <button class="btn btn-primary">Create Module</button>
+        @endif
     </form>
 </div>
 

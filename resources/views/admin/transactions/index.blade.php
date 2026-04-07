@@ -5,6 +5,8 @@
 @section('content')
 <div class="content">
     @php($admin = auth('admin')->user())
+    @php($canViewTx = $admin && $admin->hasPermission('transactions.view'))
+    @php($canViewUser = $admin && $admin->hasPermission('users.view'))
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 mb-0">Transactions</h1>
     </div>
@@ -35,7 +37,9 @@
                             <th>Items</th>
                             <th>Amount</th>
                             <th>Paid At</th>
-                            <th class="text-end">Action</th>
+                            @if($canViewTx)
+                                <th class="text-end">Action</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -44,7 +48,7 @@
                                 <td>{{ $tx->reference }}</td>
                                 <td>
                                     {{ $tx->user?->first_name }} {{ $tx->user?->last_name }}
-                                    @if($admin && $admin->isSuperAdmin() && $tx->user)
+                                    @if($canViewUser && $tx->user)
                                         <a href="{{ route('admin.users.profile', $tx->user) }}" class="ms-1 text-muted" title="View User Profile">
                                             <i class="fa fa-user"></i>
                                         </a>
@@ -60,13 +64,15 @@
                                 <td>{{ $tx->items->count() }}</td>
                                 <td>{{ $tx->currency }} {{ number_format($tx->total_amount, 2) }}</td>
                                 <td>{{ optional($tx->paid_at)->format('Y-m-d H:i') ?: '-' }}</td>
-                                <td class="text-end">
-                                    <a href="{{ route('admin.transactions.show', $tx) }}" class="btn btn-sm btn-alt-primary">View</a>
-                                </td>
+                                @if($canViewTx)
+                                    <td class="text-end">
+                                        <a href="{{ route('admin.transactions.show', $tx) }}" class="btn btn-sm btn-alt-primary">View</a>
+                                    </td>
+                                @endif
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center text-muted">No transactions found.</td>
+                                <td colspan="{{ $canViewTx ? 7 : 6 }}" class="text-center text-muted">No transactions found.</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -4,13 +4,17 @@
 
 @section('content')
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canUpdate = $admin && $admin->hasPermission('memberships.update'))
     <div class="block block-rounded">
         <div class="block-header">
             <h3 class="block-title">Edit Membership Plan</h3>
             <div class="d-flex gap-2">
-                <a href="{{ route('admin.membership-plans.tiers.index', $membership) }}" class="btn btn-alt-primary">
-                    Manage Tiers
-                </a>
+                @if($canUpdate)
+                    <a href="{{ route('admin.membership-plans.tiers.index', $membership) }}" class="btn btn-alt-primary">
+                        Manage Tiers
+                    </a>
+                @endif
                 <a href="{{ route('admin.membership-plans.index') }}" class="btn btn-alt-secondary">Back</a>
             </div>
         </div>
@@ -41,7 +45,9 @@
                     <textarea name="description" class="form-control" rows="4">{{ old('description', $membership->description) }}</textarea>
                 </div>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-primary" type="submit">Update Plan</button>
+                    @if($canUpdate)
+                        <button class="btn btn-primary" type="submit">Update Plan</button>
+                    @endif
                     <a href="{{ route('admin.membership-plans.index') }}" class="btn btn-alt-secondary">Cancel</a>
                 </div>
             </form>

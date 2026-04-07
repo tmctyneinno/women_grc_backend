@@ -56,7 +56,24 @@ class Admin extends Authenticatable
         }
 
         $permissions = $this->permissions ?? [];
-        return in_array($permission, $permissions, true);
+        if (in_array($permission, $permissions, true)) {
+            return true;
+        }
+
+        if (str_contains($permission, '.')) {
+            $module = explode('.', $permission)[0] ?? $permission;
+            if (in_array($module, $permissions, true)) {
+                return true;
+            }
+        } else {
+            foreach ($permissions as $perm) {
+                if (str_starts_with($perm, $permission . '.')) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public function canViewTransactions(): bool
@@ -66,7 +83,7 @@ class Admin extends Authenticatable
         }
 
         $permissions = $this->permissions ?? [];
-        $transactionPerms = ['transactions', 'events', 'courses', 'memberships', 'forums'];
+        $transactionPerms = ['transactions', 'transactions.view', 'events.view', 'courses.view', 'memberships.view', 'forums.view'];
 
         foreach ($transactionPerms as $perm) {
             if (in_array($perm, $permissions, true)) {

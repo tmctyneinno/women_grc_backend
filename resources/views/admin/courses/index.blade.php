@@ -4,6 +4,12 @@
 
 @section('content')
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canCreate = $admin && $admin->hasPermission('courses.create'))
+    @php($canUpdate = $admin && $admin->hasPermission('courses.update'))
+    @php($canDelete = $admin && $admin->hasPermission('courses.delete'))
+    @php($canView = $admin && $admin->hasPermission('courses.view'))
+    @php($canSeeActions = $admin && ($canUpdate || $canDelete || $canView))
     <div class="row g-3 mb-4">
         <div class="col-6 col-lg-3">
             <div class="block block-rounded h-100">
@@ -69,9 +75,11 @@
     <div class="block block-rounded">
         <div class="block-header">
             <h3 class="block-title">Courses</h3>
-            <a href="{{ route('admin.courses.create') }}" class="btn btn-primary">
-                <i class="fa fa-plus"></i> Create Course
-            </a>
+            @if($canCreate)
+                <a href="{{ route('admin.courses.create') }}" class="btn btn-primary">
+                    <i class="fa fa-plus"></i> Create Course
+                </a>
+            @endif
         </div>
 
         <div class="block-content table-responsive">
@@ -86,7 +94,9 @@
                         <th>Price</th>
                         <th>Status</th>
                         <th>Certificate</th>
-                        <th class="text-center">Actions</th>
+                        @if($canSeeActions)
+                            <th class="text-center">Actions</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -116,39 +126,49 @@
                         <td>
                             {{ $course->has_certificate ? 'Yes' : 'No' }}
                         </td>
-                        <td class="text-center">
-                            <a href="{{ route('admin.courses.edit', ['course' => $course->id]) }}"
-                               class="btn btn-sm btn-alt-secondary">
-                                <i class="fa fa-pencil-alt"></i>
-                            </a>
+                        @if($canSeeActions)
+                            <td class="text-center">
+                                @if($canUpdate)
+                                    <a href="{{ route('admin.courses.edit', ['course' => $course->id]) }}"
+                                       class="btn btn-sm btn-alt-secondary">
+                                        <i class="fa fa-pencil-alt"></i>
+                                    </a>
+                                @endif
 
-                            <a href="{{ route('admin.courses.show', ['course' => $course->id]) }}"
-                               class="btn btn-sm btn-alt-success"
-                               title="View Enrollments and Analytics">
-                                <i class="fa fa-chart-bar"></i>
-                            </a>
+                                @if($canView)
+                                    <a href="{{ route('admin.courses.show', ['course' => $course->id]) }}"
+                                       class="btn btn-sm btn-alt-success"
+                                       title="View Enrollments and Analytics">
+                                        <i class="fa fa-chart-bar"></i>
+                                    </a>
+                                @endif
 
-                            <a href="{{ route('admin.courses.modules.index', $course) }}"
-                               class="btn btn-sm btn-alt-primary"
-                               title="Manage Modules">
-                                <i class="fa fa-layer-group"></i>
-                            </a>
+                                @if($canUpdate)
+                                    <a href="{{ route('admin.courses.modules.index', $course) }}"
+                                       class="btn btn-sm btn-alt-primary"
+                                       title="Manage Modules">
+                                        <i class="fa fa-layer-group"></i>
+                                    </a>
+                                @endif
 
-                            <form method="POST"
-                                  class="d-inline"
-                                  action="{{ route('admin.courses.destroy', $course) }}"
-                                  onsubmit="return confirm('Delete this course?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-sm btn-alt-danger">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </form>
-                        </td>
+                                @if($canDelete)
+                                    <form method="POST"
+                                          class="d-inline"
+                                          action="{{ route('admin.courses.destroy', $course) }}"
+                                          onsubmit="return confirm('Delete this course?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-sm btn-alt-danger">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                            </td>
+                        @endif
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="text-center text-muted py-4">
+                        <td colspan="{{ $canSeeActions ? 9 : 8 }}" class="text-center text-muted py-4">
                             No courses yet
                         </td>
                     </tr>

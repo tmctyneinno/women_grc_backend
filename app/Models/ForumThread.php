@@ -12,12 +12,17 @@ class ForumThread extends Model
         'title',
         'content',
         'is_pinned',
+        'is_blocked',
+        'blocked_reason',
+        'blocked_at',
         'pinned_at',
     ];
 
     protected $casts = [
         'is_pinned' => 'boolean',
+        'is_blocked' => 'boolean',
         'pinned_at' => 'datetime',
+        'blocked_at' => 'datetime',
     ];
 
     public function forum()
@@ -35,4 +40,3 @@ class ForumThread extends Model
         return $this->hasMany(ForumPost::class, 'forum_thread_id');
     }
 }
-

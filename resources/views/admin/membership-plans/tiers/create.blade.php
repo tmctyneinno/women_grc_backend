@@ -4,6 +4,8 @@
 
 @section('content')
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canUpdate = $admin && $admin->hasPermission('memberships.update'))
     <div class="block block-rounded">
         <div class="block-header">
             <h3 class="block-title">Add Tier for {{ $membership->name }}</h3>
@@ -43,7 +45,9 @@
                     <input type="text" name="invitation_only" class="form-control" value="{{ old('invitation_only') }}">
                 </div>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-primary" type="submit">Create Tier</button>
+                    @if($canUpdate)
+                        <button class="btn btn-primary" type="submit">Create Tier</button>
+                    @endif
                     <a href="{{ route('admin.membership-plans.tiers.index', $membership) }}" class="btn btn-alt-secondary">Cancel</a>
                 </div>
             </form>

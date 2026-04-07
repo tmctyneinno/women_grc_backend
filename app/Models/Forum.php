@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Admin;
 
 class Forum extends Model
 {
@@ -15,7 +16,7 @@ class Forum extends Model
         'region_based',
         'region',
         'status',
-        'created_by',
+        'admin_id',
         'closed_at',
         'archived_at',
     ];
@@ -29,7 +30,7 @@ class Forum extends Model
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(Admin::class, 'admin_id');
     }
 
     public function memberships()
@@ -52,4 +53,3 @@ class Forum extends Model
         return $this->hasMany(ForumPost::class);
     }
 }
-

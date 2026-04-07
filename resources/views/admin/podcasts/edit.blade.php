@@ -4,6 +4,8 @@
 
 @section('content')
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canUpdate = $admin && $admin->hasPermission('podcasts.update'))
     <div class="block block-rounded">
         <div class="block-header">
             <h3 class="block-title">Edit Podcast</h3>
@@ -75,9 +77,11 @@
 
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">Contributors</h5>
-                    <button type="button" class="btn btn-sm btn-alt-primary" id="addContributor">
-                        <i class="fa fa-plus"></i> Add Contributor
-                    </button>
+                    @if($canUpdate)
+                        <button type="button" class="btn btn-sm btn-alt-primary" id="addContributor">
+                            <i class="fa fa-plus"></i> Add Contributor
+                        </button>
+                    @endif
                 </div>
 
                 <div id="contributorsWrapper" class="d-grid gap-3">
@@ -125,7 +129,9 @@
                 </div>
 
                 <div class="mt-4">
-                    <button class="btn btn-primary">Update Podcast</button>
+                    @if($canUpdate)
+                        <button class="btn btn-primary">Update Podcast</button>
+                    @endif
                 </div>
             </form>
         </div>

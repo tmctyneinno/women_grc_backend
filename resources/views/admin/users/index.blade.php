@@ -33,7 +33,10 @@
 
 <div class="content">
     @php($admin = auth('admin')->user())
-    @php($isSuperAdmin = $admin && $admin->isSuperAdmin())
+    @php($canView = $admin && $admin->hasPermission('users.view'))
+    @php($canApprove = $admin && $admin->hasPermission('users.approve'))
+    @php($canBlock = $admin && $admin->hasPermission('users.block'))
+    @php($canUnblock = $admin && $admin->hasPermission('users.unblock'))
 
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show">
@@ -149,7 +152,7 @@
                         <th class="d-none d-lg-table-cell">LinkedIn</th>
                         <th class="d-none d-md-table-cell">Verified</th>
                         <th class="d-none d-lg-table-cell">Joined</th>
-                        @if($isSuperAdmin)
+                        @if($canView || $canApprove || $canBlock || $canUnblock)
                             <th class="text-center">Actions</th>
                         @endif
                     </tr>
@@ -210,15 +213,17 @@
                             {{ optional($user->created_at)->format('M d, Y') ?? '-' }}
                         </td>
 
-                        @if($isSuperAdmin)
+                        @if($canView || $canApprove || $canBlock || $canUnblock)
                         <td class="text-center">
                             <div class="btn-group">
-                                <a href="{{ route('admin.users.profile', $user) }}" class="btn btn-sm btn-alt-primary mx-1" data-bs-toggle="tooltip" title="View Profile">
-                                    <i class="fa fa-user"></i>
-                                </a>
+                                @if($canView)
+                                    <a href="{{ route('admin.users.profile', $user) }}" class="btn btn-sm btn-alt-primary mx-1" data-bs-toggle="tooltip" title="View Profile">
+                                        <i class="fa fa-user"></i>
+                                    </a>
+                                @endif
 
                                 {{-- Approve --}}
-                                @if($user->status === 'pending')
+                                @if($canApprove && $user->status === 'pending')
                                 <form action="{{ route('admin.users.approve', $user->id) }}" method="POST">
                                     @csrf
                                     @method('PATCH')
@@ -228,16 +233,29 @@
                                 </form>
                                 @endif
 
-                                {{-- Block --}}
-                                @if($user->status !== 'blocked')
-                                <form action="{{ route('admin.users.block', $user->id) }}" method="POST"
-                                      onsubmit="return confirm('Block this user?')">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button class="btn btn-sm btn-alt-danger mx-1" data-bs-toggle="tooltip" title="Block">
-                                        <i class="fa fa-ban"></i>
-                                    </button>
-                                </form>
+                                {{-- Block / Unblock --}}
+                                @if($user->status === 'blocked')
+                                    @if($canUnblock)
+                                    <form action="{{ route('admin.users.unblock', $user->id) }}" method="POST"
+                                          onsubmit="return confirm('Unblock this user?')">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button class="btn btn-sm btn-alt-success mx-1" data-bs-toggle="tooltip" title="Unblock">
+                                            <i class="fa fa-unlock"></i>
+                                        </button>
+                                    </form>
+                                    @endif
+                                @else
+                                    @if($canBlock)
+                                    <form action="{{ route('admin.users.block', $user->id) }}" method="POST"
+                                          onsubmit="return confirm('Block this user?')">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button class="btn btn-sm btn-alt-danger mx-1" data-bs-toggle="tooltip" title="Block">
+                                            <i class="fa fa-ban"></i>
+                                        </button>
+                                    </form>
+                                    @endif
                                 @endif
 
                             </div>
@@ -246,7 +264,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="{{ $isSuperAdmin ? 9 : 8 }}" class="text-center py-4 text-muted">
+                        <td colspan="{{ ($canView || $canApprove || $canBlock || $canUnblock) ? 9 : 8 }}" class="text-center py-4 text-muted">
                             <i class="fa fa-users fa-2x mb-3"></i>
                             <p>No users found</p>
                         </td>

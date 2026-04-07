@@ -34,7 +34,12 @@
 <!-- Page Content -->
 <div class="content">
     @php($admin = auth('admin')->user())
-    @php($canSeeActions = $admin && ($admin->isSuperAdmin() || $events->getCollection()->contains('created_by', $admin->id)))
+    @php($canCreate = $admin && $admin->hasPermission('events.create'))
+    @php($canEdit = $admin && $admin->hasPermission('events.update'))
+    @php($canDelete = $admin && $admin->hasPermission('events.delete'))
+    @php($canViewBookings = $admin && $admin->hasPermission('events.view'))
+    @php($canManageSpeakers = $canEdit)
+    @php($canSeeActions = $admin && ($canEdit || $canDelete || $canViewBookings || $canManageSpeakers))
     <!-- Success Message -->
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -50,9 +55,11 @@
                 <div class="block-header block-header-default">
                     <h3 class="block-title">All Events</h3>
                     <div class="block-options">
-                        <a href="{{ route('admin.events.create') }}" class="btn btn-primary">
-                            <i class="fa fa-plus me-1"></i> Create Event
-                        </a>
+                        @if($canCreate)
+                            <a href="{{ route('admin.events.create') }}" class="btn btn-primary">
+                                <i class="fa fa-plus me-1"></i> Create Event
+                            </a>
+                        @endif
                     </div>
                 </div>
                 <div class="block-content">
@@ -122,39 +129,47 @@
                                         @php($canManage = $admin && ($admin->isSuperAdmin() || (int) $event->created_by === (int) $admin->id))
                                         @if($canManage)
                                             <div class="btn-group">
-                                                <a href="{{ route('admin.events.edit', $event->id) }}" 
-                                                   class="btn btn-sm btn-alt-secondary" 
-                                                   data-bs-toggle="tooltip" 
-                                                   title="Edit Event">
-                                                    <i class="fa fa-fw fa-pencil-alt"></i>
-                                                </a>
+                                                @if($canEdit)
+                                                    <a href="{{ route('admin.events.edit', $event->id) }}" 
+                                                       class="btn btn-sm btn-alt-secondary" 
+                                                       data-bs-toggle="tooltip" 
+                                                       title="Edit Event">
+                                                        <i class="fa fa-fw fa-pencil-alt"></i>
+                                                    </a>
+                                                @endif
                                                 <!-- Add Speakers Button -->
-                                                <a href="{{ route('admin.events.speakers.index', $event->id) }}" 
-                                                class="btn btn-sm btn-alt-info" 
-                                                data-bs-toggle="tooltip" 
-                                                title="Manage Speakers">
-                                                    <i class="fa fa-fw fa-users"></i>
-                                                </a>
+                                                @if($canManageSpeakers)
+                                                    <a href="{{ route('admin.events.speakers.index', $event->id) }}" 
+                                                    class="btn btn-sm btn-alt-info" 
+                                                    data-bs-toggle="tooltip" 
+                                                    title="Manage Speakers">
+                                                        <i class="fa fa-fw fa-users"></i>
+                                                    </a>
+                                                @endif
 
-                                                <a href="{{ route('admin.events.bookings', $event->id) }}" 
-                                                    class="btn btn-sm btn-alt-success"
-                                                    data-bs-toggle="tooltip"
-                                                    title="View Bookings">
-                                                        <i class="fa fa-fw fa-ticket-alt"></i>
-                                                </a>
-                                                <form action="{{ route('admin.events.destroy', $event->id) }}" 
-                                                      method="POST" 
-                                                      class="d-inline"
-                                                      onsubmit="return confirm('Are you sure you want to delete this event?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" 
-                                                            class="btn btn-sm btn-alt-secondary" 
-                                                            data-bs-toggle="tooltip" 
-                                                            title="Delete Event">
-                                                        <i class="fa fa-fw fa-times"></i>
-                                                    </button>
-                                                </form>
+                                                @if($canViewBookings)
+                                                    <a href="{{ route('admin.events.bookings', $event->id) }}" 
+                                                        class="btn btn-sm btn-alt-success"
+                                                        data-bs-toggle="tooltip"
+                                                        title="View Bookings">
+                                                            <i class="fa fa-fw fa-ticket-alt"></i>
+                                                    </a>
+                                                @endif
+                                                @if($canDelete)
+                                                    <form action="{{ route('admin.events.destroy', $event->id) }}" 
+                                                          method="POST" 
+                                                          class="d-inline"
+                                                          onsubmit="return confirm('Are you sure you want to delete this event?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" 
+                                                                class="btn btn-sm btn-alt-secondary" 
+                                                                data-bs-toggle="tooltip" 
+                                                                title="Delete Event">
+                                                            <i class="fa fa-fw fa-times"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             </div>
                                         @else
                                             <span class="text-muted">-</span>
@@ -169,9 +184,11 @@
                                         <i class="fa fa-calendar-times fa-2x mb-3"></i>
                                         <h5>No events found</h5>
                                         <p>Get started by creating your first event.</p>
-                                        <a href="{{ route('admin.events.create') }}" class="btn btn-primary">
-                                            <i class="fa fa-plus me-1"></i> Create Event
-                                        </a>
+                                        @if($canCreate)
+                                            <a href="{{ route('admin.events.create') }}" class="btn btn-primary">
+                                                <i class="fa fa-plus me-1"></i> Create Event
+                                            </a>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

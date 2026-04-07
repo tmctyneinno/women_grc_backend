@@ -5,9 +5,8 @@
 @section('content')
 @php
     $adminUser = auth('admin')->user();
-    $isSuperAdmin = $adminUser && method_exists($adminUser, 'isSuperAdmin')
-        ? $adminUser->isSuperAdmin()
-        : ($adminUser && strtolower($adminUser->email) === 'enquiries@wgrcfp.org');
+    $canCreate = $adminUser && $adminUser->hasPermission('articles.create');
+    $canApprove = $adminUser && $adminUser->hasPermission('articles.approve');
 @endphp
 <div class="content">
     <div class="block block-rounded">
@@ -47,7 +46,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Status</label>
-                        @if($isSuperAdmin)
+                        @if($canApprove)
                             <select name="status" class="form-select" required>
                                 <option value="draft" {{ old('status') === 'draft' ? 'selected' : '' }}>Draft</option>
                                 <option value="published" {{ old('status') === 'published' ? 'selected' : '' }}>Published</option>
@@ -63,7 +62,9 @@
                     <input type="file" name="cover_image" class="form-control" accept="image/*">
                 </div>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-primary" type="submit">Create Article</button>
+                    @if($canCreate)
+                        <button class="btn btn-primary" type="submit">Create Article</button>
+                    @endif
                     <a href="{{ route('admin.articles.index') }}" class="btn btn-alt-secondary">Cancel</a>
                 </div>
             </form>

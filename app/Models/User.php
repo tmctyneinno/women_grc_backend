@@ -172,10 +172,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(UserMembership::class);
     }
 
-    public function createdForums()
-    {
-        return $this->hasMany(Forum::class, 'created_by');
-    }
 
     public function forumMemberships()
     {

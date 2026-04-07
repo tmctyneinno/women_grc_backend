@@ -6,13 +6,16 @@
 
 <div class="content">
     @php($admin = auth('admin')->user())
+    @php($canEmailBookers = $admin && $admin->hasPermission('events.update'))
+    @php($canDeleteBooking = $admin && $admin->hasPermission('events.update'))
+    @php($canViewUser = $admin && $admin->hasPermission('users.view'))
     <div class="block block-rounded">
         <div class="block-header">
             <h3 class="block-title">
                 Bookings for: {{ $event->title }}
             </h3>
             <div class="d-flex gap-2">
-                @if($admin && $admin->isSuperAdmin())
+                @if($canEmailBookers)
                     <a href="{{ route('admin.events.bookings.email.form', $event) }}" class="btn btn-sm btn-primary">
                         <i class="fa fa-envelope me-1"></i> Email Bookers
                     </a>
@@ -32,7 +35,7 @@
                         <th>Email</th>
                         <th>Status</th>
                         <th>Booked At</th>
-                        @if($admin && $admin->isSuperAdmin())
+                        @if($canDeleteBooking)
                             <th class="text-end">Actions</th>
                         @endif
                     </tr>
@@ -44,7 +47,7 @@
                             <td>{{ $booking->user->first_name . ' ' . $booking->user->last_name ?? 'N/A' }}</td>
                             <td>
                                 {{ $booking->user->email ?? 'N/A' }}
-                                @if($admin && $admin->isSuperAdmin() && $booking->user)
+                                @if($canViewUser && $booking->user)
                                     <a href="{{ route('admin.users.profile', $booking->user) }}" class="ms-2 text-muted" title="View User Profile">
                                         <i class="fa fa-user"></i>
                                     </a>
@@ -56,7 +59,7 @@
                                 </span>
                             </td>
                             <td>{{ $booking->created_at ? $booking->created_at->format('M d, Y H:i') : 'N/A' }}</td>
-                            @if($admin && $admin->isSuperAdmin())
+                            @if($canDeleteBooking)
                                 <td class="text-end">
                                     <form action="{{ route('admin.events.bookings.delete', [$event, $booking]) }}" method="POST" class="d-inline">
                                         @csrf
@@ -70,7 +73,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="{{ ($admin && $admin->isSuperAdmin()) ? 6 : 5 }}" class="text-center text-muted">
+                            <td colspan="{{ $canDeleteBooking ? 6 : 5 }}" class="text-center text-muted">
                                 No bookings yet.
                             </td>
                         </tr>

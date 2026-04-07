@@ -33,6 +33,8 @@
 </div>
 
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canCreate = $admin && $admin->hasPermission('events.create'))
     <!-- Form Errors Alert -->
     @if ($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -385,14 +387,18 @@
                                 <a href="{{ route('admin.events.index') }}" class="btn btn-alt-secondary">
                                     Cancel
                                 </a>
-                                <button type="submit" name="action" value="draft" class="btn btn-alt-primary ms-2">
-                                    Save as Draft
-                                </button>
+                                @if($canCreate)
+                                    <button type="submit" name="action" value="draft" class="btn btn-alt-primary ms-2">
+                                        Save as Draft
+                                    </button>
+                                @endif
                             </div>
                             <div>
-                                <button type="submit" name="action" value="publish" class="btn btn-primary">
-                                    Create & Publish
-                                </button>
+                                @if($canCreate)
+                                    <button type="submit" name="action" value="publish" class="btn btn-primary">
+                                        Create & Publish
+                                    </button>
+                                @endif
                             </div>
                         </div>
                     </div>

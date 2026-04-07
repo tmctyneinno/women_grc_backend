@@ -33,6 +33,8 @@
 <!-- END Hero -->
 
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canCreate = $admin && $admin->hasPermission('courses.create'))
 
     {{-- Validation Errors --}}
     @if ($errors->any())
@@ -277,9 +279,11 @@
                             <a href="{{ route('admin.courses.index') }}" class="btn btn-alt-secondary">
                                 Cancel
                             </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fa fa-save me-1"></i> Create Course
-                            </button>
+                            @if($canCreate)
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-save me-1"></i> Create Course
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </div>

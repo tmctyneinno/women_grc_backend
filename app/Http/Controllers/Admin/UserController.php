@@ -50,10 +50,20 @@ class UserController extends Controller
         return back()->with('success', 'User blocked successfully.');
     }
 
+    public function unblock(User $user)
+    {
+        $user->update([
+            'status' => 'verified'
+        ]);
+        AdminActivityService::log(auth('admin')->user(), 'user_unblock', $user, [], 'Unblocked user');
+
+        return back()->with('success', 'User unblocked successfully.');
+    }
+
     public function profile(User $user)
     {
         $admin = auth('admin')->user();
-        if (!$admin || !$admin->isSuperAdmin()) {
+        if (!$admin || !$admin->hasPermission('users.view')) {
             abort(403);
         }
 

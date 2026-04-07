@@ -5,9 +5,8 @@
 @section('content')
 @php
     $adminUser = auth('admin')->user();
-    $isSuperAdmin = $adminUser && method_exists($adminUser, 'isSuperAdmin')
-        ? $adminUser->isSuperAdmin()
-        : ($adminUser && strtolower($adminUser->email) === 'enquiries@wgrcfp.org');
+    $canUpdate = $adminUser && $adminUser->hasPermission('articles.update');
+    $canApprove = $adminUser && $adminUser->hasPermission('articles.approve');
 @endphp
 <div class="content">
     <div class="block block-rounded">
@@ -48,7 +47,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Status</label>
-                        @if($isSuperAdmin)
+                        @if($canApprove)
                             <select name="status" class="form-select" required>
                                 @foreach(['draft','pending','published','rejected'] as $s)
                                     <option value="{{ $s }}" {{ old('status', $article->status) === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
@@ -70,7 +69,9 @@
                     @endif
                 </div>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                    @if($canUpdate)
+                        <button class="btn btn-primary" type="submit">Save Changes</button>
+                    @endif
                     <a href="{{ route('admin.articles.index') }}" class="btn btn-alt-secondary">Cancel</a>
                 </div>
             </form>

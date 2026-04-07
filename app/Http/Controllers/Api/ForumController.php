@@ -12,6 +12,8 @@ use App\Models\ForumPost;
 use App\Models\ForumReaction;
 use App\Models\ForumReport;
 use App\Models\ForumThread;
+use App\Models\ForumBannedWord;
+use App\Models\Admin;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,23 +29,20 @@ class ForumController extends Controller
         $mine = (bool) $request->boolean('mine');
 
         $forums = Forum::query()
-            ->with(['creator:id,first_name,last_name'])
             ->withCount([
                 'memberships as members_count' => fn ($query) => $query->where('status', 'active'),
-                'threads',
+                'threads as threads_count' => fn ($query) => $query->where('is_blocked', false),
+            ])
+            ->addSelect([
+                'has_pending_request' => ForumMembership::selectRaw('count(*)')
+                    ->whereColumn('forum_memberships.forum_id', 'forums.id')
+                    ->where('user_id', $user->id)
+                    ->where('status', 'pending'),
             ])
             ->where('status', 'open')
             ->when($mine, function ($query) use ($user) {
                 $query->whereHas('memberships', function ($memberQuery) use ($user) {
                     $memberQuery->where('user_id', $user->id)->where('status', 'active');
-                });
-            })
-            ->when(!$mine, function ($query) use ($user) {
-                $query->where(function ($nested) use ($user) {
-                    $nested->where('type', 'public')
-                        ->orWhereHas('memberships', function ($memberQuery) use ($user) {
-                            $memberQuery->where('user_id', $user->id)->where('status', 'active');
-                        });
                 });
             })
             ->when($q !== '', function ($query) use ($q) {
@@ -61,46 +60,7 @@ class ForumController extends Controller
 
     public function store(Request $request)
     {
-        $user = $this->authUser();
-        if ($user->status !== 'verified') {
-            return ApiResponse::error('Only verified members can create forums.', [], 403);
-        }
-
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category' => 'nullable|string|max:120',
-            'type' => 'required|in:public,private',
-            'tags' => 'nullable|array',
-            'tags.*' => 'string|max:80',
-            'region_based' => 'nullable|boolean',
-            'region' => 'nullable|string|max:120',
-        ]);
-
-        $forum = DB::transaction(function () use ($data, $user) {
-            $forum = Forum::create([
-                'title' => $data['title'],
-                'description' => $data['description'] ?? null,
-                'category' => $data['category'] ?? null,
-                'type' => $data['type'],
-                'tags' => $data['tags'] ?? [],
-                'region_based' => (bool) ($data['region_based'] ?? false),
-                'region' => $data['region'] ?? null,
-                'created_by' => $user->id,
-            ]);
-
-            ForumMembership::create([
-                'forum_id' => $forum->id,
-                'user_id' => $user->id,
-                'role' => 'creator',
-                'status' => 'active',
-                'joined_at' => now(),
-            ]);
-
-            return $forum;
-        });
-
-        return ApiResponse::success($forum, 'Forum created successfully.');
+        return ApiResponse::error('Forum creation is restricted to admins.', [], 403);
     }
 
     public function show(Forum $forum)
@@ -114,9 +74,13 @@ class ForumController extends Controller
         }
 
         $forum->load([
-            'creator:id,first_name,last_name',
             'memberships' => fn ($query) => $query->with('user:id,first_name,last_name')->where('status', 'active'),
-            'threads' => fn ($query) => $query->with('user:id,first_name,last_name')->withCount('posts')->orderByDesc('is_pinned')->latest()->limit(30),
+            'threads' => fn ($query) => $query->with('user:id,first_name,last_name')
+                ->where('is_blocked', false)
+                ->withCount(['posts' => fn ($postQuery) => $postQuery->where('is_blocked', false)])
+                ->orderByDesc('is_pinned')
+                ->latest()
+                ->limit(30),
         ]);
 
         return ApiResponse::success($forum, 'Forum details fetched successfully.');
@@ -206,16 +170,33 @@ class ForumController extends Controller
     public function join(Forum $forum)
     {
         $user = $this->authUser();
-        if ($forum->type !== 'public') {
-            return ApiResponse::error('This is a private forum. Invitation is required.', [], 403);
+        if ($forum->status !== 'open') {
+            return ApiResponse::error('This forum is not available.', [], 403);
+        }
+        $membership = ForumMembership::where('forum_id', $forum->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($membership && $membership->status === 'active') {
+            return ApiResponse::error('You are already a member of this forum.', [], 409);
+        }
+
+        if ($membership && $membership->status === 'pending') {
+            return ApiResponse::success($membership, 'Your request is still pending.');
         }
 
         $membership = ForumMembership::updateOrCreate(
             ['forum_id' => $forum->id, 'user_id' => $user->id],
-            ['status' => 'active', 'joined_at' => now()]
+            ['status' => 'pending', 'role' => 'member', 'joined_at' => null]
         );
 
-        return ApiResponse::success($membership, 'Joined forum successfully.');
+        $this->notifyAdmins(
+            "New forum join request",
+            "{$user->first_name} {$user->last_name} requested to join '{$forum->title}'.",
+            ['forum_id' => $forum->id, 'user_id' => $user->id]
+        );
+
+        return ApiResponse::success($membership, 'Join request submitted. You will be notified after review.');
     }
 
     public function leave(Forum $forum)
@@ -416,8 +397,9 @@ class ForumController extends Controller
         }
 
         $threads = ForumThread::with(['user:id,first_name,last_name'])
-            ->withCount('posts')
+            ->withCount(['posts' => fn ($query) => $query->where('is_blocked', false)])
             ->where('forum_id', $forum->id)
+            ->where('is_blocked', false)
             ->orderByDesc('is_pinned')
             ->latest()
             ->paginate(30);
@@ -436,6 +418,27 @@ class ForumController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'nullable|string',
         ]);
+
+        $issue = $this->moderationCheck(trim(($data['title'] ?? '') . ' ' . ($data['content'] ?? '')));
+        if ($issue) {
+            $thread = ForumThread::create([
+                'forum_id' => $forum->id,
+                'user_id' => $user->id,
+                'title' => $data['title'],
+                'content' => $data['content'] ?? null,
+                'is_blocked' => true,
+                'blocked_reason' => $issue,
+                'blocked_at' => now(),
+            ]);
+
+            $this->notifyAdmins(
+                'Blocked forum thread',
+                "{$user->first_name} {$user->last_name}'s thread was blocked in '{$forum->title}'. Reason: {$issue}",
+                ['forum_id' => $forum->id, 'thread_id' => $thread->id, 'user_id' => $user->id, 'reason' => $issue]
+            );
+
+            return ApiResponse::error("Your thread was blocked: {$issue}", ['reason' => $issue], 422);
+        }
 
         $thread = ForumThread::create([
             'forum_id' => $forum->id,
@@ -469,6 +472,9 @@ class ForumController extends Controller
         if ((int) $thread->forum_id !== (int) $forum->id) {
             return ApiResponse::error('Thread does not belong to this forum.', [], 422);
         }
+        if ($thread->is_blocked) {
+            return ApiResponse::error('This thread is not available.', [], 403);
+        }
 
         $canModerate = $this->isModeratorOrCreator($forum, $user);
         if (!$canModerate && (int) $thread->user_id !== (int) $user->id) {
@@ -480,6 +486,23 @@ class ForumController extends Controller
             'content' => 'nullable|string',
         ]);
 
+        $issue = $this->moderationCheck(trim(($data['title'] ?? $thread->title) . ' ' . ($data['content'] ?? $thread->content)));
+        if ($issue) {
+            $thread->update([
+                'is_blocked' => true,
+                'blocked_reason' => $issue,
+                'blocked_at' => now(),
+            ]);
+
+            $this->notifyAdmins(
+                'Blocked forum thread update',
+                "{$user->first_name} {$user->last_name}'s thread update was blocked in '{$forum->title}'. Reason: {$issue}",
+                ['forum_id' => $forum->id, 'thread_id' => $thread->id, 'user_id' => $user->id, 'reason' => $issue]
+            );
+
+            return ApiResponse::error("Your thread update was blocked: {$issue}", ['reason' => $issue], 422);
+        }
+
         $thread->update($data);
 
         return ApiResponse::success($thread, 'Thread updated.');
@@ -490,6 +513,9 @@ class ForumController extends Controller
         $user = $this->authUser();
         if ((int) $thread->forum_id !== (int) $forum->id) {
             return ApiResponse::error('Thread does not belong to this forum.', [], 422);
+        }
+        if ($thread->is_blocked) {
+            return ApiResponse::error('This thread is not available.', [], 403);
         }
 
         $canModerate = $this->isModeratorOrCreator($forum, $user);
@@ -507,6 +533,9 @@ class ForumController extends Controller
         $user = $this->authUser();
         if ((int) $thread->forum_id !== (int) $forum->id) {
             return ApiResponse::error('Thread does not belong to this forum.', [], 422);
+        }
+        if ($thread->is_blocked) {
+            return ApiResponse::error('This thread is not available.', [], 403);
         }
 
         if (!$this->isModeratorOrCreator($forum, $user)) {
@@ -527,10 +556,13 @@ class ForumController extends Controller
         if (!$this->canViewForum($forum, $user) || (int) $thread->forum_id !== (int) $forum->id) {
             return ApiResponse::error('Access denied.', [], 403);
         }
+        if ($thread->is_blocked) {
+            return ApiResponse::error('This thread is not available.', [], 403);
+        }
 
         $posts = ForumPost::with([
             'user:id,first_name,last_name',
-            'quote:id,user_id,content',
+            'quote' => fn ($query) => $query->select(['id', 'user_id', 'content'])->where('is_blocked', false),
             'quote.user:id,first_name,last_name',
             'reactions',
             'replies' => function ($query) {
@@ -540,7 +572,7 @@ class ForumController extends Controller
                 ])->withCount([
                     'reactions as likes_count' => fn ($q) => $q->where('reaction', 'like'),
                     'reactions as dislikes_count' => fn ($q) => $q->where('reaction', 'dislike'),
-                ]);
+                ])->where('is_blocked', false);
             },
         ])
             ->withCount([
@@ -549,6 +581,7 @@ class ForumController extends Controller
             ])
             ->where('forum_thread_id', $thread->id)
             ->whereNull('parent_post_id')
+            ->where('is_blocked', false)
             ->latest()
             ->paginate(40);
 
@@ -561,6 +594,9 @@ class ForumController extends Controller
         if ((int) $thread->forum_id !== (int) $forum->id || !$this->canWriteInForum($forum, $user)) {
             return ApiResponse::error('You cannot post in this thread.', [], 403);
         }
+        if ($thread->is_blocked) {
+            return ApiResponse::error('This thread is not available.', [], 403);
+        }
 
         $data = $request->validate([
             'content' => 'required|string',
@@ -568,6 +604,30 @@ class ForumController extends Controller
             'quote_post_id' => 'nullable|exists:forum_posts,id',
             'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:4096',
         ]);
+
+        $issue = $this->moderationCheck($data['content']);
+        if ($issue) {
+            $post = ForumPost::create([
+                'forum_thread_id' => $thread->id,
+                'forum_id' => $forum->id,
+                'user_id' => $user->id,
+                'parent_post_id' => $data['parent_post_id'] ?? null,
+                'quote_post_id' => $data['quote_post_id'] ?? null,
+                'content' => $data['content'],
+                'attachment_path' => null,
+                'is_blocked' => true,
+                'blocked_reason' => $issue,
+                'blocked_at' => now(),
+            ]);
+
+            $this->notifyAdmins(
+                'Blocked forum post',
+                "{$user->first_name} {$user->last_name}'s post was blocked in '{$forum->title}'. Reason: {$issue}",
+                ['forum_id' => $forum->id, 'thread_id' => $thread->id, 'post_id' => $post->id, 'user_id' => $user->id, 'reason' => $issue]
+            );
+
+            return ApiResponse::error("Your post was blocked: {$issue}", ['reason' => $issue], 422);
+        }
 
         $attachmentPath = null;
         if ($request->hasFile('attachment')) {
@@ -607,6 +667,9 @@ class ForumController extends Controller
         if ((int) $thread->forum_id !== (int) $forum->id || (int) $post->forum_thread_id !== (int) $thread->id) {
             return ApiResponse::error('Post does not belong to this thread/forum.', [], 422);
         }
+        if ($thread->is_blocked) {
+            return ApiResponse::error('This thread is not available.', [], 403);
+        }
 
         $canModerate = $this->isModeratorOrCreator($forum, $user);
         $isOwner = (int) $post->user_id === (int) $user->id;
@@ -620,7 +683,29 @@ class ForumController extends Controller
             'content' => 'required|string',
         ]);
 
-        $post->update(['content' => $data['content']]);
+        $issue = $this->moderationCheck($data['content']);
+        if ($issue) {
+            $post->update([
+                'is_blocked' => true,
+                'blocked_reason' => $issue,
+                'blocked_at' => now(),
+            ]);
+
+            $this->notifyAdmins(
+                'Blocked forum post update',
+                "{$user->first_name} {$user->last_name}'s post update was blocked in '{$forum->title}'. Reason: {$issue}",
+                ['forum_id' => $forum->id, 'thread_id' => $thread->id, 'post_id' => $post->id, 'user_id' => $user->id, 'reason' => $issue]
+            );
+
+            return ApiResponse::error("Your post was blocked: {$issue}", ['reason' => $issue], 422);
+        }
+
+        $post->update([
+            'content' => $data['content'],
+            'is_blocked' => false,
+            'blocked_reason' => null,
+            'blocked_at' => null,
+        ]);
 
         return ApiResponse::success($post, 'Post updated successfully.');
     }
@@ -630,6 +715,9 @@ class ForumController extends Controller
         $user = $this->authUser();
         if ((int) $thread->forum_id !== (int) $forum->id || (int) $post->forum_thread_id !== (int) $thread->id) {
             return ApiResponse::error('Post does not belong to this thread/forum.', [], 422);
+        }
+        if ($thread->is_blocked) {
+            return ApiResponse::error('This thread is not available.', [], 403);
         }
 
         $canModerate = $this->isModeratorOrCreator($forum, $user);
@@ -648,6 +736,9 @@ class ForumController extends Controller
     public function reactPost(Request $request, ForumPost $post)
     {
         $user = $this->authUser();
+        if ($post->is_blocked) {
+            return ApiResponse::error('This post is not available.', [], 403);
+        }
         if (!$this->canWriteInForum($post->forum, $user)) {
             return ApiResponse::error('You cannot react in this forum.', [], 403);
         }
@@ -667,6 +758,9 @@ class ForumController extends Controller
     public function reportPost(Request $request, ForumPost $post)
     {
         $user = $this->authUser();
+        if ($post->is_blocked) {
+            return ApiResponse::error('This post is not available.', [], 403);
+        }
         if (!$this->canViewForum($post->forum, $user)) {
             return ApiResponse::error('You cannot report this post.', [], 403);
         }
@@ -697,8 +791,8 @@ class ForumController extends Controller
 
         $data = [
             'members_count' => ForumMembership::where('forum_id', $forum->id)->where('status', 'active')->count(),
-            'threads_count' => ForumThread::where('forum_id', $forum->id)->count(),
-            'posts_count' => ForumPost::where('forum_id', $forum->id)->count(),
+            'threads_count' => ForumThread::where('forum_id', $forum->id)->where('is_blocked', false)->count(),
+            'posts_count' => ForumPost::where('forum_id', $forum->id)->where('is_blocked', false)->count(),
             'reports_open_count' => ForumReport::whereHas('post', fn ($query) => $query->where('forum_id', $forum->id))
                 ->where('status', 'open')->count(),
         ];
@@ -772,10 +866,6 @@ class ForumController extends Controller
 
     private function canViewForum(Forum $forum, User $user): bool
     {
-        if ($forum->type === 'public') {
-            return true;
-        }
-
         return ForumMembership::where('forum_id', $forum->id)
             ->where('user_id', $user->id)
             ->where('status', 'active')
@@ -867,5 +957,66 @@ class ForumController extends Controller
             'announcements' => true,
             'email_immediate' => true,
         ], is_array($prefs) ? $prefs : []);
+    }
+
+    private function moderationCheck(string $text): ?string
+    {
+        $clean = trim(strip_tags($text));
+        $banned = ForumBannedWord::where('is_active', true)->pluck('word')->all();
+        if (empty($banned)) {
+            $banned = config('forum_moderation.banned_words', []);
+        }
+
+        foreach ($banned as $word) {
+            $word = trim((string) $word);
+            if ($word === '') {
+                continue;
+            }
+
+            if (preg_match('/\b' . preg_quote($word, '/') . '\b/i', $clean)) {
+                return "Prohibited language detected";
+            }
+        }
+
+        $minChars = (int) config('forum_moderation.min_chars', 12);
+        $minWords = (int) config('forum_moderation.min_words', 3);
+
+        $words = preg_split('/\s+/', $clean, -1, PREG_SPLIT_NO_EMPTY);
+        $wordCount = is_array($words) ? count($words) : 0;
+
+        $length = function_exists('mb_strlen') ? mb_strlen($clean) : strlen($clean);
+        if ($clean === '' || $length < $minChars || $wordCount < $minWords) {
+            return 'Inadequate content';
+        }
+
+        return null;
+    }
+
+    private function notifyAdmins(string $title, string $body, array $data = []): void
+    {
+        $admins = Admin::query()
+            ->where('is_active', true)
+            ->get();
+
+        foreach ($admins as $admin) {
+            if (!$admin->hasPermission('forums')) {
+                continue;
+            }
+
+            if (!$admin->email) {
+                continue;
+            }
+
+            try {
+                Mail::raw(
+                    ($body ? $body . "\n\n" : '') . "Notification: {$title}",
+                    function ($mail) use ($admin, $title) {
+                        $mail->to($admin->email)->subject("WGRCFP Forum - {$title}");
+                    }
+                );
+            } catch (\Throwable $e) {
+                // Keep notification delivery non-blocking.
+            }
+        }
     }
 }

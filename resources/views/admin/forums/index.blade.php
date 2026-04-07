@@ -4,9 +4,28 @@
 
 @section('content')
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canCreate = $admin && $admin->hasPermission('forums.create'))
+    @php($canModerate = $admin && $admin->hasPermission('forums.moderate'))
+    @php($canView = $admin && $admin->hasPermission('forums.view'))
+    @php($canUpdate = $admin && $admin->hasPermission('forums.update'))
+    @php($canDelete = $admin && $admin->hasPermission('forums.delete'))
+    @php($canSeeActions = $admin && ($canView || $canUpdate || $canDelete))
     <div class="block block-rounded">
         <div class="block-header">
             <h3 class="block-title">All Forums</h3>
+            <div class="block-options">
+                @if($canModerate)
+                    <a href="{{ route('admin.forums.banned-words.index') }}" class="btn btn-sm btn-alt-secondary">
+                        <i class="fa fa-ban"></i> Banned Words
+                    </a>
+                @endif
+                @if($canCreate)
+                    <a href="{{ route('admin.forums.create') }}" class="btn btn-sm btn-primary">
+                        <i class="fa fa-plus"></i> Create Forum
+                    </a>
+                @endif
+            </div>
         </div>
 
         <div class="block-content">
@@ -40,7 +59,9 @@
                         <th>Members</th>
                         <th>Threads</th>
                         <th>Posts</th>
-                        <th class="text-center">Actions</th>
+                        @if($canSeeActions)
+                            <th class="text-center">Actions</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -63,47 +84,55 @@
                             </span>
                         </td>
                         <td>
-                            <div>{{ $forum->creator?->first_name }} {{ $forum->creator?->last_name }}</div>
-                            <div class="small text-muted">{{ $forum->creator?->email }}</div>
+                            <div>{{ $forum->creator?->name ?? '-' }}</div>
+                            <div class="small text-muted">{{ $forum->creator?->email ?? '-' }}</div>
                         </td>
                         <td>{{ $forum->members_count }}</td>
                         <td>{{ $forum->threads_count }}</td>
                         <td>{{ $forum->posts_count }}</td>
-                        <td class="text-center">
-                            <a href="{{ route('admin.forums.show', $forum) }}" class="btn btn-sm btn-alt-info" title="View">
-                                <i class="fa fa-eye"></i>
-                            </a>
+                        @if($canSeeActions)
+                            <td class="text-center">
+                                @if($canView)
+                                    <a href="{{ route('admin.forums.show', $forum) }}" class="btn btn-sm btn-alt-info" title="View">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                @endif
 
-                            @if($forum->status !== 'archived')
-                                <form method="POST" action="{{ route('admin.forums.deactivate', $forum) }}" class="d-inline" onsubmit="return confirm('Deactivate this forum?')">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button class="btn btn-sm btn-alt-warning" title="Deactivate">
-                                        <i class="fa fa-ban"></i>
-                                    </button>
-                                </form>
-                            @else
-                                <form method="POST" action="{{ route('admin.forums.activate', $forum) }}" class="d-inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button class="btn btn-sm btn-alt-success" title="Activate">
-                                        <i class="fa fa-check"></i>
-                                    </button>
-                                </form>
-                            @endif
+                                @if($canUpdate)
+                                    @if($forum->status !== 'archived')
+                                        <form method="POST" action="{{ route('admin.forums.deactivate', $forum) }}" class="d-inline" onsubmit="return confirm('Deactivate this forum?')">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button class="btn btn-sm btn-alt-warning" title="Deactivate">
+                                                <i class="fa fa-ban"></i>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <form method="POST" action="{{ route('admin.forums.activate', $forum) }}" class="d-inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button class="btn btn-sm btn-alt-success" title="Activate">
+                                                <i class="fa fa-check"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                @endif
 
-                            <form method="POST" action="{{ route('admin.forums.destroy', $forum) }}" class="d-inline" onsubmit="return confirm('Delete this forum permanently?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-sm btn-alt-danger" title="Delete">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </form>
-                        </td>
+                                @if($canDelete)
+                                    <form method="POST" action="{{ route('admin.forums.destroy', $forum) }}" class="d-inline" onsubmit="return confirm('Delete this forum permanently?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-sm btn-alt-danger" title="Delete">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                            </td>
+                        @endif
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="text-center text-muted py-4">No forums found.</td>
+                        <td colspan="{{ $canSeeActions ? 9 : 8 }}" class="text-center text-muted py-4">No forums found.</td>
                     </tr>
                 @endforelse
                 </tbody>
@@ -114,4 +143,3 @@
     </div>
 </div>
 @endsection
-

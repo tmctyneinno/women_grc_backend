@@ -3,6 +3,8 @@
 @section('content')
 <div class="content">
     @php($admin = auth('admin')->user())
+    @php($canApprove = $admin && $admin->hasPermission('memberships.approve'))
+    @php($canViewUser = $admin && $admin->hasPermission('users.view'))
     <div class="block block-rounded">
         <div class="block-header block-header-default">
             <h3 class="block-title">Pending Membership Approvals</h3>
@@ -25,7 +27,9 @@
                                 <th>Membership</th>
                                 <th>Tier</th>
                                 <th>Requested</th>
-                                <th class="text-end">Action</th>
+                                @if($canApprove)
+                                    <th class="text-end">Action</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -34,7 +38,7 @@
                                     <td>{{ $membership->user?->first_name }} {{ $membership->user?->last_name }}</td>
                                     <td>
                                         {{ $membership->user?->email }}
-                                        @if($admin && $admin->isSuperAdmin() && $membership->user)
+                                        @if($canViewUser && $membership->user)
                                             <a href="{{ route('admin.users.profile', $membership->user) }}" class="ms-2 text-muted" title="View User Profile">
                                                 <i class="fa fa-user"></i>
                                             </a>
@@ -50,13 +54,15 @@
                                     <td>{{ $membership->membership?->name }}</td>
                                     <td>{{ $membership->tier?->name }}</td>
                                     <td>{{ optional($membership->created_at)->format('Y-m-d H:i') }}</td>
-                                    <td class="text-end">
-                                        <form method="POST" action="{{ route('admin.memberships.approve', $membership->id) }}">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button class="btn btn-sm btn-success" type="submit">Approve</button>
-                                        </form>
-                                    </td>
+                                    @if($canApprove)
+                                        <td class="text-end">
+                                            <form method="POST" action="{{ route('admin.memberships.approve', $membership->id) }}">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button class="btn btn-sm btn-success" type="submit">Approve</button>
+                                            </form>
+                                        </td>
+                                    @endif
                                 </tr>
                             @endforeach
                         </tbody>

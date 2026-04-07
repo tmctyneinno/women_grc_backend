@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Admin\MembershipApprovalController;
+use App\Http\Controllers\ForumInvitationController;
 use Illuminate\Support\Str;
 
 
@@ -71,3 +72,6 @@ Route::get('/reset-password', [ForgotPasswordController::class, 'reset'])->name(
 Route::get('/memberships/approve/{userMembership}', [MembershipApprovalController::class, 'approveFromEmail'])
     ->middleware('signed')
     ->name('memberships.email-approve');
+
+Route::get('/forums/invitations/accept/{token}', [ForumInvitationController::class, 'accept'])
+    ->name('forums.invitation.accept');

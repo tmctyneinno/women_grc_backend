@@ -5,9 +5,11 @@
 @section('content')
 @php
     $adminUser = auth('admin')->user();
-    $isSuperAdmin = $adminUser && method_exists($adminUser, 'isSuperAdmin')
-        ? $adminUser->isSuperAdmin()
-        : ($adminUser && strtolower($adminUser->email) === 'enquiries@wgrcfp.org');
+    $canCreate = $adminUser && $adminUser->hasPermission('articles.create');
+    $canEdit = $adminUser && $adminUser->hasPermission('articles.update');
+    $canApprove = $adminUser && $adminUser->hasPermission('articles.approve');
+    $canDelete = $adminUser && $adminUser->hasPermission('articles.delete');
+    $canSeeActions = $adminUser && ($canEdit || $canApprove || $canDelete);
 @endphp
 <div class="content">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
@@ -15,9 +17,11 @@
             <h1 class="h3 mb-1">Articles</h1>
             <p class="text-muted mb-0">Manage event articles submitted by admins and users.</p>
         </div>
-        <a href="{{ route('admin.articles.create') }}" class="btn btn-primary mt-3 mt-md-0">
-            <i class="fa fa-plus me-1"></i> Create Article
-        </a>
+        @if($canCreate)
+            <a href="{{ route('admin.articles.create') }}" class="btn btn-primary mt-3 mt-md-0">
+                <i class="fa fa-plus me-1"></i> Create Article
+            </a>
+        @endif
     </div>
 
     <div class="block block-rounded">
@@ -48,7 +52,9 @@
                             <th>Author</th>
                             <th>Tag</th>
                             <th>Created</th>
-                            <th class="text-end">Actions</th>
+                            @if($canSeeActions)
+                                <th class="text-end">Actions</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -79,32 +85,38 @@
                                 </td>
                                 <td>{{ $article->tag ?? '-' }}</td>
                                 <td>{{ $article->created_at?->format('M d, Y') }}</td>
-                                <td class="text-end">
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.articles.edit', $article) }}" class="btn btn-sm btn-alt-primary">Edit</a>
-                                        @if($isSuperAdmin && $article->status === 'pending')
-                                            <form method="POST" action="{{ route('admin.articles.approve', $article) }}">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button class="btn btn-sm btn-success" type="submit">Approve</button>
-                                            </form>
-                                            <form method="POST" action="{{ route('admin.articles.reject', $article) }}">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button class="btn btn-sm btn-danger" type="submit">Reject</button>
-                                            </form>
-                                        @endif
-                                        <form method="POST" action="{{ route('admin.articles.destroy', $article) }}" onsubmit="return confirm('Delete this article?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="btn btn-sm btn-alt-secondary" type="submit">Delete</button>
-                                        </form>
-                                    </div>
-                                </td>
+                                @if($canSeeActions)
+                                    <td class="text-end">
+                                        <div class="btn-group">
+                                            @if($canEdit)
+                                                <a href="{{ route('admin.articles.edit', $article) }}" class="btn btn-sm btn-alt-primary">Edit</a>
+                                            @endif
+                                            @if($canApprove && $article->status === 'pending')
+                                                <form method="POST" action="{{ route('admin.articles.approve', $article) }}">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button class="btn btn-sm btn-success" type="submit">Approve</button>
+                                                </form>
+                                                <form method="POST" action="{{ route('admin.articles.reject', $article) }}">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button class="btn btn-sm btn-danger" type="submit">Reject</button>
+                                                </form>
+                                            @endif
+                                            @if($canDelete)
+                                                <form method="POST" action="{{ route('admin.articles.destroy', $article) }}" onsubmit="return confirm('Delete this article?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="btn btn-sm btn-alt-secondary" type="submit">Delete</button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    </td>
+                                @endif
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted">No articles found.</td>
+                                <td colspan="{{ $canSeeActions ? 6 : 5 }}" class="text-center text-muted">No articles found.</td>
                             </tr>
                         @endforelse
                     </tbody>

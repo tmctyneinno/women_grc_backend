@@ -33,6 +33,8 @@
 <!-- END Hero -->
 
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canUpdate = $admin && $admin->hasPermission('courses.update'))
 
     {{-- Flash Message --}}
     @if(session('success'))
@@ -229,9 +231,11 @@
                 {{-- Actions --}}
                 <div class="d-flex justify-content-end gap-2">
                     <a href="{{ route('admin.courses.index') }}" class="btn btn-alt-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-alt-primary">
-                        <i class="fa fa-save me-1"></i> Update Course
-                    </button>
+                    @if($canUpdate)
+                        <button type="submit" class="btn btn-alt-primary">
+                            <i class="fa fa-save me-1"></i> Update Course
+                        </button>
+                    @endif
                 </div>
             </form>
         </div>
@@ -241,9 +245,11 @@
     <div class="block block-rounded mt-4">
         <div class="block-header block-header-default">
             <h3 class="block-title">Modules</h3>
-            <a href="{{ route('admin.courses.modules.create', $course) }}" class="btn btn-sm btn-primary">
-                <i class="fa fa-plus"></i> Add Module
-            </a>
+            @if($canUpdate)
+                <a href="{{ route('admin.courses.modules.create', $course) }}" class="btn btn-sm btn-primary">
+                    <i class="fa fa-plus"></i> Add Module
+                </a>
+            @endif
         </div>
 
         <div class="block-content table-responsive">
@@ -253,7 +259,9 @@
                         <th>Title</th>
                         <th>Order</th>
                         <th>Status</th>
-                        <th class="text-center">Actions</th>
+                        @if($canUpdate)
+                            <th class="text-center">Actions</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -266,25 +274,27 @@
                                 {{ $module->is_active ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
-                        <td class="text-center">
-                            <a href="{{ route('admin.courses.modules.edit', [$course, $module]) }}"
-                               class="btn btn-sm btn-alt-secondary">
-                                <i class="fa fa-pencil-alt"></i>
-                            </a>
+                        @if($canUpdate)
+                            <td class="text-center">
+                                <a href="{{ route('admin.courses.modules.edit', [$course, $module]) }}"
+                                   class="btn btn-sm btn-alt-secondary">
+                                    <i class="fa fa-pencil-alt"></i>
+                                </a>
 
-                            <form method="POST" class="d-inline"
-                                  action="{{ route('admin.courses.modules.destroy', [$course, $module]) }}"
-                                  onsubmit="return confirm('Delete this module?')">
-                                @csrf @method('DELETE')
-                                <button class="btn btn-sm btn-alt-danger">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </form>
-                        </td>
+                                <form method="POST" class="d-inline"
+                                      action="{{ route('admin.courses.modules.destroy', [$course, $module]) }}"
+                                      onsubmit="return confirm('Delete this module?')">
+                                    @csrf @method('DELETE')
+                                    <button class="btn btn-sm btn-alt-danger">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        @endif
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="text-center text-muted py-4">
+                        <td colspan="{{ $canUpdate ? 4 : 3 }}" class="text-center text-muted py-4">
                             No modules yet
                         </td>
                     </tr>

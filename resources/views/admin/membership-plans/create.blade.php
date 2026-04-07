@@ -4,6 +4,8 @@
 
 @section('content')
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canCreate = $admin && $admin->hasPermission('memberships.create'))
     <div class="block block-rounded">
         <div class="block-header">
             <h3 class="block-title">Create Membership Plan</h3>
@@ -31,7 +33,9 @@
                     <textarea name="description" class="form-control" rows="4">{{ old('description') }}</textarea>
                 </div>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-primary" type="submit">Create Plan</button>
+                    @if($canCreate)
+                        <button class="btn btn-primary" type="submit">Create Plan</button>
+                    @endif
                     <a href="{{ route('admin.membership-plans.index') }}" class="btn btn-alt-secondary">Cancel</a>
                 </div>
             </form>

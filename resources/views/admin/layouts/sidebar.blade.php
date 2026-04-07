@@ -122,7 +122,7 @@
         </li>
         
         <li class="nav-main-heading">Core</li>
-        @if($admin && ($admin->isSuperAdmin() || $admin->hasPermission('users')))
+        @if($admin && ($admin->isSuperAdmin() || $admin->hasPermission('users.view')))
         <li class="nav-main-item">
             <a class="nav-main-link nav-main-link-submenu {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
                 <i class="nav-main-link-icon si si-users"></i>
@@ -163,7 +163,7 @@
         @endif
 
         <li class="nav-main-heading">Learning</li>
-        @if($admin && $admin->hasPermission('courses'))
+        @if($admin && $admin->hasPermission('courses.view'))
         <li class="nav-main-item">
             <a class="nav-main-link nav-main-link-submenu {{ request()->routeIs('admin.courses.*') || request()->routeIs('admin.modules.*') || request()->routeIs('admin.lessons.*') || request()->routeIs('admin.quizzes.*') ? 'active' : '' }}" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
                 <i class="nav-main-link-icon si si-graduation"></i>
@@ -196,36 +196,40 @@
         @endif
         
         <li class="nav-main-heading">Engagement</li>
-        @if($admin && ($admin->hasPermission('events') || $admin->hasPermission('articles')))
+        @if($admin && ($admin->hasPermission('events.view') || $admin->hasPermission('articles.view') || $admin->hasPermission('podcasts.view')))
         <li class="nav-main-item">
             <a class="nav-main-link nav-main-link-submenu {{ request()->routeIs('admin.events.*') || request()->routeIs('admin.podcasts.*') ? 'active' : '' }}" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
                 <i class="nav-main-link-icon si si-calendar"></i>
                 <span class="nav-main-link-name">Events</span>
             </a>
             <ul class="nav-main-submenu">
-                @if($admin->hasPermission('events'))
+                @if($admin->hasPermission('events.view'))
                 <li class="nav-main-item">
                     <a class="nav-main-link {{ request()->routeIs('admin.events.index') ? 'active' : '' }}" href="{{ route('admin.events.index') }}">
                         <span class="nav-main-link-name">All Events</span>
                     </a>
                 </li>
+                @if($admin->hasPermission('events.create'))
                 <li class="nav-main-item">
                     <a class="nav-main-link {{ request()->routeIs('admin.events.create') ? 'active' : '' }}" href="{{ route('admin.events.create') }}">
                         <span class="nav-main-link-name">Create Event</span>
                     </a>
                 </li>
+                @endif
                 <li class="nav-main-item">
                     <a class="nav-main-link {{ request()->routeIs('admin.events.calendar') ? 'active' : '' }}" href="{{ route('admin.events.calendar') }}">
                         <span class="nav-main-link-name">Calendar View</span>
                     </a>
                 </li>
+                @endif
+                @if($admin->hasPermission('podcasts.view'))
                 <li class="nav-main-item">
                     <a class="nav-main-link {{ request()->routeIs('admin.podcasts.index') ? 'active' : '' }}" href="{{ route('admin.podcasts.index') }}">
                         <span class="nav-main-link-name">Podcasts</span>
                     </a>
                 </li>
                 @endif
-                @if($admin && ($admin->isSuperAdmin() || $admin->hasPermission('articles')))
+                @if($admin && ($admin->isSuperAdmin() || $admin->hasPermission('articles.view')))
                 <li class="nav-main-item">
                     <a class="nav-main-link {{ request()->routeIs('admin.articles.*') ? 'active' : '' }}" href="{{ route('admin.articles.index') }}">
                         <span class="nav-main-link-name">Articles</span>
@@ -237,7 +241,7 @@
         </li>
         @endif
         
-        @if($admin && $admin->hasPermission('memberships'))
+        @if($admin && $admin->hasPermission('memberships.view'))
         <li class="nav-main-item">
             <a class="nav-main-link nav-main-link-submenu {{ request()->routeIs('admin.membership-plans.*') || request()->routeIs('admin.memberships.*') ? 'active' : '' }}" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
                 <i class="nav-main-link-icon si si-badge"></i>
@@ -249,11 +253,13 @@
                         <span class="nav-main-link-name">Membership Plans</span>
                     </a>
                 </li>
+                @if($admin->hasPermission('memberships.approve'))
                 <li class="nav-main-item">
                     <a class="nav-main-link {{ request()->routeIs('admin.memberships.pending') ? 'active' : '' }}" href="{{ route('admin.memberships.pending') }}">
                         <span class="nav-main-link-name">Membership Approvals</span>
                     </a>
                 </li>
+                @endif
             </ul>
         </li>
         @endif
@@ -267,7 +273,7 @@
         </li>
         @endif
 
-        @if($admin && $admin->hasPermission('forums'))
+        @if($admin && $admin->hasPermission('forums.view'))
         <li class="nav-main-item">
             <a class="nav-main-link {{ request()->routeIs('admin.forums.*') ? 'active' : '' }}" href="{{ route('admin.forums.index') }}">
                 <i class="nav-main-link-icon si si-bubbles"></i>

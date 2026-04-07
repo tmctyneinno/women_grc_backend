@@ -5,6 +5,7 @@
 @section('content')
 <div class="content">
     @php($admin = auth('admin')->user())
+    @php($canViewUser = $admin && $admin->hasPermission('users.view'))
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
             <h3 class="mb-1">{{ $course->title }}</h3>
@@ -39,7 +40,7 @@
                         <td>{{ $enrollment->user?->first_name }} {{ $enrollment->user?->last_name }}</td>
                         <td>
                             {{ $enrollment->user?->email }}
-                            @if($admin && $admin->isSuperAdmin() && $enrollment->user)
+                            @if($canViewUser && $enrollment->user)
                                 <a href="{{ route('admin.users.profile', $enrollment->user) }}" class="ms-2 text-muted" title="View User Profile">
                                     <i class="fa fa-user"></i>
                                 </a>

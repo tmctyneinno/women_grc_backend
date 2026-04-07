@@ -36,6 +36,8 @@
 </div>
 
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canManageSpeakers = $admin && $admin->hasPermission('events.update'))
     <!-- Form Errors Alert -->
     @if ($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -178,9 +180,11 @@
                                 </a>
                             </div>
                             <div>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-save me-1"></i> Save Speaker
-                                </button>
+                                @if($canManageSpeakers)
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa fa-save me-1"></i> Save Speaker
+                                    </button>
+                                @endif
                             </div>
                         </div>
                     </div>

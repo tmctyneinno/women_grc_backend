@@ -4,6 +4,8 @@
 
 @section('content')
 <div class="content">
+    @php($adminUser = auth('admin')->user())
+    @php($canManageAdmins = $adminUser && $adminUser->isSuperAdmin())
     <div class="block block-rounded">
         <div class="block-header">
             <h3 class="block-title">Create Admin</h3>
@@ -58,19 +60,28 @@
                 <hr>
 
                 <h4 class="fs-5 mb-3">Permissions</h4>
-                <div class="row g-2">
-                    @foreach($permissions as $perm)
-                        <div class="col-md-4">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="perm_{{ $perm }}" name="permissions[]" value="{{ $perm }}" {{ in_array($perm, old('permissions', [])) ? 'checked' : '' }}>
-                                <label class="form-check-label" for="perm_{{ $perm }}">{{ ucfirst($perm) }}</label>
-                            </div>
+                @php($selectedPerms = old('permissions', []))
+                @foreach(($permissionGroups ?? []) as $module => $actions)
+                    <div class="mb-3">
+                        <div class="fw-semibold text-uppercase small text-muted mb-2">{{ ucfirst($module) }}</div>
+                        <div class="row g-2">
+                            @foreach($actions as $action)
+                                @php($permKey = $module . '.' . $action)
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="perm_{{ $permKey }}" name="permissions[]" value="{{ $permKey }}" {{ in_array($permKey, $selectedPerms, true) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="perm_{{ $permKey }}">{{ ucfirst($action) }}</label>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
-                    @endforeach
-                </div>
+                    </div>
+                @endforeach
 
                 <div class="d-flex gap-2 mt-4">
-                    <button class="btn btn-primary" type="submit">Create Admin</button>
+                    @if($canManageAdmins)
+                        <button class="btn btn-primary" type="submit">Create Admin</button>
+                    @endif
                     <a href="{{ route('admin.admins.index') }}" class="btn btn-alt-secondary">Cancel</a>
                 </div>
             </form>

@@ -21,6 +21,8 @@
 </div>
 
 <div class="content">
+    @php($admin = auth('admin')->user())
+    @php($canUpdate = $admin && $admin->hasPermission('courses.update'))
 
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show">
@@ -102,9 +104,11 @@
                     <a href="{{ route('admin.courses.modules.index', $course) }}" class="btn btn-alt-secondary">
                         Cancel
                     </a>
-                    <button class="btn btn-alt-primary">
-                        <i class="fa fa-save me-1"></i> Update Module
-                    </button>
+                    @if($canUpdate)
+                        <button class="btn btn-alt-primary">
+                            <i class="fa fa-save me-1"></i> Update Module
+                        </button>
+                    @endif
                 </div>
             </form>
         </div>
@@ -112,4 +116,3 @@
 
 </div>
 @endsection
-
